@@ -119,7 +119,36 @@ Which solution meets these requirements?
 <details>
   <summary>Answer</summary>
 
-  - [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
+  - [ ] A. Add the aws:PrincipalOrgID global condition key with a reference to the organization ID to the S3 bucket policy.
+
+  The correct answer is A. Add the aws:PrincipalOrgID global condition key with a reference to the organization ID to the S3 bucket policy.
+
+Why is this the correct answer?
+
+aws:PrincipalOrgID for Organization-Wide Access: The aws:PrincipalOrgID condition key in an S3 bucket policy allows you to restrict access to AWS principals (users, roles) that belong to a specific AWS organization. This is the most efficient and direct way to enforce the requirement that only accounts within your AWS Organizations can access the bucket.
+Least Operational Overhead: This method involves a simple modification to the S3 bucket policy. You add a condition that checks the organization ID, which is a static identifier. There's no need to manage individual accounts, OUs, or tags, resulting in minimal administrative effort.
+Why are the other answers wrong?
+
+B. Create an organizational unit (OU) for each department. Add the aws:PrincipalOrgPaths global condition key to the S3 bucket policy.   
+
+Why it's wrong: While this could work, it's more complex than necessary. It requires you to create and maintain OUs, which adds organizational structure overhead. The aws:PrincipalOrgPaths condition key restricts access based on the OU hierarchy, which might be useful in some cases but is not needed for the simple requirement of granting access to the entire organization. If the organization structure changes, you might need to update the bucket policy.
+C. Use AWS CloudTrail to monitor the CreateAccount, InviteAccountToOrganization, LeaveOrganization, and RemoveAccountFrom Organization events. Update the S3 bucket policy accordingly.
+
+Why it's wrong: This is an extremely complex and inefficient solution. It involves:
+Setting up CloudTrail to log organization events.
+Creating an automated process (e.g., Lambda function) to analyze CloudTrail logs.
+Parsing the logs to identify changes in the organization membership.
+Dynamically updating the S3 bucket policy based on those changes. This approach introduces significant operational overhead, potential latency in policy updates, and increased risk of errors.
+D. Tag each user that needs access to the S3 bucket. Add the aws: PrincipalTag global condition key to the S3 bucket policy.   
+
+Why it's wrong: This is also complex and difficult to maintain. It requires:
+Implementing a system to tag IAM users.
+Ensuring that all relevant users are correctly tagged.
+Updating tags whenever users are added or removed.
+The aws:PrincipalTag condition key is useful for attribute-based access control (ABAC) but is not the most efficient way to control access based on organization membership.
+Summary
+
+The best solution is A. Add the aws:PrincipalOrgID global condition key because it's the simplest, most direct, and least operationally intensive way to restrict S3 bucket access to accounts within an AWS organization.
 
 </details>
 
