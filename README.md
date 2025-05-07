@@ -16,7 +16,7 @@ Which approach will meet these requirements?
 </details>
 
 <details>
-  <summary>Anwser 1</summary>
+  <summary>Answer 1</summary>
   
   ```
   $ node --version
