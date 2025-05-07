@@ -71,8 +71,36 @@ Which solution meets these requirements?
 <details>
   <summary>Answer 2</summary>
 
-  - [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
+  - [ ] B. Use Amazon ElastiCache for Redis to store the session state data. Modify the application to read and write session state data to ElastiCache.
 
+  The correct answer is B. Use Amazon ElastiCache for Redis to store the session state data. Modify the application to read and write session state data to ElastiCache.
+
+  Why is this the correct answer?
+  
+  - [ ] Durable and Elastic: ElastiCache (both Redis and Memcached) provides an in-memory data store that is highly available and scalable.
+  - [ ] Redis, in particular, offers durability options (RDB and AOF persistence) to ensure that session data is not lost in case of failures.
+  - [ ] ElastiCache can elastically scale to handle increasing session loads.
+  - [ ] Minimizes Operational Overhead: ElastiCache is a managed service.
+  - [ ] AWS handles the setup, patching, scaling, and maintenance of the cache infrastructure, reducing the operational burden on the company.
+  
+  Why are the other answers wrong?
+  
+  A. Use Amazon DynamoDB to store the session state data. Modify the application to read and write session state data to DynamoDB.
+  
+  Why it's wrong: While DynamoDB is durable and scalable, it's a NoSQL database, not an in-memory cache. Accessing DynamoDB is generally slower than accessing an in-memory cache like ElastiCache. For session state, low latency is crucial for a good user experience. DynamoDB might introduce more latency than ElastiCache.
+  
+  C. Use Amazon EC2 instance store volumes to store the session state data. Configure the application to replicate session state data across multiple EC2 instances.
+  
+  Why it's wrong: EC2 instance store volumes are ephemeral, meaning the data is lost if the instance stops, terminates, or fails. Relying on instance store for session state would require complex application-level replication, which introduces significant operational overhead and potential data loss. This solution is neither durable nor operationally simple.
+  
+  D. Use Amazon Elastic File System (Amazon EFS) to store the session state data. Modify the application to read and write session state data to Amazon EFS.
+  
+  Why it's wrong: EFS is a file storage service. File system operations are generally slower than in-memory operations. Using EFS for session state would introduce latency and negatively impact application performance. It's not designed for the high-speed, low-latency access required for session data.
+  
+  Summary
+  
+  ElastiCache for Redis is the best solution because it provides a durable, elastic, and managed in-memory store that minimizes operational overhead and meets the performance requirements for session state management.
+    
 </details>
 
 
