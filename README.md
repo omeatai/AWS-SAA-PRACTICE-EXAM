@@ -4,14 +4,14 @@ AWS-SAA-PRACTICE-EXAM
 <details>
   <summary>Question 1</summary>
  
-A company collects data for temperature, humidity, and atmospheric pressure in cities across multiple continents. The average volume of data that the company collects from each site daily is 500 GB. Each site has a high-speed internet connection. The company wants to store this data in a central data lake on AWS that is highly scalable and cost-effective. Data should be available for analytics within 24 hours of collection.   
-  
-Which approach will meet these requirements?
-  
-- [ ] A. Use Amazon S3 as the data lake. Ingest data directly into S3 from each site using AWS DataSync.
-- [ ] B. Use Amazon S3 as the data lake. Ingest data from each site into Amazon Kinesis Data Streams, and then use AWS Lambda to write the data to S3.
-- [ ] C. Use Amazon S3 as the data lake. Ingest data into Amazon Kinesis Data Firehose from each site, and configure it to deliver data to S3.
-- [ ] D. Use Amazon S3 as the data lake. Set up an Amazon EC2 instance at each site to compress and batch the data, and then transfer the data to S3 using SCP.
+A company collects data for temperature, humidity, and atmospheric pressure in cities across multiple continents.  The average volume of data that the company collects from each site daily is 500 GB.  Each site has a high-speed internet connection.  The company wants to aggregate the data from all these global sites as quickly as possible in a single Amazon S3 bucket.  The solution must minimize operational complexity.  
+
+Which solution meets these requirements?
+
+- [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket.  Use multipart uploads to directly upload site data to the destination S3 bucket.    
+- [ ] B.  Upload the data from each site to an S3 bucket in the closest Region.  Use S3 Cross-Region Replication to copy objects to the destination S3 bucket.  Then remove the data from the origin S3 bucket.    
+- [ ] C.  Schedule AWS Snowball Edge Storage Optimized device jobs daily to transfer data from each site to the closest Region.  Use S3 Cross-Region Replication to copy objects to the destination S3 bucket.    
+- [ ] D.  Upload the data from each site to an Amazon EC2 instance in the closest Region.  Store the data in an Amazon Elastic Block Store (Amazon EBS) volume.  At regular intervals, take an EBS snapshot and copy it to the Region that contains the destination S3 bucket.  Restore the EBS volume in that Region. 
 
 </details>
 
