@@ -16,7 +16,7 @@ Which solution meets these requirements?
 </details>
 
 <details>
-  <summary>Answer 1</summary>
+  <summary>Answer</summary>
 
   - [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
 
@@ -69,7 +69,7 @@ Which solution meets these requirements?
 </details>
 
 <details>
-  <summary>Answer 2</summary>
+  <summary>Answer</summary>
 
   - [ ] B. Use Amazon ElastiCache for Redis to store the session state data. Modify the application to read and write session state data to ElastiCache.
 
@@ -146,7 +146,7 @@ Which solution meets these requirements?
 </details>
 
 <details>
-  <summary>Answer 1</summary>
+  <summary>Answer</summary>
 
   - [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
 
