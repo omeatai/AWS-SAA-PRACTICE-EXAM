@@ -217,18 +217,21 @@ The correct answer is C. Copy the data from both EBS volumes to Amazon EFS. Modi
 
 Why is this the correct answer?
 
-Shared File System: Amazon EFS provides a shared file system that can be mounted by multiple EC2 instances concurrently. By migrating the documents to EFS, both EC2 instances can access the same set of files, resolving the issue where users only see a subset of their documents depending on which instance they hit.
-Persistence and Availability: EFS is designed for high availability and durability. The data is stored redundantly across multiple Availability Zones, ensuring that files are not lost if an instance fails.
-Scalability: EFS automatically scales its storage capacity as you add or remove files, making it suitable for handling a growing number of user-uploaded documents.
+- [ ] Shared File System: Amazon EFS provides a shared file system that can be mounted by multiple EC2 instances concurrently. By migrating the documents to EFS, both EC2 instances can access the same set of files, resolving the issue where users only see a subset of their documents depending on which instance they hit.
+- [ ] Persistence and Availability: EFS is designed for high availability and durability. The data is stored redundantly across multiple Availability Zones, ensuring that files are not lost if an instance fails.
+- [ ] Scalability: EFS automatically scales its storage capacity as you add or remove files, making it suitable for handling a growing number of user-uploaded documents.
 Why are the other answers wrong?
 
 A. Copy the data so both EBS volumes contain all the documents.
 
 Why it's wrong: While this might seem like a straightforward solution, it introduces significant challenges. You would need to implement a synchronization mechanism to keep the EBS volumes in sync, which can be complex, error-prone, and introduce latency. It also doesn't address the underlying architecture issue of each instance having its own storage.
+
 B. Configure the Application Load Balancer to direct a user to the server with the documents.
 
 Why it's wrong: This approach is not scalable or highly available. It creates "sticky sessions," meaning a user is always routed to the same EC2 instance. If that instance fails, the user loses access to their documents. It also doesn't solve the problem of data consistency.
+
 D. Configure the Application Load Balancer to send the request to both servers. Return each document from the correct server.
+
 Why it's wrong: This is also complex and inefficient. It would require significant application logic to track which documents are stored on which server and then merge the results. It also increases the load on both servers, as they would both need to process each request.
 
 Summary
