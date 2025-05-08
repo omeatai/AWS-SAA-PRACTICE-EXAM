@@ -336,6 +336,110 @@ Amazon SNS and SQS provide the best combination of decoupling, scalability, and 
 
 </details>
 
+<details>
+  <summary>Question 8</summary>
+
+A company is migrating a distributed application to AWS. The application serves variable workloads. The legacy platform consists of a primary server that coordinates jobs across multiple compute nodes. The company wants to modernize the application with a solution that maximizes resiliency and scalability. How should a solutions architect design the architecture to meet these requirements?   
+
+- [ ] A. Configure an Amazon Simple Queue Service (Amazon SQS) queue as a destination for the jobs. Implement the compute nodes with Amazon EC2 instances that are managed in an Auto Scaling group. Configure EC2 Auto Scaling to use scheduled scaling.   
+- [ ] B. Configure an Amazon Simple Queue Service (Amazon SQS) queue as a destination for the jobs. Implement the compute nodes with Amazon EC2 instances that are managed in an Auto Scaling group. Configure EC2 Auto Scaling based on the size of the queue.
+- [ ] C. Implement the primary server and the compute nodes with Amazon EC2 instances that are managed in an Auto Scaling group. Configure AWS CloudTrail as a destination for the jobs. Configure EC2 Auto Scaling based on the load on the primary server.   
+- [ ] D. Implement the primary server and the compute nodes with Amazon EC2 instances that are managed in an Auto Scaling group. Configure Amazon EventBridge (Amazon CloudWatch Events) as a destination for the jobs. Configure EC2 Auto Scaling based on the load on the compute nodes. 
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Configure an Amazon Simple Queue Service (Amazon SQS) queue as a destination for the jobs. Implement the compute nodes with Amazon EC2 instances that are managed in an Auto Scaling group. Configure EC2 Auto Scaling based on the size of the queue.
+
+The correct answer is B. Configure an Amazon Simple Queue Service (Amazon SQS) queue as a destination for the jobs. Implement the compute nodes with Amazon EC2 instances that are managed in an Auto Scaling group. Configure EC2 Auto Scaling based on the size of the queue.
+
+Why is this the correct answer?
+
+- [ ] SQS for Decoupling and Resiliency: Using an SQS queue effectively decouples the primary server from the compute nodes. The primary server puts jobs in the queue, and the compute nodes take jobs from the queue. This makes the system more resilient because if a compute node fails, the job remains in the queue to be processed by another node.   
+- [ ] Auto Scaling for Scalability: Managing compute nodes with an Auto Scaling group allows the number of nodes to adjust automatically based on demand, providing scalability.   
+- [ ] Queue-Based Scaling: Configuring Auto Scaling based on the size of the SQS queue is crucial for handling variable workloads. When the queue is large, Auto Scaling adds more compute nodes to process the backlog. When the queue is small, Auto Scaling removes nodes to save costs. This ensures the application scales efficiently with the workload.   
+
+Why are the other answers wrong?
+
+A. Configure an Amazon Simple Queue Service (Amazon SQS) queue as a destination for the jobs. Implement the compute nodes with Amazon EC2 instances that are managed in an Auto Scaling group. Configure EC2 Auto Scaling to use scheduled scaling.
+
+Why it's wrong: Scheduled scaling doesn't provide the dynamic responsiveness needed for variable workloads. Scheduled scaling works well for predictable load patterns, but this scenario involves unpredictable variations. Scaling based on queue size is more adaptive.   
+
+C. Implement the primary server and the compute nodes with Amazon EC2 instances that are managed in an Auto Scaling group. Configure AWS CloudTrail as a destination for the jobs. Configure EC2 Auto Scaling based on the load on the primary server.
+
+Why it's wrong: CloudTrail is for auditing API calls, not for queuing jobs. Scaling based on the primary server's load might not accurately reflect the work needed by the compute nodes. The queue size is a more direct indicator of the workload for those nodes. Also, it does not decouple the primary server from the compute nodes.   
+
+D. Implement the primary server and the compute nodes with Amazon EC2 instances that are managed in an Auto Scaling group. Configure Amazon EventBridge (Amazon CloudWatch Events) as a destination for the jobs. Configure EC2 Auto Scaling based on the load on the compute nodes.
+
+Why it's wrong: EventBridge is for event-driven architectures, not for queuing jobs in this manner. While scaling compute nodes based on their load is good, it doesn't address how jobs are passed between the primary server and the compute nodes. SQS provides the necessary decoupling and reliable queuing. Also, it does not decouple the primary server from the compute nodes.   
+
+Summary
+
+The best solution is B.  Using SQS for job queuing and Auto Scaling based on queue size provides the most resilient and scalable architecture for variable workloads.
+
+</details>
+
+<details>
+  <summary>Question 9</summary>
+
+A company is running an SMB file server in its data center.  The file server stores large files that are accessed frequently for the first few days after the files are created.  After 7 days the files are rarely accessed.   
+
+The total data size is increasing and is close to the company's total storage capacity.  A solutions architect must increase the company's available storage space without losing low-latency access to the most recently accessed files.  The solutions architect must also provide file lifecycle management to avoid future storage issues.   
+
+Which solution will meet these requirements?
+
+- [ ] A.  Use AWS DataSync to copy data that is older than 7 days from the SMB file server to AWS. 
+- [ ] B.  Create an Amazon S3 File Gateway to extend the company's storage space. Create an S3 Lifecycle policy to transition the data to S3 Glacier Deep Archive after 7 days. 
+- [ ] C.  Create an Amazon FSx for Windows File Server file system to extend the company's storage space. 
+- [ ] D.  Install a utility on each user's computer to access Amazon S3. Create an S3 Lifecycle policy to transition the data to S3 Glacier Flexible Retrieval after 7 days. 
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B.  Create an Amazon S3 File Gateway to extend the company's storage space.  Create an S3 Lifecycle policy to transition the data to S3 Glacier Deep Archive after 7 days.  
+
+The correct answer is B. Create an Amazon S3 File Gateway to extend the company's storage space. Create an S3 Lifecycle policy to transition the data to S3 Glacier Deep Archive after 7 days.   
+
+Why is this the correct answer?
+
+- [ ] Amazon S3 File Gateway: This service allows you to seamlessly connect your on-premises file server to Amazon S3. It caches frequently accessed files on-premises, providing low-latency access, while transparently storing all your data in S3. This effectively extends the company's storage capacity in the cloud without requiring significant changes to how users access files.
+- [ ] S3 Lifecycle Policy: This feature automates the movement of objects between different S3 storage classes. By creating a lifecycle policy to transition files to S3 Glacier Deep Archive after 7 days, you can automatically move infrequently accessed data to a lower-cost storage option. This addresses the requirement for file lifecycle management and avoids future storage issues by optimizing storage costs.
+
+Why are the other answers wrong?
+
+A. Use AWS DataSync to copy data that is older than 7 days from the SMB file server to AWS.
+
+Why it's wrong: AWS DataSync is designed for data migration and replication, not for providing a seamless extension of on-premises storage with local caching. While it can move data to AWS, it doesn't provide the low-latency access to recently accessed files that the File Gateway offers. It also doesn't integrate as directly with file access as a file gateway.
+
+C. Create an Amazon FSx for Windows File Server file system to extend the company's storage space.
+
+Why it's wrong: Amazon FSx for Windows File Server provides a fully managed native Microsoft Windows file system. While it's suitable for Windows-based workloads, it doesn't inherently provide the lifecycle management to archive older files to a lower-cost storage like S3 Glacier Deep Archive. It's also a separate file system, not an extension of the existing SMB file server with caching.
+
+D. Install a utility on each user's computer to access Amazon S3. Create an S3 Lifecycle policy to transition the data to S3 Glacier Flexible Retrieval after 7 days.   
+
+Why it's wrong: This approach is disruptive and complex. It requires users to change their workflow to access files directly from S3, which is not a seamless extension of their existing SMB file server. It also introduces management overhead for installing and maintaining the utility on each user's computer. While S3 Lifecycle can move data to Glacier, it doesn't address the need for low-latency access to recently accessed files in the same way that File Gateway's caching does.
+
+Summary
+
+The best solution is B because it provides a seamless way to extend on-premises storage with caching for frequently accessed files (via S3 File Gateway) and automates the archival of older files to a cost-effective storage class (via S3 Lifecycle policy), meeting all the requirements of the scenario.
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
