@@ -167,7 +167,32 @@ An application runs on an Amazon EC2 instance in a VPC.  The application process
 <details>
   <summary>Answer</summary>
 
-  - [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
+- [ ] A.  Create a gateway VPC endpoint to the S3 bucket.  
+
+The correct answer is A. Create a gateway VPC endpoint to the S3 bucket.
+
+Why is this the correct answer?
+
+- [ ] Gateway VPC Endpoint for Private Connectivity: A gateway VPC endpoint for S3 enables instances within your VPC to access S3 over the AWS private network, without traversing the internet.
+- [ ] This provides secure and private connectivity, satisfying the requirement to access the S3 bucket without internet access.
+
+Why are the other answers wrong?
+
+B. Stream the logs to Amazon CloudWatch Logs. Export the logs to the S3 bucket.
+
+Why it's wrong: While CloudWatch Logs is useful for log management, this solution doesn't address the requirement for private connectivity. Exporting logs from CloudWatch Logs to S3 still involves network traffic, and it doesn't guarantee that the initial application access to S3 is private. It also adds an unnecessary intermediary step.
+
+C. Create an instance profile on Amazon EC2 to allow S3 access.
+
+Why it's wrong: An instance profile (which uses IAM roles) grants permissions to the EC2 instance to access AWS services like S3. However, it does not, by itself, provide private connectivity. The instance would still use public endpoints to access S3 unless a VPC endpoint is configured.
+
+D. Create an Amazon API Gateway API with a private link to access the S3 endpoint.
+
+Why it's wrong: While PrivateLink does provide private connectivity, using API Gateway in this scenario is overly complex and not the intended use case. API Gateway is designed for creating and managing APIs, not for direct, high-volume data access to S3 from EC2 instances. Gateway VPC endpoints are simpler and more efficient for this purpose.
+
+Summary
+
+The best solution is A. Create a gateway VPC endpoint to the S3 bucket because it directly and efficiently provides the required private connectivity between the EC2 instance and the S3 bucket.
 
 </details>
 
@@ -227,7 +252,7 @@ An application runs on an Amazon EC2 instance in a VPC.  The application process
 <details>
   <summary>Answer</summary>
 
-  - [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
+- [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
 
 </details>
 
