@@ -197,7 +197,7 @@ The best solution is A. Create a gateway VPC endpoint to the S3 bucket because i
 </details>
 
 <details>
-  <summary>Question X</summary>
+  <summary>Question 5</summary>
 
 A company is hosting a web application on AWS using a single Amazon EC2 instance that stores user-uploaded documents in an Amazon EBS volume.  For better scalability and availability, the company duplicated the architecture and created a second EC2 instance and EBS volume in another Availability Zone, placing both behind an Application Load Balancer.  After completing this change, users reported that, each time they refreshed the website, they could see one subset of their documents or the other, but never all of the documents at the same time.  What should a solutions architect propose to ensure users see all of their documents at once?   
 
