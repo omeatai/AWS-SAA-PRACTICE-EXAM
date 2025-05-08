@@ -196,12 +196,24 @@ The best solution is A. Create a gateway VPC endpoint to the S3 bucket because i
 
 </details>
 
+<details>
+  <summary>Question X</summary>
 
+A company is hosting a web application on AWS using a single Amazon EC2 instance that stores user-uploaded documents in an Amazon EBS volume.  For better scalability and availability, the company duplicated the architecture and created a second EC2 instance and EBS volume in another Availability Zone, placing both behind an Application Load Balancer.  After completing this change, users reported that, each time they refreshed the website, they could see one subset of their documents or the other, but never all of the documents at the same time.  What should a solutions architect propose to ensure users see all of their documents at once?   
 
+- [ ] A.  Copy the data so both EBS volumes contain all the documents
+- [ ] B.  Configure the Application Load Balancer to direct a user to the server with the documents
+- [ ] C.  Copy the data from both EBS volumes to Amazon EFS.  Modify the application to save new documents to Amazon EFS   
+- [ ] D.  Configure the Application Load Balancer to send the request to both servers.  Return each document from the correct server   
 
+</details>
 
+<details>
+  <summary>Answer</summary>
 
+- [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
 
+</details>
 
 
 
@@ -244,8 +256,6 @@ The best solution is A. Create a gateway VPC endpoint to the S3 bucket because i
 
 - [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
 - [ ] B.  Upload the data from each site to an S3 bucket in the closest Region.  Use S3 Cross-Region Replication to copy objects to the destination S3 bucket.  Then remove the data from the origin S3 bucket.    
-- [ ] C.  Schedule AWS Snowball Edge Storage Optimized device jobs daily to transfer data from each site to the closest Region.  Use S3 Cross-Region Replication to copy objects to the destination S3 bucket.    
-- [ ] D.  Upload the data from each site to an Amazon EC2 instance in the closest Region.  Store the data in an Amazon Elastic Block Store (Amazon EBS) volume.  At regular intervals, take an EBS snapshot and copy it to the Region that contains the destination S3 bucket.  Restore the EBS volume in that Region. 
 
 </details>
 
