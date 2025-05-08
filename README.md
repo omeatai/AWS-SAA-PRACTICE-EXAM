@@ -240,8 +240,101 @@ The best solution is C. Copy the data from both EBS volumes to Amazon EFS. Modif
 
 </details>
 
+<details>
+  <summary>Question 6</summary>
 
+A company uses NFS to store large video files in on-premises network attached storage.  Each video file ranges in size from 1 MB to 500 GB.  The total storage is 70 TB and is no longer growing.  The company decides to migrate the video files to Amazon S3.  The company must migrate the video files as soon as possible while using the least possible network bandwidth.    
 
+Which solution will meet these requirements?
+
+- [ ] A.  Create an S3 bucket.  Create an IAM role that has permissions to write to the S3 bucket.  Use the AWS CLI to copy all files locally to the S3 bucket.    
+- [ ] B.  Create an AWS Snowball Edge job.  Receive a Snowball Edge device on premises.  Use the Snowball Edge client to transfer data to the device.  Return the device so that AWS can import the data into Amazon S3.    
+- [ ] C.  Deploy an S3 File Gateway on premises.  Create a public service endpoint to connect to the S3 File Gateway.  Create an S3 bucket.  Create a new NFS file share on the S3 File Gateway.  Point the new file share to the S3 bucket.  Transfer the data from the existing NFS file share to the S3 File Gateway.    
+- [ ] D.  Set up an AWS Direct Connect connection between the on-premises network and AWS.  Deploy an S3 File Gateway on premises.  Create a public virtual interface (VIF) to connect to the S3 File Gateway.  Create an S3 bucket.   Create a new NFS file share on the S3 File Gateway.  Point the new file share to the S3 bucket.  Transfer the data from the existing NFS file share to the S3 File Gateway.    
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Create an AWS Snowball Edge job. Receive a Snowball Edge device on premises. Use the Snowball Edge client to transfer data to the device. Return the device so that AWS can import the data into Amazon S3.    
+
+The correct answer is B. Create an AWS Snowball Edge job. Receive a Snowball Edge device on premises. Use the Snowball Edge client to transfer data to the device. Return the device so that AWS can import the data into Amazon S3.    
+
+Why is this the correct answer?
+
+- [ ] Least Network Bandwidth: AWS Snowball Edge is a physical device that you can use to transfer large amounts of data into and out of AWS.  It's designed for situations where transferring data over the internet would be slow or expensive due to limited network bandwidth.  In this case, the requirement to use the "least possible network bandwidth" strongly points to Snowball Edge.   
+- [ ] Speed for Large Data: For 70 TB of data, even with a good internet connection, the time to transfer all that data can be significant. Snowball Edge allows for much faster transfer of large volumes of data compared to online methods.    
+- [ ] One-time Migration: The scenario describes a one-time migration of existing data, not an ongoing synchronization. Snowball Edge is well-suited for this type of bulk transfer.    
+
+Why are the other answers wrong?
+
+A. Create an S3 bucket. Create an IAM role that has permissions to write to the S3 bucket. Use the AWS CLI to copy all files locally to the S3 bucket.
+
+Why it's wrong: This solution relies on transferring 70 TB of data over the network using the AWS CLI.  This would consume a large amount of network bandwidth and take a significant amount of time, directly contradicting the requirements.   
+
+C. Deploy an S3 File Gateway on premises. Create a public service endpoint to connect to the S3 File Gateway. Create an S3 bucket. Create a new NFS file share on the S3 File Gateway. Point the new file share to the S3 bucket. Transfer the data from the existing NFS file share to the S3 File Gateway.
+
+Why it's wrong: AWS S3 File Gateway is designed for hybrid cloud storage, providing on-premises applications access to S3.  While it could be used for migration, it's more complex than Snowball Edge for a one-time transfer. It still involves network transfer, although it might be optimized, it doesn't minimize bandwidth usage to the same extent as Snowball Edge.    
+
+D. Set up an AWS Direct Connect connection between the on-premises network and AWS. Deploy an S3 File Gateway on premises. Create a public virtual interface (VIF) to connect to the S3 File Gateway. Create an S3 bucket. Create a new NFS file share on the S3 File Gateway. Point the new file share to the S3 bucket. Transfer the data from the existing NFS file share to the S3 File Gateway.
+
+Why it's wrong: AWS Direct Connect provides a dedicated network connection to AWS, which can increase transfer speed.  However, setting up Direct Connect is a complex and time-consuming process. It's an overkill for a one-time migration and doesn't meet the "least possible network bandwidth" requirement as efficiently as Snowball Edge.  Additionally, it includes the complexity of S3 File Gateway.    
+
+Summary
+
+The best solution is B. Create an AWS Snowball Edge job because it minimizes network bandwidth usage and provides a fast way to migrate a large amount of data to Amazon S3.
+
+</details>
+
+<details>
+  <summary>Question 7</summary>
+
+A company has an application that ingests incoming messages.  Dozens of other applications and microservices then quickly consume these messages.  The number of messages varies drastically and sometimes increases suddenly to 100,000 each second.  The company wants to decouple the solution and increase scalability.   
+
+Which solution meets these requirements?
+
+- [ ] A.  Persist the messages to Amazon Kinesis Data Analytics.  Configure the consumer applications to read and process the messages.    
+- [ ] B.  Deploy the ingestion application on Amazon EC2 instances in an Auto Scaling group to scale the number of EC2 instances based on CPU metrics.    
+- [ ] C.  Write the messages to Amazon Kinesis Data Streams with a single shard.  Use an AWS Lambda function to preprocess messages and store them in Amazon DynamoDB.  Configure the consumer applications to read from DynamoDB to process the messages.    
+- [ ] D.  Publish the messages to an Amazon Simple Notification Service (Amazon SNS) topic with multiple Amazon Simple Queue Service (Amazon SOS) subscriptions.  Configure the consumer applications to process the messages from the queues. 
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Publish the messages to an Amazon Simple Notification Service (Amazon SNS) topic with multiple Amazon Simple Queue Service (Amazon SQS) subscriptions. Configure the consumer applications to process the messages from the queues.
+
+The correct answer is D. Publish the messages to an Amazon Simple Notification Service (Amazon SNS) topic with multiple Amazon Simple Queue Service (Amazon SQS) subscriptions. Configure the consumer applications to process the messages from the queues.
+   
+Why is this the correct answer?
+
+- [ ] Decoupling: Amazon SNS and SQS together provide excellent decoupling.  The ingestion application publishes messages to an SNS topic, and the consumer applications subscribe to the topic via SQS queues.  This means the ingestion application doesn't need to know anything about the consumers, and consumers don't need to know about each other.   
+- [ ] Scalability: SNS can handle a high volume of messages, and SQS queues can buffer messages for consumers, allowing each part of the system to scale independently.  If message volume spikes to 100,000 per second, SNS can handle it, and SQS queues will ensure that consumers can process them at their own pace.   
+- [ ] Fan-out: SNS allows for "fan-out" delivery, meaning a single message can be delivered to multiple SQS queues.  This perfectly suits the requirement that "dozens" of applications and microservices consume the messages. Each consumer gets its own copy of the message via its SQS queue.   
+
+Why are the other answers wrong?
+
+A. Persist the messages to Amazon Kinesis Data Analytics. Configure the consumer applications to read and process the messages.
+
+Why it's wrong: Kinesis Data Analytics is designed for real-time analytics on streaming data.  While it can handle high volumes, it's not the best fit for simple message distribution to many consumers.  It's more complex and expensive than SNS/SQS for this use case.   
+
+B. Deploy the ingestion application on Amazon EC2 instances in an Auto Scaling group to scale the number of EC2 instances based on CPU metrics.
+
+Why it's wrong: This only scales the ingestion of messages, not the consumption.  It doesn't decouple the system or address the scalability of the many consumer applications.   
+
+C. Write the messages to Amazon Kinesis Data Streams with a single shard. Use an AWS Lambda function to preprocess messages and store them in Amazon DynamoDB. Configure the consumer applications to read from DynamoDB to process the messages.
+
+Why it's wrong: Kinesis Data Streams is good for real-time data streaming, but using a single shard will limit throughput.  Lambda preprocessing adds complexity and potential bottlenecks.  Storing in DynamoDB adds latency and cost compared to SQS queues, which are designed for message queuing.  Also, reading from DynamoDB by many consumers can create hot spots and scaling issues.   
+
+Summary
+
+The best solution is D.
+ 
+Amazon SNS and SQS provide the best combination of decoupling, scalability, and fan-out capability to meet the requirements of the scenario.
+
+</details>
 
 
 
