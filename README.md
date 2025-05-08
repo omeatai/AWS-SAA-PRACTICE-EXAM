@@ -152,7 +152,24 @@ The best solution is A. Add the aws:PrincipalOrgID global condition key because 
 
 </details>
 
+<details>
+  <summary>Question 4</summary>
 
+An application runs on an Amazon EC2 instance in a VPC.  The application processes logs that are stored in an Amazon S3 bucket.  The EC2 instance needs to access the S3 bucket without connectivity to the internet.  Which solution will provide private network connectivity to Amazon S3?   
+
+- [ ] A.  Create a gateway VPC endpoint to the S3 bucket.    
+- [ ] B.  Stream the logs to Amazon CloudWatch Logs.  Export the logs to the S3 bucket.    
+- [ ] C.  Create an instance profile on Amazon EC2 to allow S3 access.    
+- [ ] D.  Create an Amazon API Gateway API with a private link to access the S3 endpoint.  
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+  - [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
+
+</details>
 
 
 
