@@ -522,7 +522,7 @@ The best solution is A because AWS Secrets Manager is the most suitable service 
 <details>
   <summary>Question 12</summary>
 
-  A global company hosts its web application on Amazon EC2 instances behind an Application Load Balancer (ALB).  The web application has static data and dynamic data.  The company stores its static data in an Amazon S3 bucket.  The company wants to improve performance and reduce latency for the static data and dynamic data.  The company is using its own domain name registered with Amazon Route 53.    
+A global company hosts its web application on Amazon EC2 instances behind an Application Load Balancer (ALB).  The web application has static data and dynamic data.  The company stores its static data in an Amazon S3 bucket.  The company wants to improve performance and reduce latency for the static data and dynamic data.  The company is using its own domain name registered with Amazon Route 53.    
 
 What should a solutions architect do to meet these requirements?
 
@@ -536,13 +536,174 @@ What should a solutions architect do to meet these requirements?
 <details>
   <summary>Answer</summary>
 
-- [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
+- [ ] A.  Create an Amazon CloudFront distribution that has the S3 bucket and the ALB as origins.  Configure Route 53 to route traffic to the CloudFront distribution. 
+
+The correct answer is A. Create an Amazon CloudFront distribution that has the S3 bucket and the ALB as origins. Configure Route 53 to route traffic to the CloudFront distribution.    
+
+Why is this the correct answer?
+
+- [ ] Amazon CloudFront is a content delivery network (CDN) service that speeds up the distribution of your web content to users.
+- [ ] By using CloudFront with both the S3 bucket (for static content) and the Application Load Balancer (for dynamic content) as origins, you can effectively cache and deliver both types of content efficiently.
+- [ ] Route 53 is a highly available and scalable Domain Name System (DNS) web service.
+- [ ] Configuring Route 53 to route traffic to the CloudFront distribution ensures that user requests are directed to the nearest CloudFront edge location, further reducing latency and improving performance.    
+
+Why are the other answers wrong?
+
+B. Create an Amazon CloudFront distribution that has the ALB as an origin. Create an AWS Global Accelerator standard accelerator that has the S3 bucket as an endpoint Configure Route 53 to route traffic to the CloudFront distribution.
+
+Why it's wrong: While CloudFront is suitable for caching, AWS Global Accelerator is designed to improve the performance of dynamic traffic over the internet. Using Global Accelerator for the S3 bucket (static content) is not the most efficient use of the service. CloudFront can handle static content delivery effectively. Also, this option introduces unnecessary complexity.    
+
+C. Create an Amazon CloudFront distribution that has the S3 bucket as an origin. Create an AWS Global Accelerator standard accelerator that has the ALB and the CloudFront distribution as endpoints. Create a custom domain name that points to the accelerator DNS name. Use the custom domain name as an endpoint for the web application.
+
+Why it's wrong: This option overcomplicates the architecture. Using Global Accelerator with CloudFront as an endpoint is not a typical or necessary pattern for this use case. CloudFront can handle both static and dynamic content efficiently when configured with both S3 and ALB as origins.    
+
+D. Create an Amazon CloudFront distribution that has the ALB as an origin. Create an AWS Global Accelerator standard accelerator that has the S3 bucket as an endpoint. Create two domain names. Point one domain name to the CloudFront DNS name for dynamic content. Point the other domain name to the accelerator DNS name for static content. Use the domain names as endpoints for the web application.
+
+Why it's wrong: This option suggests using two separate domain names, which adds complexity to the application and is not necessary. CloudFront can serve both static and dynamic content under a single domain name when configured correctly with multiple origins. Using Global Accelerator for S3 is not the most cost-effective or efficient approach.    
+
+Summary
+
+The best solution is A because it leverages CloudFront to efficiently deliver both static and dynamic content and uses Route 53 to optimize routing. This approach provides the required performance and latency improvements in a straightforward and effective manner.
 
 </details>
 
+<details>
+  <summary>Question 13</summary>
+ 
+A company performs monthly maintenance on its AWS infrastructure.  During these maintenance activities, the company needs to rotate the credentials for its Amazon RDS for MySQL databases across multiple AWS Regions.    
 
+Which solution will meet these requirements with the LEAST operational overhead?
 
+- [ ] A.  Store the credentials as secrets in AWS Secrets Manager.  Use multi-Region secret replication for the required Regions.  Configure Secrets Manager to rotate the secrets on a schedule.    
+- [ ] B.  Store the credentials as secrets in AWS Systems Manager by creating a secure string parameter.  Use multi-Region secret replication for the required Regions.  Configure Systems Manager to rotate the secrets on a schedule.    
+- [ ] C.  Store the credentials in an Amazon S3 bucket that has server-side encryption (SSE) enabled.  Use Amazon EventBridge (Amazon CloudWatch Events) to invoke an AWS Lambda function to rotate the credentials.    
+- [ ] D.  Encrypt the credentials as secrets by using AWS Key Management Service (AWS KMS) multi-Region customer managed keys.  Store the secrets in an Amazon DynamoDB global table.  Use an AWS Lambda function to retrieve the secrets from DynamoDB.  Use the RDS API to rotate the secrets.
 
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A.  Store the credentials as secrets in AWS Secrets Manager.  Use multi-Region secret replication for the required Regions.  Configure Secrets Manager to rotate the secrets on a schedule.    
+
+The correct answer is A. Store the credentials as secrets in AWS Secrets Manager. Use multi-Region secret replication for the required Regions. Configure Secrets Manager to rotate the secrets on a schedule.   
+
+Why is this the correct answer?
+
+- [ ] AWS Secrets Manager: This service is specifically designed for managing database credentials, API keys, and other secrets. It simplifies the process of storing, retrieving, and rotating sensitive information.
+- [ ] Multi-Region Secret Replication: Secrets Manager allows you to replicate secrets across multiple AWS Regions. This ensures that the credentials are available in all the necessary Regions for the RDS for MySQL databases.
+- [ ] Scheduled Rotation: Secrets Manager has built-in automatic rotation capabilities. You can configure it to rotate the RDS database credentials on a schedule (e.g., monthly), which aligns with the company's maintenance activities. This automation minimizes operational overhead.
+
+Why are the other answers wrong?
+
+B. Store the credentials as secrets in AWS Systems Manager by creating a secure string parameter. Use multi-Region secret replication for the required Regions. Configure Systems Manager to rotate the secrets on a schedule.   
+
+Why it's wrong: While AWS Systems Manager Parameter Store can securely store secrets, it's not as specialized for database credential rotation as Secrets Manager. Implementing automatic rotation with Parameter Store requires more manual setup and management with Lambda functions, increasing operational overhead.
+
+C. Store the credentials in an Amazon S3 bucket that has server-side encryption (SSE) enabled. Use Amazon EventBridge (Amazon CloudWatch Events) to invoke an AWS Lambda function to rotate the credentials.   
+
+Why it's wrong: Storing credentials directly in S3, even with encryption, is not a recommended security best practice. It requires managing access control to the bucket and implementing custom rotation logic using EventBridge and Lambda. This approach is more complex and has higher operational overhead compared to using Secrets Manager.
+
+D. Encrypt the credentials as secrets by using AWS Key Management Service (AWS KMS) multi-Region customer managed keys. Store the secrets in an Amazon DynamoDB global table. Use an AWS Lambda function to retrieve the secrets from DynamoDB. Use the RDS API to rotate the secrets.   
+
+Why it's wrong: This solution is overly complex. Using DynamoDB to store credentials introduces unnecessary overhead, and managing the entire rotation process with Lambda and the RDS API requires significant custom coding and maintenance. Secrets Manager provides a much simpler and more managed approach.
+
+Summary
+
+The best solution is A because AWS Secrets Manager provides a centralized and managed way to store, replicate, and automatically rotate database credentials across multiple Regions, minimizing operational overhead.
+
+</details>
+
+<details>
+  <summary>Question 14</summary>
+
+A company runs an ecommerce application on Amazon EC2 instances behind an Application Load Balancer.  The instances run in an Amazon EC2 Auto Scaling group across multiple Availability Zones.  The Auto Scaling group scales based on CPU utilization metrics.  The ecommerce application stores the transaction data in a MySQL 8.0 database that is hosted on a large EC2 instance.  The database's performance degrades quickly as application load increases.  The application handles more read requests than write transactions.  The company wants a solution that will automatically scale the database to meet the demand of unpredictable read workloads while maintaining high availability.  Which solution will meet these requirements?   
+
+- [ ] A.  Use Amazon Redshift with a single node for leader and compute functionality.    
+- [ ] B.  Use Amazon RDS with a Single-AZ deployment Configure Amazon RDS to add reader instances in a different Availability Zone.    
+- [ ] C.  Use Amazon Aurora with a Multi-AZ deployment.  Configure Aurora Auto Scaling with Aurora Replicas.    
+- [ ] D.  Use Amazon ElastiCache for Memcached with EC2 Spot Instances. 
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C.  Use Amazon Aurora with a Multi-AZ deployment.  Configure Aurora Auto Scaling with Aurora Replicas.
+  
+The correct answer is C. Use Amazon Aurora with a Multi-AZ deployment. Configure Aurora Auto Scaling with Aurora Replicas.
+
+Why is this the correct answer?
+
+- [ ] Amazon Aurora: Aurora is a MySQL and PostgreSQL-compatible relational database service built for the cloud. It is designed to offer high performance, scalability, and availability.
+- [ ] Multi-AZ Deployment: Deploying Aurora in a Multi-AZ configuration provides high availability by synchronously replicating data to a standby instance in a different Availability Zone. This ensures that the database remains available even if one AZ experiences an outage.   
+- [ ] Aurora Auto Scaling with Aurora Replicas: Aurora Auto Scaling allows you to automatically add or remove Aurora Replicas based on the database workload. Since the application handles more read requests, adding replicas will distribute the read load and improve performance.
+- [ ] Auto Scaling ensures that this scaling happens automatically in response to demand, meeting the requirement for scaling to unpredictable read workloads.
+
+Why are the other answers wrong?
+
+A. Use Amazon Redshift with a single node for leader and compute functionality.
+
+Why it's wrong: Amazon Redshift is a data warehousing service designed for analytics and business intelligence. It is not suitable for online transaction processing (OLTP) workloads like an ecommerce application's transaction data. Also, using a single node does not provide high availability.
+
+B. Use Amazon RDS with a Single-AZ deployment Configure Amazon RDS to add reader instances in a different Availability Zone.   
+
+Why it's wrong: While Amazon RDS can provide read replicas for scaling reads, a Single-AZ deployment does not offer high availability. If the single AZ fails, the database will be unavailable. Aurora's Multi-AZ deployment provides a more robust high availability solution.
+
+D. Use Amazon ElastiCache for Memcached with EC2 Spot Instances.
+
+Why it's wrong: Amazon ElastiCache is an in-memory caching service. It is used to improve application performance by caching frequently accessed data, but it is not a replacement for a relational database like MySQL for storing transaction data. Also, using EC2 Spot Instances can introduce availability risks, as Spot Instances can be interrupted.
+
+Summary
+
+The best solution is C because Amazon Aurora with Multi-AZ deployment provides both the high availability and the ability to automatically scale read capacity with Aurora Replicas, which directly addresses the application's requirements.
+
+</details>
+
+<details>
+  <summary>Question 15</summary>
+
+A company recently migrated to AWS and wants to implement a solution to protect the traffic that flows in and out of the production VPC.  The company had an inspection server in its on-premises data center.  The inspection server performed specific operations such as traffic flow inspection and traffic filtering.  The company wants to have the same functionalities in the AWS Cloud.    
+
+Which solution will meet these requirements?
+
+- [ ] A.  Use Amazon GuardDuty for traffic inspection and traffic filtering in the production VPC.    
+- [ ] B.  Use Traffic Mirroring to mirror traffic from the production VPC for traffic inspection and filtering.    
+- [ ] C.  Use AWS Network Firewall to create the required rules for traffic inspection and traffic filtering for the production VPC.    
+- [ ] D.  Use AWS Firewall Manager to create the required rules for traffic inspection and traffic filtering for the production VPC. 
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C.  Use AWS Network Firewall to create the required rules for traffic inspection and traffic filtering for the production VPC.  
+          
+The correct answer is C. Use AWS Network Firewall to create the required rules for traffic inspection and traffic filtering for the production VPC.   
+
+Why is this the correct answer?
+
+- [ ] AWS Network Firewall: This service provides stateful network firewalling for your VPCs. It allows you to filter traffic at the network layer (Layer 3 and 4) as well as the application layer (Layer 7).
+- [ ] You can create fine-grained rules for traffic inspection and filtering, giving you the control needed to protect your VPC. It's designed to provide the functionalities of a traditional inspection server in the cloud.
+
+Why are the other answers wrong?
+
+A. Use Amazon GuardDuty for traffic inspection and traffic filtering in the production VPC.
+
+Why it's wrong: Amazon GuardDuty is a threat detection service that monitors for malicious activity and delivers security alerts. It analyzes VPC Flow Logs, DNS Logs, and CloudTrail Logs. While it performs "inspection" in the sense of detecting threats, it does not provide the capability to create custom rules to actively filter or block traffic in the way that a traditional firewall does.
+
+B. Use Traffic Mirroring to mirror traffic from the production VPC for traffic inspection and filtering.
+
+Why it's wrong: Traffic Mirroring allows you to copy network traffic from EC2 instances. However, it only copies the traffic; it doesn't provide the firewall functionality to inspect and filter traffic in real-time. You would need to send the mirrored traffic to separate inspection appliances, adding complexity and cost.
+
+D. Use AWS Firewall Manager to create the required rules for traffic inspection and traffic filtering for the production VPC.   
+
+Why it's wrong: AWS Firewall Manager is a security management service that allows you to centrally manage firewall rules across multiple AWS accounts and VPCs. It works in conjunction with AWS Network Firewall and AWS WAF. You still need AWS Network Firewall to define the actual inspection and filtering rules; Firewall Manager is for centralized management of those rules.
+
+Summary
+
+The best solution is C because AWS Network Firewall is the service that most closely replicates the functionality of an on-premises inspection server by providing stateful firewall capabilities with customizable rules for traffic inspection and filtering directly within the VPC.
+</details>
 
 
 
