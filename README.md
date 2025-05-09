@@ -713,8 +713,244 @@ Summary
 The best solution is C because AWS Network Firewall is the service that most closely replicates the functionality of an on-premises inspection server by providing stateful firewall capabilities with customizable rules for traffic inspection and filtering directly within the VPC.
 </details>
 
+<details>
+  <summary>Question 16</summary>
 
+A company hosts a data lake on AWS.  The data lake consists of data in Amazon S3 and Amazon RDS for PostgreSQL.  The company needs a reporting solution that provides data visualization and includes all the data sources within the data lake.  Only the company's management team should have full access to all the visualizations.  The rest of the company should have only limited access.   
 
+Which solution will meet these requirements?
+
+- [ ] A.  Create an analysis in Amazon QuickSight.  Connect all the data sources and create new datasets.  Publish dashboards to visualize the data.  Share the dashboards with the appropriate IAM roles.   
+- [ ] B.  Create an analysis in Amazon QuickSight.  Connect all the data sources and create new datasets.  Publish dashboards to visualize the data.  Share the dashboards with the appropriate users and groups.   
+- [ ] C.  Create an AWS Glue table and crawler for the data in Amazon S3.  Create an AWS Glue extract, transform, and load (ETL) job to produce reports.  Publish the reports to Amazon S3.  Use S3 bucket policies to limit access to the reports.   
+- [ ] D.  Create an AWS Glue table and crawler for the data in Amazon S3.  Use Amazon Athena Federated Query to access data within Amazon RDS for PostgreSQL.  Generate reports by using Amazon Athena.  Publish the reports to Amazon S3.  Use S3 bucket policies to limit access to the reports. 
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B.  Create an analysis in Amazon QuickSight.  Connect all the data sources and create new datasets.  Publish dashboards to visualize the data.  Share the dashboards with the appropriate users and groups.    
+
+The correct answer is B. Create an analysis in Amazon QuickSight. Connect all the data sources and create new datasets. Publish dashboards to visualize the data. Share the dashboards with the appropriate users and groups.    
+
+Why is this the correct answer?
+
+- [ ] Amazon QuickSight is a cloud-native, serverless business intelligence service that makes it easy to connect to various data sources, create interactive dashboards, and share them with users within an organization.    
+- [ ] By connecting QuickSight to both Amazon S3 and Amazon RDS for PostgreSQL, you can visualize data from both parts of the data lake in one place.
+- [ ] QuickSight allows you to share dashboards with specific users and groups, providing granular control over access to the visualizations.  This directly addresses the requirement to give the management team full access and the rest of the company limited access.   
+
+Why are the other answers wrong?
+
+A. Create an analysis in Amazon QuickSight. Connect all the data sources and create new datasets. Publish dashboards to visualize the data. Share the dashboards with the appropriate IAM roles.
+
+Why it's wrong: While QuickSight can integrate with AWS Identity and Access Management (IAM), sharing dashboards directly with IAM roles is not the typical or most effective way to manage user access within QuickSight. QuickSight is designed to manage sharing through users and groups within the QuickSight service itself, which provides more fine-grained control for this use case.
+
+C. Create an AWS Glue table and crawler for the data in Amazon S3. Create an AWS Glue extract, transform, and load (ETL) job to produce reports. Publish the reports to Amazon S3. Use S3 bucket policies to limit access to the reports.
+
+Why it's wrong: This solution focuses on using AWS Glue for data processing and S3 for storing reports. While Glue is excellent for ETL, it doesn't provide the data visualization capabilities needed for the reporting solution. Relying solely on S3 bucket policies for access control is less flexible and user-friendly than QuickSight's built-in sharing features.
+
+D. Create an AWS Glue table and crawler for the data in Amazon S3. Use Amazon Athena Federated Query to access data within Amazon RDS for PostgreSQL. Generate reports by using Amazon Athena. Publish the reports to Amazon S3. Use S3 bucket policies to limit access to the reports.
+
+Why it's wrong: Similar to option C, this solution uses AWS Glue and Amazon Athena, which are powerful for data querying and analysis, but it lacks the visualization component. Athena is a query service, not a reporting tool. Again, using only S3 bucket policies for access control is less ideal than QuickSight's sharing features.
+Summary
+
+The best solution is B because Amazon QuickSight provides the necessary data visualization capabilities and granular control over sharing dashboards with users and groups, fulfilling all the requirements of the scenario.
+
+</details>
+
+<details>
+  <summary>Question 17</summary>
+
+A company is implementing a new business application.  The application runs on two Amazon EC2 instances and uses an Amazon S3 bucket for document storage.  A solutions architect needs to ensure that the EC2 instances can access the S3 bucket.    
+
+What should the solutions architect do to meet this requirement?
+
+- [ ] A.  Create an IAM role that grants access to the S3 bucket.  Attach the role to the EC2 instances.    
+- [ ] B.  Create an IAM policy that grants access to the S3 bucket.  Attach the policy to the EC2 instances.    
+- [ ] C.  Create an IAM group that grants access to the S3 bucket.  Attach the group to the EC2 instances.    
+- [ ] D.  Create an IAM user that grants access to the S3 bucket.  Attach the user account to the EC2 instances.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A.  Create an IAM role that grants access to the S3 bucket.  Attach the role to the EC2 instances.    
+
+The correct answer is A. Create an IAM role that grants access to the S3 bucket. Attach the role to the EC2 instances.
+
+Why is this the correct answer?
+
+- [ ] IAM roles are the recommended way to grant permissions to AWS services like EC2 to access other AWS services like S3.    
+- [ ] When you attach an IAM role to an EC2 instance, the applications running on that instance can obtain temporary AWS credentials and use them to access the specified resources.    
+- [ ] This method is secure and manageable, as you don't need to manage long-term credentials directly on the EC2 instances.    
+
+Why are the other answers wrong?
+
+B. Create an IAM policy that grants access to the S3 bucket. Attach the policy to the EC2 instances.
+
+Why it's wrong: IAM policies define permissions, but they need to be attached to IAM identities (users, groups, or roles). You can't directly attach a policy to an EC2 instance. Roles are the correct way to grant permissions to EC2 instances.
+
+C. Create an IAM group that grants access to the S3 bucket. Attach the group to the EC2 instances.
+
+Why it's wrong: IAM groups are used to manage permissions for IAM users, not AWS resources like EC2 instances. You can't attach a group to an EC2 instance.
+
+D. Create an IAM user that grants access to the S3 bucket. Attach the user account to the EC2 instances.
+
+Why it's wrong: Creating IAM users and embedding their credentials (access keys and secret access keys) directly on EC2 instances is a security risk. It's harder to manage and rotate credentials, and if an instance is compromised, the credentials could be exposed. Roles provide a more secure and manageable way to grant permissions to EC2 instances.
+
+Summary
+
+The best solution is A because IAM roles are designed for granting permissions to AWS services, providing a secure and manageable way for EC2 instances to access S3 buckets without managing credentials directly on the instances.
+
+</details>
+
+<details>
+  <summary>Question 18</summary>
+
+An application development team is designing a microservice that will convert large images to smaller, compressed images.  When a user uploads an image through the web interface, the microservice should store the image in an Amazon S3 bucket, process and compress the image with an AWS Lambda function, and store the image in its compressed form in a different S3 bucket.  A solutions architect needs to design a solution that uses durable, stateless components to process the images automatically.    
+
+Which combination of actions will meet these requirements? (Choose two.)
+
+- [ ] A.  Create an Amazon Simple Queue Service (Amazon SQS) queue.  Configure the S3 bucket to send a notification to the SQS queue when an image is uploaded to the S3 bucket.  
+- [ ] B.  Configure the Lambda function to use the Amazon Simple Queue Service (Amazon SQS) queue as the invocation source.  When the SQS message is successfully processed, delete the message in the queue.  
+- [ ] C.  Configure the Lambda function to monitor the S3 bucket for new uploads.  When an uploaded image is detected, write the file name to a text file in memory and use the text file to keep track of the images that were processed.    
+- [ ] D.  Launch an Amazon EC2 instance to monitor an Amazon Simple Queue Service (Amazon SQS) queue.  When items are added to the queue, log the file name in a text file on the EC2 instance and invoke the Lambda function.    
+- [ ] E.  Configure an Amazon EventBridge (Amazon CloudWatch Events) event to monitor the S3 bucket.  When an image is uploaded, send an alert to an Amazon Simple Notification Service (Amazon SNS) topic with the application owner's email address for further processing. 
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A.  Create an Amazon Simple Queue Service (Amazon SQS) queue.  Configure the S3 bucket to send a notification to the SQS queue when an image is uploaded to the S3 bucket.  
+- [ ] B.  Configure the Lambda function to use the Amazon Simple Queue Service (Amazon SQS) queue as the invocation source.  When the SQS message is successfully processed, delete the message in the queue.
+
+The answer is A and B.
+
+Here's why:
+
+A. Create an Amazon Simple Queue Service (Amazon SQS) queue. Configure the S3 bucket to send a notification to the SQS queue when an image is uploaded to the S3 bucket.    
+
+- [ ] This is a good first step because it creates a durable and decoupled way to handle the image processing requests.
+- [ ] S3 event notifications allow the bucket to trigger events when new objects are created (images uploaded), and sending these notifications to an SQS queue ensures that the processing requests are reliably queued for processing, even if the system experiences temporary issues.
+
+B. Configure the Lambda function to use the Amazon Simple Queue Service (Amazon SQS) queue as the invocation source. When the SQS message is successfully processed, delete the message in the queue.    
+
+- [ ] This connects the processing logic (Lambda function) to the queue.
+- [ ] Lambda can be triggered by new messages in the SQS queue, and deleting the message after successful processing ensures that each image is processed exactly once. This is important for durability and prevents reprocessing.
+
+Why other options are not the best fit:
+
+C. While Lambda can be triggered by S3 events, relying on Lambda to "monitor" the S3 bucket and maintain a text file in memory for tracking introduces state management within the Lambda function, which is generally bad practice. Lambda functions should be stateless. It also doesn't provide the same level of durability as SQS.
+
+D. Using an EC2 instance to monitor an SQS queue adds unnecessary complexity and cost. Lambda functions are designed for this type of event-driven processing and are more cost-effective and scalable.
+
+E. While EventBridge or SNS could be used to trigger actions based on S3 events, they don't provide the queueing and guaranteed delivery that SQS does. SNS is more for fan-out notifications, and EventBridge is an event bus. SQS is designed for reliable message queuing. Sending an email to the application owner is not part of the automated processing requirement.
+
+In summary
+
+A and B together create a durable, scalable, and stateless solution: S3 triggers SQS, and Lambda processes items from SQS. 
+
+</details>
+
+<details>
+  <summary>Question 19</summary>
+
+A company has a three-tier web application that is deployed on AWS.  The web servers are deployed in a public subnet in a VPC.  The application servers and database servers are deployed in private subnets in the same VPC.  The company has deployed a third-party virtual firewall appliance from AWS Marketplace in an inspection VPC.  The appliance is configured with an IP interface that can accept IP packets.  A solutions architect needs to integrate the web application with the appliance to inspect all traffic to the application before the traffic reaches the web server.    
+Which solution will meet these requirements with the LEAST operational overhead?
+
+- [ ] A.  Create a Network Load Balancer in the public subnet of the application's VPC to route the traffic to the appliance for packet inspection.    
+- [ ] B.  Create an Application Load Balancer in the public subnet of the application's VPC to route the traffic to the appliance for packet inspection.    
+- [ ] C.  Deploy a transit gateway in the inspection VPConfigure route tables to route the incoming packets through the transit gateway.    
+- [ ] D.  Deploy a Gateway Load Balancer in the inspection VPC.  Create a Gateway Load Balancer endpoint to receive the incoming packets and forward the packets to the appliance. 
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D.  Deploy a Gateway Load Balancer in the inspection VPC.  Create a Gateway Load Balancer endpoint to receive the incoming packets and forward the packets to the appliance.
+ 
+The answer is D. Deploy a Gateway Load Balancer in the inspection VPC. Create a Gateway Load Balancer endpoint to receive the incoming packets and forward the packets to the appliance.   
+
+Here's a breakdown of why:
+
+Why is this the correct answer?
+
+- [ ] Gateway Load Balancer (GWLB): This load balancer is specifically designed to distribute traffic to virtual appliances like firewalls. It operates at the network layer (Layer 3) and uses the GENEVE protocol to encapsulate and forward traffic to the appliance.
+- [ ] GWLB Endpoint: This endpoint allows you to transparently insert the GWLB into the traffic flow. You configure your VPC route tables to send traffic to the GWLB endpoint, and the GWLB then distributes that traffic to your firewall appliance.
+- [ ] This solution minimizes operational overhead by providing a scalable and highly available way to direct network traffic to the inspection appliance without requiring you to manage individual connections or instances.
+
+Why are the other answers wrong?
+
+A. Create a Network Load Balancer in the public subnet of the application's VPC to route the traffic to the appliance for packet inspection.   
+
+Why it's wrong: While NLB works at the network layer, it's not designed for transparently inserting appliances into the traffic path. It's more suited for load balancing traffic to applications. Using an NLB for this purpose would require more complex configuration and might not handle the traffic inspection use case as efficiently as a GWLB.
+
+B. Create an Application Load Balancer in the public subnet of the application's VPC to route the traffic to the appliance for packet inspection.   
+
+Why it's wrong: ALB operates at the application layer (Layer 7) and is designed for HTTP/HTTPS traffic. It's not suitable for inspecting all types of network traffic. Using an ALB for this purpose would introduce unnecessary overhead and limitations.
+
+C. Deploy a transit gateway in the inspection VPConfigure route tables to route the incoming packets through the transit gateway.   
+
+Why it's wrong: While a Transit Gateway can connect VPCs, it doesn't inherently provide the service insertion capability needed for this use case. You would still need a mechanism to direct traffic from the Transit Gateway to the appliance, which would likely involve complex routing and Network Address Translation (NAT) configurations. GWLB simplifies this process.
+
+Summary
+
+The best solution is D because Gateway Load Balancer is the AWS service specifically built to simplify the deployment and scaling of virtual appliances for network traffic inspection, minimizing operational overhead.
+
+</details>
+
+<details>
+  <summary>Question 20</summary>
+
+A company wants to improve its ability to clone large amounts of production data into a test environment in the same AWS Region.  The data is stored in Amazon EC2 instances on Amazon Elastic Block Store (Amazon EBS) volumes.  Modifications to the cloned data must not affect the production environment.  The software that accesses this data requires consistently high I/O performance.  A solutions architect needs to minimize the time that is required to clone the production data into the test environment.    
+
+Which solution will meet these requirements?
+
+- [ ] A.  Take EBS snapshots of the production EBS volumes.  Restore the snapshots onto EC2 instance store volumes in the test environment.    
+- [ ] B.  Configure the production EBS volumes to use the EBS Multi-Attach feature.  Take EBS snapshots of the production EBS volumes.  Attach the production EBS volumes to the EC2 instances in the test environment.    
+- [ ] C.  Take EBS snapshots of the production EBS volumes.  Create and initialize new EBS volumes.  Attach the new EBS volumes to EC2 instances in the test environment before restoring the volumes from the production EBS snapshots.    
+- [ ] D.  Take EBS snapshots of the production EBS volumes.  Turn on the EBS fast snapshot restore feature on the EBS snapshots.  Restore the snapshots into new EBS volumes.  Attach the new EBS volumes to EC2 instances in the test environment.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D.  Take EBS snapshots of the production EBS volumes.  Turn on the EBS fast snapshot restore feature on the EBS snapshots.  Restore the snapshots into new EBS volumes.  Attach the new EBS volumes to EC2 instances in the test environment.  
+
+The answer is D. Take EBS snapshots of the production EBS volumes. Turn on the EBS fast snapshot restore feature on the EBS snapshots. Restore the snapshots into new EBS volumes. Attach the new EBS volumes to EC2 instances in the test environment.   
+
+Here's a detailed explanation:
+
+Why is this the correct answer?
+
+- [ ] EBS Snapshots: Snapshots are the standard way to back up EBS volumes. They capture a point-in-time copy of your data.
+- [ ] EBS Fast Snapshot Restore: This feature is crucial for minimizing the time required to clone data. By enabling Fast Snapshot Restore, you pre-initialize the EBS volumes created from the snapshot, significantly reducing the latency when they are first attached to an EC2 instance. This is essential for applications that require consistently high I/O performance immediately.
+- [ ] New EBS Volumes: Creating new volumes from the snapshots ensures that the test environment has its own independent copy of the data, and modifications in the test environment will not affect the production environment.
+
+Why are the other answers wrong?
+
+A. Take EBS snapshots of the production EBS volumes. Restore the snapshots onto EC2 instance store volumes in the test environment.   
+
+Why it's wrong: EC2 instance store volumes are ephemeral, meaning their data is lost when the instance is stopped or terminated. This is not suitable for a test environment where data needs to persist. Additionally, instance store volumes generally do not provide the same level of consistent I/O performance as EBS volumes.
+
+B. Configure the production EBS volumes to use the EBS Multi-Attach feature. Take EBS snapshots of the production EBS volumes. Attach the production EBS volumes to the EC2 instances in the test environment.   
+
+Why it's wrong: EBS Multi-Attach allows attaching a single volume to multiple EC2 instances concurrently, but it's designed for specific use cases (like clustered applications) and is not appropriate for cloning production data for testing. Attaching the production volumes to the test environment directly poses a significant risk of accidentally corrupting or modifying production data.
+
+C. Take EBS snapshots of the production EBS volumes. Create and initialize new EBS volumes. Attach the new EBS volumes to EC2 instances in the test environment before restoring the volumes from the production EBS snapshots.   
+
+Why it's wrong: While this approach creates independent volumes, it misses the crucial step of using Fast Snapshot Restore. Initializing EBS volumes from snapshots can take a significant amount of time, especially for large volumes, as the data is lazily loaded from S3. This would not meet the requirement to minimize the time needed to clone the data.
+
+Summary
+
+The best solution is D because it combines the use of EBS snapshots for data cloning with the EBS Fast Snapshot Restore feature to minimize the time required to make the cloned data available with high I/O performance. This solution effectively balances data isolation and performance.
+
+</details>
 
 
 
