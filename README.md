@@ -1017,9 +1017,9 @@ Which storage option meets these requirements?
 <details>
   <summary>Answer</summary>
 
-- [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
+- [ ] B. S3 Intelligent-Tiering
 
-You are correct! The answer is indeed B. S3 Intelligent-Tiering.   
+The answer is indeed B. S3 Intelligent-Tiering.   
 
 Here's why:
 
@@ -1039,8 +1039,67 @@ In summary, S3 Intelligent-Tiering provides the best balance of cost-effectivene
 
 </details>
 
+<details>
+  <summary>Question 23</summary>
 
+A company is storing backup files by using Amazon S3 Standard storage.  The files are accessed frequently for 1 month.  However, the files are not accessed after 1 month.  The company must keep the files indefinitely.   
 
+Which storage solution will meet these requirements MOST cost-effectively?
+
+- [ ] A.  Configure S3 Intelligent-Tiering to automatically migrate objects.
+- [ ] B.  Create an S3 Lifecycle configuration to transition objects from S3 Standard to S3 Glacier Deep Archive after 1 month.
+- [ ] C.  Create an S3 Lifecycle configuration to transition objects from S3 Standard to S3 Standard-Infrequent Access (S3 Standard-IA) after 1 month. 
+- [ ] D.  Create an S3 Lifecycle configuration to transition objects from S3 Standard to S3 One Zone-Infrequent Access (S3 One Zone-IA) after 1 month.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B.  Create an S3 Lifecycle configuration to transition objects from S3 Standard to S3 Glacier Deep Archive after 1 month.
+
+The answer is B. Create an S3 Lifecycle configuration to transition objects from S3 Standard to S3 Glacier Deep Archive after 1 month.    
+
+Here's why:
+
+- [ ] S3 Lifecycle Policies: These policies automate the movement of objects between different S3 storage classes.    
+- [ ] S3 Glacier Deep Archive: This is the lowest-cost storage class in S3, designed for long-term archiving.  It's suitable for data that is accessed very rarely but needs to be retained indefinitely.    
+- [ ] By setting up a lifecycle policy to move the files to Glacier Deep Archive after 1 month, you meet the requirements of cost-effectiveness (for long-term storage) and indefinite retention.    
+
+Let's analyze why the other options are not ideal:
+
+A. Configure S3 Intelligent-Tiering to automatically migrate objects: While Intelligent-Tiering optimizes costs based on access patterns, it's designed for data with unpredictable access. In this case, the access pattern is very predictable (frequent for 1 month, then never). Glacier Deep Archive will be more cost-effective for long-term storage of data that is known to be rarely accessed.
+
+C. Create an S3 Lifecycle configuration to transition objects from S3 Standard to S3 Standard-Infrequent Access (S3 Standard-IA) after 1 month: S3 Standard-IA is cheaper than S3 Standard but more expensive than Glacier Deep Archive. Since the files are not accessed after 1 month, Glacier Deep Archive provides the best cost savings for long-term storage.
+
+D. Create an S3 Lifecycle configuration to transition objects from S3 Standard to S3 One Zone-Infrequent Access (S3 One Zone-IA) after 1 month: S3 One Zone-IA is cheaper, but it stores data in only one Availability Zone, which means it has lower availability and durability than other S3 storage classes. For backup files that need to be kept indefinitely, Glacier Deep Archive is a more suitable choice in terms of data preservation and cost.
+
+</details>
+
+<details>
+  <summary>Question 24</summary>
+
+- [ ]    
+A company observes an increase in Amazon EC2 costs in its most recent bill. The billing team notices unwanted vertical scaling of instance types for a couple of EC2 instances. A solutions architect needs to create a graph comparing the last 2 months of EC2 costs and perform an in-depth analysis to identify the root cause of the vertical scaling.
+
+How should the solutions architect generate the information with the LEAST operational overhead?
+
+A. Use AWS Budgets to create a budget report and compare EC2 costs based on instance types.
+
+B. Use Cost Explorer's granular filtering feature to perform an in-depth analysis of EC2 costs based on instance types.
+
+C. Use graphs from the AWS Billing and Cost Management dashboard to compare EC2 costs based on instance types for the last 2 months.
+
+D. Use AWS Cost and Usage Reports to create a report and send it to an Amazon S3 bucket. Use Amazon QuickSight with Amazon S3 as a source to generate an interactive graph based on instance types.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A.  Turn on S3 Transfer Acceleration
+
+</details>
 
 
 
@@ -1089,15 +1148,14 @@ In summary, S3 Intelligent-Tiering provides the best balance of cost-effectivene
 <details>
   <summary>Question X</summary>
 
-- [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
-- [ ] B.  Upload the data from each site to an S3 bucket in the closest Region.  Use S3 Cross-Region Replication to copy objects to the destination S3 bucket.  Then remove the data from the origin S3 bucket.    
+- [ ]    
 
 </details>
 
 <details>
   <summary>Answer</summary>
 
-- [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
+- [ ] A.  Turn on S3 Transfer Acceleration
 
 </details>
 
