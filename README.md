@@ -2,6 +2,9 @@
 AWS-SAA-PRACTICE-EXAM
 
 <details>
+  <summary>Questions 1-10</summary>
+  
+<details>
   <summary>Question 1</summary>
  
 A company collects data for temperature, humidity, and atmospheric pressure in cities across multiple continents.  The average volume of data that the company collects from each site daily is 500 GB.  Each site has a high-speed internet connection.  The company wants to aggregate the data from all these global sites as quickly as possible in a single Amazon S3 bucket.  The solution must minimize operational complexity.  
@@ -476,6 +479,11 @@ The best solution is B because it uses Amazon SQS FIFO queues to ensure orders a
 
 </details>
 
+</details>
+
+<details>
+  <summary>Questions 11-20</summary>
+
 <details>
   <summary>Question 11</summary>
 
@@ -704,6 +712,37 @@ Summary
 
 The best solution is C because AWS Network Firewall is the service that most closely replicates the functionality of an on-premises inspection server by providing stateful firewall capabilities with customizable rules for traffic inspection and filtering directly within the VPC.
 </details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
