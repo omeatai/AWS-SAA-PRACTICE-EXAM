@@ -952,16 +952,90 @@ The best solution is D because it combines the use of EBS snapshots for data clo
 
 </details>
 
+</details>
 
+<details>
+  <summary>==Questions 21-30==</summary>
 
+<details>
+  <summary>Question 21</summary>
 
+An ecommerce company wants to launch a one-deal-a-day website on AWS. Each day will feature exactly one product on sale for a period of 24 hours. The company wants to be able to handle millions of requests each hour with millisecond latency during peak hours.    
 
+Which solution will meet these requirements with the LEAST operational overhead?
 
+- [ ] A.  Use Amazon S3 to host the full website in different S3 buckets.  Add Amazon CloudFront distributions.  Set the S3 buckets as origins for the distributions.  Store the order data in Amazon S3.    
+- [ ] B.  Deploy the full website on Amazon EC2 instances that run in Auto Scaling groups across multiple Availability Zones.  Add an Application Load Balancer (ALB) to distribute the website traffic.  Add another ALB for the backend APIs.  Store the data in Amazon RDS for MySQL.    
+- [ ] C.  Migrate the full application to run in containers.  Host the containers on Amazon Elastic Kubernetes Service (Amazon EKS).  Use the Kubernetes Cluster Autoscaler to increase and decrease the number of pods to process bursts in traffic.  Store the data in Amazon RDS for MySQL.    
+- [ ] D.  Use an Amazon S3 bucket to host the website's static content.  Deploy an Amazon CloudFront distribution.  Set the S3 bucket as the origin.  Use Amazon API Gateway and AWS Lambda functions for the backend APIs.  Store the data in Amazon DynamoDB.   
 
+</details>
 
+<details>
+  <summary>Answer</summary>
 
+- [ ] D.  Use an Amazon S3 bucket to host the website's static content.  Deploy an Amazon CloudFront distribution.  Set the S3 bucket as the origin.  Use Amazon API Gateway and AWS Lambda functions for the backend APIs.  Store the data in Amazon DynamoDB.   
 
+The answer is D. Use an Amazon S3 bucket to host the website's static content. Deploy an Amazon CloudFront distribution. Set the S3 bucket as the origin. Use Amazon API Gateway and AWS Lambda functions for the backend APIs. Store the data in Amazon DynamoDB.    
 
+Here's a breakdown of why this is the best solution for a high-traffic, low-latency, one-deal-a-day website:
+
+Why this solution works:
+
+- [ ] Amazon S3 for Static Content: S3 is excellent for storing static assets (images, CSS, JavaScript) due to its scalability, availability, and cost-effectiveness.    
+- [ ] Amazon CloudFront: CloudFront is a Content Delivery Network (CDN) that caches static content and distributes it globally, reducing latency and improving load times for users. This is crucial for handling millions of requests with millisecond latency.    
+- [ ] Amazon API Gateway and AWS Lambda: API Gateway provides a scalable and serverless way to create and manage APIs. Lambda allows you to run backend code without provisioning or managing servers. This combination is ideal for handling the dynamic parts of the website (e.g., retrieving product information, processing orders) with high scalability.    
+- [ ] Amazon DynamoDB: DynamoDB is a NoSQL database service that provides fast and predictable performance with seamless scalability. It's well-suited for storing data that needs to be accessed with low latency, such as product information and order details.    
+- [ ] Least Operational Overhead: This architecture leverages managed services (S3, CloudFront, API Gateway, Lambda, DynamoDB), which reduces the operational overhead of managing servers, scaling infrastructure, and ensuring availability.    
+
+Why the other options are not as suitable:
+
+A. While S3 and CloudFront are good for static content, hosting the entire website (including the dynamic parts) in S3 would be complex and inefficient. You would still need a backend to handle the dynamic logic, and S3 is not designed for that.
+B. Deploying the website on EC2 instances with Auto Scaling and ALBs can handle traffic, but it involves more operational overhead than the serverless approach in Option D. You are responsible for managing the EC2 instances, scaling them, and ensuring their availability. RDS for MySQL might also become a bottleneck under extreme load.
+C. EKS is a powerful container orchestration platform, but it adds significant operational complexity. Managing a Kubernetes cluster requires more effort than using managed services like Lambda and DynamoDB. While it can scale, it's more overhead than necessary for this use case. RDS for MySQL might also become a bottleneck under extreme load.
+
+In summary
+
+Option D provides the best balance of scalability, performance, and minimal operational overhead for a high-traffic, one-deal-a-day website.
+
+</details>
+
+<details>
+  <summary>Question 22</summary>
+
+A solutions architect is using Amazon S3 to design the storage architecture of a new digital media application.  The media files must be resilient to the loss of an Availability Zone.  Some files are accessed frequently while other files are rarely accessed in an unpredictable pattern.  The solutions architect must minimize the costs of storing and retrieving the media files.   
+
+Which storage option meets these requirements?
+
+- [ ] A. S3 Standard
+- [ ] B. S3 Intelligent-Tiering
+- [ ] C. S3 Standard-Infrequent Access (S3 Standard-IA)
+- [ ] D. S3 One Zone-Infrequent Access (S3 One Zone-IA)   
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
+
+You are correct! The answer is indeed B. S3 Intelligent-Tiering.   
+
+Here's why:
+
+- [ ] S3 Intelligent-Tiering: This storage class is designed to optimize costs by automatically moving data between frequently accessed (hot) and infrequently accessed (cool) tiers based on changing access patterns.   
+- [ ] It addresses the requirement of unpredictable access patterns by ensuring that frequently accessed files are readily available at low latency, while automatically moving less frequently accessed files to a lower-cost tier.   
+- [ ] It also satisfies the requirement for resilience to the loss of an Availability Zone because it stores data across multiple Availability Zones.
+
+Let's look at why the other options are not the best fit:
+
+A. S3 Standard: While S3 Standard offers high availability and durability, it is the most expensive option for storing data. If some files are rarely accessed, it would not be cost-effective.   
+
+C. S3 Standard-Infrequent Access (S3 Standard-IA): S3 Standard-IA is suitable for data that is less frequently accessed, but it does not automatically adapt to changing access patterns like S3 Intelligent-Tiering. If access patterns are unpredictable, S3 Intelligent-Tiering is more efficient.   
+
+D. S3 One Zone-Infrequent Access (S3 One Zone-IA): S3 One Zone-IA is a lower-cost option, but it stores data in only one Availability Zone, making it less resilient. It does not meet the requirement for resilience to the loss of an Availability Zone.   
+
+In summary, S3 Intelligent-Tiering provides the best balance of cost-effectiveness, performance, and resilience for this scenario. 
 
 </details>
 
@@ -984,11 +1058,7 @@ The best solution is D because it combines the use of EBS snapshots for data clo
 
 
 
-
-
-
-
-
+</details>
 
 
 
