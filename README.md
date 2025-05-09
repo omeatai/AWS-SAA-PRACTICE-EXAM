@@ -429,9 +429,116 @@ The best solution is B because it provides a seamless way to extend on-premises 
 
 </details>
 
+<details>
+  <summary>Question 10</summary>
 
+A company is building an ecommerce web application on AWS.  The application sends information about new orders to an Amazon API Gateway REST API to process.  The company wants to ensure that orders are processed in the order that they are received.    
 
+Which solution will meet these requirements?
 
+- [ ] A.  Use an API Gateway integration to publish a message to an Amazon Simple Notification Service (Amazon SNS) topic when the application receives an order.  Subscribe an AWS Lambda function to the topic to perform processing. 
+- [ ] B.  Use an API Gateway integration to send a message to an Amazon Simple Queue Service (Amazon SQS) FIFO queue when the application receives an order.  Configure the SQS FIFO queue to invoke an AWS Lambda function for processing. 
+- [ ] C.  Use an API Gateway authorizer to block any requests while the application processes an order. 
+- [ ] D.  Use an API Gateway integration to send a message to an Amazon Simple Queue Service (Amazon SQS) standard queue when the application receives an order.  Configure the SQS standard queue to invoke an AWS Lambda function for processing.  
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B.  Use an API Gateway integration to send a message to an Amazon Simple Queue Service (Amazon SQS) FIFO queue when the application receives an order.  Configure the SQS FIFO queue to invoke an AWS Lambda function for processing. 
+
+The correct answer is B. Use an API Gateway integration to send a message to an Amazon Simple Queue Service (Amazon SQS) FIFO queue when the application receives an order. Configure the SQS FIFO queue to invoke an AWS Lambda function for processing.   
+
+Why is this the correct answer?
+
+- [ ] Amazon SQS FIFO (First-In-First-Out) queue: FIFO queues are designed to preserve the order in which messages are sent and received. This is crucial for the requirement of processing orders in the order they are received. When API Gateway sends order information to a FIFO queue, SQS guarantees that the Lambda function will process these orders in the correct sequence.
+- [ ] API Gateway Integration with SQS: API Gateway can directly integrate with SQS to send messages. This allows the application to submit order data to the queue as soon as it's received.
+- [ ] SQS Invokes Lambda: SQS can be configured to trigger a Lambda function automatically whenever new messages arrive in the queue. This creates an event-driven architecture, where the Lambda function processes orders asynchronously, ensuring that the API Gateway remains responsive.
+
+Why are the other answers wrong?
+
+A. Use an API Gateway integration to publish a message to an Amazon Simple Notification Service (Amazon SNS) topic when the application receives an order. Subscribe an AWS Lambda function to the topic to perform processing.   
+
+Why it's wrong: Amazon SNS is a publish/subscribe messaging service. While it can trigger Lambda functions, it does not guarantee message ordering. In a publish/subscribe pattern, messages are delivered to all subscribers, and there is no inherent mechanism to ensure that messages are processed in the order they were published. This violates the requirement for ordered processing.
+
+C. Use an API Gateway authorizer to block any requests while the application processes an order.
+
+Why it's wrong: API Gateway authorizers are used for authentication and authorization, not for managing message processing order. Blocking requests while processing would severely impact the application's performance and availability. It would create a bottleneck and prevent the application from handling concurrent orders efficiently. This is not a scalable or practical solution.
+
+D. Use an API Gateway integration to send a message to an Amazon Simple Queue Service (Amazon SQS) standard queue when the application receives an order. Configure the SQS standard queue to invoke an AWS Lambda function for processing.   
+
+Why it's wrong: Amazon SQS standard queues provide at-least-once delivery but do not guarantee message ordering. Messages might be delivered out of order, which would violate the requirement to process orders in the sequence they are received. While standard queues are suitable for many use cases, they are not appropriate when message ordering is critical.
+
+Summary
+
+The best solution is B because it uses Amazon SQS FIFO queues to ensure orders are processed in the order they are received, which is a key requirement. The other options do not provide guaranteed message ordering or introduce other problems like performance bottlenecks.
+
+</details>
+
+<details>
+  <summary>Question 11</summary>
+
+A company has an application that runs on Amazon EC2 instances and uses an Amazon Aurora database.  The EC2 instances connect to the database by using user names and passwords that are stored locally in a file.  The company wants to minimize the operational overhead of credential management.    
+
+What should a solutions architect do to accomplish this goal?
+
+- [ ] A.  Use AWS Secrets Manager.  Turn on automatic rotation.
+- [ ] B.  Use AWS Systems Manager Parameter Store.  Turn on automatic rotation.
+- [ ] C.  Create an Amazon S3 bucket to store objects that are encrypted with an AWS Key Management Service (AWS KMS) encryption key.  Migrate the credential file to the S3 bucket.  Point the application to the S3 bucket. 
+- [ ] D.  Create an encrypted Amazon Elastic Block Store (Amazon EBS) volume for each EC2 instance.  Attach the new EBS volume to each EC2 instance.  Migrate the credential file to the new EBS volume.  Point the application to the new EBS volume.  
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A.  Use AWS Secrets Manager.  Turn on automatic rotation.
+
+The correct answer is A. Use AWS Secrets Manager. Turn on automatic rotation.
+
+Why is this the correct answer?
+
+- [ ] AWS Secrets Manager: This service is specifically designed to help you securely store, retrieve, and manage database credentials, API keys, and other secrets.  It offers features like automatic secret rotation, which greatly reduces the operational overhead of manually changing credentials.    
+- [ ] Automatic Rotation: By turning on automatic rotation, Secrets Manager can automatically rotate the database credentials on a defined schedule.  This eliminates the need for manual intervention, minimizing operational overhead and improving security by reducing the risk of using long-lived credentials.    
+
+Why are the other answers wrong?
+
+B. Use AWS Systems Manager Parameter Store. Turn on automatic rotation.
+
+Why it's wrong: While AWS Systems Manager Parameter Store can securely store secrets, it is not primarily designed for automatic secret rotation of database credentials in the same way that Secrets Manager is.  Implementing automatic rotation with Parameter Store would require additional custom configuration and management, increasing operational overhead.    
+C. Create an Amazon S3 bucket to store objects that are encrypted with an AWS Key Management Service (AWS KMS) encryption key. Migrate the credential file to the S3 bucket. Point the application to the S3 bucket.
+
+Why it's wrong: Storing credentials in an S3 bucket, even if encrypted, is not a secure or operationally efficient way to manage them.  It introduces complexities in access control, requires managing S3 permissions, and does not provide built-in secret rotation.  Additionally, the application would need to be modified to retrieve credentials from S3, adding overhead.    
+D. Create an encrypted Amazon Elastic Block Store (Amazon EBS) volume for each EC2 instance. Attach the new EBS volume to each EC2 instance. Migrate the credential file to the new EBS volume. Point the application to the new EBS volume.
+
+Why it's wrong: Storing credentials on EBS volumes is not a recommended security practice.  It increases management overhead as each volume needs to be managed and secured. It also doesn't provide any built-in mechanism for secret rotation.  If an EC2 instance is compromised, the credentials on the EBS volume could be exposed.    
+Summary
+
+The best solution is A because AWS Secrets Manager is the most suitable service for managing database credentials with the least operational overhead, thanks to its automatic rotation feature. The other options introduce more complexity, security risks, or lack the automated rotation capabilities needed for efficient credential management.
+
+</details>
+
+<details>
+  <summary>Question 12</summary>
+
+  A global company hosts its web application on Amazon EC2 instances behind an Application Load Balancer (ALB).  The web application has static data and dynamic data.  The company stores its static data in an Amazon S3 bucket.  The company wants to improve performance and reduce latency for the static data and dynamic data.  The company is using its own domain name registered with Amazon Route 53.    
+
+What should a solutions architect do to meet these requirements?
+
+- [ ] A.  Create an Amazon CloudFront distribution that has the S3 bucket and the ALB as origins.  Configure Route 53 to route traffic to the CloudFront distribution. 
+- [ ] B.  Create an Amazon CloudFront distribution that has the ALB as an origin.  Create an AWS Global Accelerator standard accelerator that has the S3 bucket as an endpoint Configure Route 53 to route traffic to the CloudFront distribution. 
+- [ ] C.  Create an Amazon CloudFront distribution that has the S3 bucket as an origin.  Create an AWS Global Accelerator standard accelerator that has the ALB and the CloudFront distribution as endpoints.  Create a custom domain name that points to the accelerator DNS name.  Use the custom domain name as an endpoint for the web application. 
+- [ ] D.  Create an Amazon CloudFront distribution that has the ALB as an origin.  Create an AWS Global Accelerator standard accelerator that has the S3 bucket as an endpoint.  Create two domain names.  Point one domain name to the CloudFront DNS name for dynamic content.  Point the other domain name to the accelerator DNS name for static content.  Use the domain names as endpoints for the web application. 
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A.  Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.    
+
+</details>
 
 
 
