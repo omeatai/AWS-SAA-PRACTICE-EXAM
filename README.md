@@ -1108,10 +1108,12 @@ A.  Use AWS Budgets to create a budget report and compare EC2 costs based on ins
 
 Why it's wrong: AWS Budgets is primarily used for setting budgets and receiving alerts when costs exceed those budgets. While it can provide reports, it is not as granular or flexible as Cost Explorer for in-depth cost analysis based on specific dimensions like instance types.
 AWS Budgets focuses on alerting and tracking against a set budget, not detailed historical analysis and graphing of cost components.
+
 B.  Use graphs from the AWS Billing and Cost Management dashboard to compare EC2 costs based on instance types for the last 2 months.
 
 Why it's wrong: The AWS Billing and Cost Management dashboard provides a high-level overview of costs, but it lacks the detailed filtering and analysis capabilities of Cost Explorer.
 While it can show overall EC2 costs, it is not designed for granular analysis of costs by instance type over specific periods.
+
 D.  Use AWS Cost and Usage Reports to get a detailed breakdown of each month's EC2 costs and analyze the information.
 
 Why it's wrong: AWS Cost and Usage Reports provide the most comprehensive data about AWS costs, but they are delivered as detailed data files (e.g., CSV) that require additional tools and effort to analyze and visualize the data.
