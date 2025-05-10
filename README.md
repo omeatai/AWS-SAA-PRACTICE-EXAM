@@ -1125,7 +1125,7 @@ This option involves more operational overhead because it requires setting up a 
 
 <details>
   <summary>Question 25</summary>
-  
+ 
 A company stores its data in Amazon S3. The company wants to implement a search solution to provide users with the ability to search for files based on keywords. The search solution must support full-text search capabilities. The company also wants to minimize operational overhead.
 
 Which solution meets these requirements?
