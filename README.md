@@ -703,16 +703,7 @@ Why are the other answers wrong?
 </details>
 
 
-
-
-
-
-
-
-
-
 </details>
-
 
 
 
