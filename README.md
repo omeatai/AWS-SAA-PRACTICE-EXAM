@@ -1165,6 +1165,46 @@ However, S3 Select is not designed for full-text search across multiple files. I
 
 </details>
 
+<details>
+  <summary>Question 26</summary>
+
+A company wants to provide secure access to objects in an Amazon S3 bucket for its users. The company wants to use pre-signed URLs to grant temporary access to the objects. The solution must provide the highest level of security.
+
+Which configuration should the solutions architect use to meet these requirements?
+
+- [ ] A. Create pre-signed URLs that expire after 1 hour.    
+- [ ] B. Create pre-signed URLs that expire after 7 days.    
+- [ ] C. Require users to provide their AWS credentials to generate pre-signed URLs.
+- [ ] D. Require users to have multi-factor authentication (MFA) enabled to generate pre-signed URLs. 
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Require users to have multi-factor authentication (MFA) enabled to generate pre-signed URLs.
+
+Why is this the correct answer?
+
+- [ ] Requiring multi-factor authentication (MFA) to generate pre-signed URLs adds an extra layer of security.
+- [ ] Even if the pre-signed URL is compromised, the attacker would also need to have access to the user's MFA device to use the URL.
+- [ ] This significantly reduces the risk of unauthorized access.   
+
+Why are the other answers wrong?
+
+A.  Create pre-signed URLs that expire after 1 hour.
+
+Why it's wrong: While setting a shorter expiration time is a good security practice, it doesn't provide the highest level of security on its own.  If a pre-signed URL is compromised within that hour, it can still be used.    
+
+B.  Create pre-signed URLs that expire after 7 days.
+
+Why it's wrong: A longer expiration time increases the window of opportunity for misuse if the URL is compromised.  This option is less secure than using MFA.   
+
+C.  Require users to provide their AWS credentials to generate pre-signed URLs.
+
+Why it's wrong: This is the opposite of security best practices. You should avoid sharing AWS credentials directly. Pre-signed URLs are designed to grant access without sharing credentials.
+
+</details>
 
 
 
