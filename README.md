@@ -991,7 +991,9 @@ Why this solution works:
 Why the other options are not as suitable:
 
 A. While S3 and CloudFront are good for static content, hosting the entire website (including the dynamic parts) in S3 would be complex and inefficient. You would still need a backend to handle the dynamic logic, and S3 is not designed for that.
+
 B. Deploying the website on EC2 instances with Auto Scaling and ALBs can handle traffic, but it involves more operational overhead than the serverless approach in Option D. You are responsible for managing the EC2 instances, scaling them, and ensuring their availability. RDS for MySQL might also become a bottleneck under extreme load.
+
 C. EKS is a powerful container orchestration platform, but it adds significant operational complexity. Managing a Kubernetes cluster requires more effort than using managed services like Lambda and DynamoDB. While it can scale, it's more overhead than necessary for this use case. RDS for MySQL might also become a bottleneck under extreme load.
 
 In summary
