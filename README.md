@@ -1123,6 +1123,52 @@ This option involves more operational overhead because it requires setting up a 
 
 </details>
 
+<details>
+  <summary>Question 25</summary>
+  
+A company stores its data in Amazon S3. The company wants to implement a search solution to provide users with the ability to search for files based on keywords. The search solution must support full-text search capabilities. The company also wants to minimize operational overhead.
+
+Which solution meets these requirements?
+
+- [ ] A. Copy the files to Amazon Elasticsearch Service. Implement the search solution by using the Elasticsearch service.
+- [ ] B. Copy the files to Amazon OpenSearch Service. Implement the search solution by using the OpenSearch service.
+- [ ] C. Create an Amazon S3 event notification to send object create events to Amazon CloudWatch Logs. Implement the search solution by using CloudWatch Logs.
+- [ ] D. Use Amazon S3 Select to search the files in Amazon S3.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Copy the files to Amazon OpenSearch Service. Implement the search solution by using the OpenSearch service.
+
+Why is this the correct answer?
+
+Amazon OpenSearch Service is a fully managed search and analytics service that makes it simple to deploy, secure, and operate OpenSearch clusters at scale. It excels at providing full-text search capabilities, which is a key requirement for this scenario. By using OpenSearch, the company can efficiently index and search their files stored in Amazon S3, delivering a powerful search experience to users.  Moreover, it minimizes operational overhead as AWS handles the underlying infrastructure, scaling, and maintenance of the OpenSearch clusters.
+
+Why are the other answers wrong?
+
+A. Copy the files to Amazon Elasticsearch Service. Implement the search solution by using the Elasticsearch service.
+
+Why it's wrong: Amazon Elasticsearch Service (now largely superseded by OpenSearch Service) could also provide full-text search, but since the question specifies minimizing operational overhead and OpenSearch is the strategic direction, it's less ideal.
+While Elasticsearch could work, it might imply using older technology compared to the current AWS recommendation.
+
+C. Create an Amazon S3 event notification to send object create events to Amazon CloudWatch Logs. Implement the search solution by using CloudWatch Logs.
+
+Why it's wrong: Amazon CloudWatch Logs is primarily a monitoring and logging service. While it can store log data, it is not designed or optimized for full-text search across files.
+Using CloudWatch Logs for this purpose would be inefficient, complex, and would not provide the necessary search capabilities.
+
+D. Use Amazon S3 Select to search the files in Amazon S3.
+
+Why it's wrong: Amazon S3 Select allows you to retrieve specific data from objects using SQL expressions, which is useful for filtering and retrieving subsets of data within files.
+However, S3 Select is not designed for full-text search across multiple files. It operates on individual objects and lacks the indexing and search capabilities needed for a comprehensive search solution.
+
+</details>
+
+
+
+
+
 
 
 
