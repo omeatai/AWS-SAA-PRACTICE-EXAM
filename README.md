@@ -1078,26 +1078,44 @@ D. Create an S3 Lifecycle configuration to transition objects from S3 Standard t
 
 <details>
   <summary>Question 24</summary>
-
-- [ ]    
+ 
 A company observes an increase in Amazon EC2 costs in its most recent bill. The billing team notices unwanted vertical scaling of instance types for a couple of EC2 instances. A solutions architect needs to create a graph comparing the last 2 months of EC2 costs and perform an in-depth analysis to identify the root cause of the vertical scaling.
 
 How should the solutions architect generate the information with the LEAST operational overhead?
 
-A. Use AWS Budgets to create a budget report and compare EC2 costs based on instance types.
-
-B. Use Cost Explorer's granular filtering feature to perform an in-depth analysis of EC2 costs based on instance types.
-
-C. Use graphs from the AWS Billing and Cost Management dashboard to compare EC2 costs based on instance types for the last 2 months.
-
-D. Use AWS Cost and Usage Reports to create a report and send it to an Amazon S3 bucket. Use Amazon QuickSight with Amazon S3 as a source to generate an interactive graph based on instance types.
+- [ ] A. Use AWS Budgets to create a budget report and compare EC2 costs based on instance types.
+- [ ] B. Use Cost Explorer's granular filtering feature to perform an in-depth analysis of EC2 costs based on instance types.
+- [ ] C. Use graphs from the AWS Billing and Cost Management dashboard to compare EC2 costs based on instance types for the last 2 months.
+- [ ] D. Use AWS Cost and Usage Reports to create a report and send it to an Amazon S3 bucket. Use Amazon QuickSight with Amazon S3 as a source to generate an interactive graph based on instance types.
 
 </details>
 
 <details>
   <summary>Answer</summary>
 
-- [ ] A.  Turn on S3 Transfer Acceleration
+- [ ] B.  Use Cost Explorer's granular filtering feature to perform an in-depth analysis of EC2 costs based on instance types.
+      
+Why is this the correct answer?
+
+- [ ] AWS Cost Explorer provides a user-friendly interface that allows for detailed analysis of AWS costs.
+- [ ] It includes granular filtering capabilities, which enable users to analyze costs based on various dimensions such as instance type.
+- [ ] This makes it easy to compare EC2 costs over the past two months and identify the specific instance types that contributed to the increased spending due to vertical scaling.
+- [ ] Cost Explorer is designed for cost analysis and visualization, thus requiring the least operational overhead for generating the required information.    
+
+Why are the other answers wrong?
+
+A.  Use AWS Budgets to create a budget report and compare EC2 costs based on instance types.
+
+Why it's wrong: AWS Budgets is primarily used for setting budgets and receiving alerts when costs exceed those budgets. While it can provide reports, it is not as granular or flexible as Cost Explorer for in-depth cost analysis based on specific dimensions like instance types.
+AWS Budgets focuses on alerting and tracking against a set budget, not detailed historical analysis and graphing of cost components.
+B.  Use graphs from the AWS Billing and Cost Management dashboard to compare EC2 costs based on instance types for the last 2 months.
+
+Why it's wrong: The AWS Billing and Cost Management dashboard provides a high-level overview of costs, but it lacks the detailed filtering and analysis capabilities of Cost Explorer.
+While it can show overall EC2 costs, it is not designed for granular analysis of costs by instance type over specific periods.
+D.  Use AWS Cost and Usage Reports to get a detailed breakdown of each month's EC2 costs and analyze the information.
+
+Why it's wrong: AWS Cost and Usage Reports provide the most comprehensive data about AWS costs, but they are delivered as detailed data files (e.g., CSV) that require additional tools and effort to analyze and visualize the data.
+This option involves more operational overhead because it requires setting up a system to download, parse, and analyze the reports, rather than using a built-in tool like Cost Explorer.
 
 </details>
 
