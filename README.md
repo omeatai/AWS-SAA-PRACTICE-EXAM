@@ -1206,6 +1206,44 @@ Why it's wrong: This is the opposite of security best practices. You should avoi
 
 </details>
 
+<details>
+  <summary>Question 27</summary>
+  
+A company stores its data in Amazon S3.  The media files must be resilient to the loss of an Availability Zone.  Some files are accessed frequently while other files are rarely accessed in an unpredictable pattern.  The solutions architect must minimize the costs of storing and retrieving the media files.   
+
+Which storage option meets these requirements?
+
+- [ ] A. S3 Standard
+- [ ] B. S3 Standard-IA
+- [ ] C. S3 Intelligent-Tiering
+- [ ] D. S3 Glacier Flexible Retrieval
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. S3 Intelligent-Tiering
+
+Why is this the correct answer?
+
+S3 Intelligent-Tiering is designed to optimize costs by automatically moving data to the most cost-effective access tier based on access patterns, without performance impact or operational overhead.  It's suitable for data with unpredictable access patterns, making it ideal for the scenario where some files are accessed frequently and others are not.   It also provides the resilience of S3 Standard, storing data across multiple Availability Zones.    
+
+Why are the other answers wrong?
+
+A.  S3 Standard
+
+Why it's wrong: S3 Standard is for frequently accessed data and is more expensive for data that is accessed infrequently.  While it provides high availability and durability, it does not optimize costs based on access patterns like S3 Intelligent-Tiering.   
+
+B.  S3 Standard-IA
+
+Why it's wrong: S3 Standard-IA is for data that is less frequently accessed but requires rapid retrieval when needed.  It can be more cost-effective than S3 Standard for infrequent access, but it doesn’t automatically optimize for changing access patterns.    
+
+D.  S3 Glacier Flexible Retrieval
+
+Why it's wrong: S3 Glacier Flexible Retrieval (formerly S3 Glacier) is designed for archiving data and is not suitable for applications requiring frequent or rapid access.  Retrieval times can range from minutes to hours, which does not meet the requirement for minimizing retrieval costs for files that may be accessed frequently.
+
+</details>
 
 
 
