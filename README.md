@@ -707,6 +707,58 @@ Why are the other answers wrong?
 
 
 
+<details>
+  <summary>==Questions 21-30==</summary>
+
+<details>
+  <summary>Question 21</summary>
+
+An ecommerce company wants to launch a one-deal-a-day website on AWS. Each day will feature exactly one product on sale for a period of 24 hours. The company wants to be able to handle millions of requests each hour with millisecond latency during peak hours.
+
+Which solution will meet these requirements with the LEAST operational overhead?
+
+- [ ]  A. Use Amazon S3 to host the full website in different S3 buckets. Add Amazon CloudFront distributions. Set the S3 buckets as origins for the distributions. Store the order data in Amazon S3.
+- [ ]  B. Deploy the full website on Amazon EC2 instances that run in Auto Scaling groups across multiple Availability Zones. Add an Application Load Balancer (ALB) to distribute the website traffic. Add another ALB for the backend APIs. Store the data in Amazon RDS for MySQL.
+- [ ]  C. Migrate the full application to run in containers. Host the containers on Amazon Elastic Kubernetes Service (Amazon EKS). Use the Kubernetes Cluster Autoscaler to increase and decrease the number of pods to process bursts in traffic. Store the data in Amazon RDS for MySQL.
+- [ ]  D. Use an Amazon S3 bucket to host the website's static content. Deploy an Amazon CloudFront distribution. Set the S3 bucket as the origin. Use Amazon API Gateway and AWS Lambda functions for the backend APIs. Store the data in Amazon DynamoDB.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ]  D. Use an Amazon S3 bucket to host the website's static content. Deploy an Amazon CloudFront distribution. Set the S3 bucket as the origin. Use Amazon API Gateway and AWS Lambda functions for the backend APIs. Store the data in Amazon DynamoDB.
+
+Why this is the correct answer:
+
+- [ ] Static Content Hosting (S3 and CloudFront): For a "one-deal-a-day" website, much of the content (product description, images, pricing for that day) is static.
+- [ ] Hosting this static content (HTML, CSS, JavaScript, images) in an Amazon S3 bucket and distributing it via Amazon CloudFront provides high scalability ("millions of requests each hour") and low latency ("millisecond latency") due to CloudFront's global network of edge locations. This setup has very low operational overhead.
+- [ ] Serverless Backend (API Gateway and Lambda): For dynamic functionalities like processing orders, handling user interactions, or inventory checks, using Amazon API Gateway to create RESTful APIs that trigger AWS Lambda functions is a highly scalable, pay-per-use, and low operational overhead approach. Lambda functions can execute code in response to API calls without needing to manage servers.
+- [ ] Scalable Database (DynamoDB): Amazon DynamoDB is a fully managed NoSQL database service that delivers single-digit millisecond performance at any scale.
+- [ ] It is well-suited for ecommerce applications that require low-latency data access and can handle high request volumes, such as storing order information or user session data. Its serverless nature means no servers to manage.   
+- [ ] Least Operational Overhead: This combination of serverless and managed services (S3, CloudFront, API Gateway, Lambda, DynamoDB) minimizes infrastructure management, patching, and manual scaling efforts, directly meeting the requirement for the "LEAST operational overhead."
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While using S3 and CloudFront for hosting is good, storing "order data in Amazon S3" is not appropriate for a transactional system. S3 is an object store, not a database designed for frequent, low-latency transactional reads and writes with querying capabilities needed for order management.
+- [ ] Option B is wrong because: Deploying the application on Amazon EC2 instances, even with Auto Scaling and Application Load Balancers, involves significantly more operational overhead (managing instances, operating systems, scaling policies, patching) compared to a serverless architecture like the one described in option D.
+- [ ] Option C is wrong because: Migrating to containers on Amazon EKS introduces considerable operational complexity. Managing a Kubernetes cluster, even with EKS, requires expertise and effort for cluster operations, node management, and container orchestration. This is generally more operationally intensive than a serverless approach, especially when "LEAST operational overhead" is a primary goal.
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</details>
 
 
 
@@ -723,6 +775,20 @@ Why are the other answers wrong?
 
 
 
+
+
+
+
+
+
+
+
+
+
+<details>
+  <summary>==Questions X-X==</summary>
+
+  
 
 <details>
   <summary>Question X</summary>
@@ -742,7 +808,7 @@ Why are the other answers wrong?
 
 
 
-
+</details>
 
 
 
