@@ -1071,7 +1071,358 @@ Why are the other answers wrong?
 
 </details>
 
+<details>
+  <summary>==Questions 31-40==</summary>
 
+<details>
+  <summary>Question 31</summary>
+
+A company that hosts its web application on AWS wants to ensure all Amazon EC2 instances, Amazon RDS DB instances, and Amazon Redshift clusters are configured with tags.  The company wants to minimize the effort of configuring and operating this check.    
+
+What should a solutions architect do to accomplish this?    
+
+- [ ] A. Use AWS Config rules to define and detect resources that are not properly tagged. 
+- [ ] B. Use Cost Explorer to display resources that are not properly tagged. Tag those resources manually. 
+- [ ] C. Write API calls to check all resources for proper tag allocation. Periodically run the code on an EC2 instance. 
+- [ ] D. Write API calls to check all resources for proper tag allocation. Schedule an AWS Lambda function through Amazon CloudWatch to periodically run the code.    
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Use AWS Config rules to define and detect resources that are not properly tagged. 
+
+Why this is the correct answer:
+
+- [ ] AWS Config for Configuration Compliance: AWS Config is a service that allows you to assess, audit, and evaluate the configurations of your AWS resources.  It's designed for tracking resource configurations and ensuring compliance with desired policies.   
+- [ ] Config Rules for Tagging: AWS Config provides managed rules (like required-tags) and the ability to create custom rules to check whether your resources (including EC2 instances, RDS DB instances, and Redshift clusters) have the necessary tags.    
+- [ ] Automated Detection and Minimal Effort: Once set up, AWS Config rules automatically and continuously evaluate your resources. If a resource is found to be non-compliant (e.g., missing required tags), AWS Config can flag it. This provides an automated way to perform the check with minimal ongoing operational effort.    
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: AWS Cost Explorer is a tool for visualizing, understanding, and managing your AWS costs and usage. While it can use tags to filter cost data, it is not designed as a primary tool for detecting resources that are missing required tags for compliance purposes.  Its focus is cost analysis, not configuration auditing of tags.   
+- [ ] Option C is wrong because: Writing custom scripts with API calls to check for tags and running them periodically on an EC2 instance involves significant initial development effort and ongoing operational overhead for maintaining the script and the EC2 instance.  This does not minimize effort compared to using a managed service like AWS Config.   
+- [ ] Option D is wrong because: Similar to option C, developing custom API calls within an AWS Lambda function scheduled by Amazon CloudWatch (now Amazon EventBridge) requires custom coding and maintenance.  While serverless, it's still more effort to develop and manage than using the built-in capabilities of AWS Config, which is specifically designed for configuration compliance checks like ensuring proper tagging.
+
+</details>  
+
+<details>
+  <summary>Question 32</summary>
+
+A development team needs to host a website that will be accessed by other teams. The website contents consist of HTML, CSS, client-side JavaScript, and images.
+
+Which method is the MOST cost-effective for hosting the website?    
+
+- [ ] A. Containerize the website and host it in AWS Fargate. 
+- [ ] B. Create an Amazon S3 bucket and host the website there. 
+- [ ] C. Deploy a web server on an Amazon EC2 instance to host the website. 
+- [ ] D. Configure an Application Load Balancer with an AWS Lambda target that uses the Express.js framework.    
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Create an Amazon S3 bucket and host the website there. 
+
+Why this is the correct answer:
+
+- [ ] Amazon S3 for Static Website Hosting: Amazon S3 has a feature that allows you to configure a bucket to host a static website.  Since the website consists only of static content (HTML, CSS, client-side JavaScript, and images), S3 is an ideal choice.    
+- [ ] MOST Cost-Effective: Hosting a static website on S3 is generally the most cost-effective option.  You primarily pay for the S3 storage consumed by your website files and the data transfer out (requests for your website content). There are no charges for compute instances, making it significantly cheaper than solutions involving EC2, Fargate, or Lambda for simple static content delivery.   
+- [ ] Scalability and Durability: S3 is inherently highly scalable, durable, and available, automatically handling variations in traffic without requiring manual intervention.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Containerizing a purely static website and hosting it on AWS Fargate is an overly complex and more expensive solution.  Fargate is a serverless compute engine for containers, and you would incur costs for the vCPU and memory resources allocated to your container, which is unnecessary for serving static files.   
+- [ ] Option C is wrong because: Deploying a web server (e.g., Apache, Nginx) on an Amazon EC2 instance to host a static website involves the cost of the EC2 instance running 24/7 (or on-demand), plus the operational overhead of managing the server (patching, security, updates).  This is less cost-effective and requires more management than S3 static website hosting.   
+- [ ] Option D is wrong because: Configuring an Application Load Balancer with an AWS Lambda target using a framework like Express.js is designed for dynamic web applications that require server-side processing.  For a website with only static content, this architecture is unnecessarily complex, has higher latency for static file delivery compared to direct S3/CloudFront, and incurs higher costs (ALB charges, Lambda invocation costs).
+
+</details>
+
+<details>
+  <summary>Question 33</summary>
+
+A company runs an online marketplace web application on AWS. The application serves hundreds of thousands of users during peak hours. The company needs a scalable, near-real-time solution to share the details of millions of financial transactions with several other internal applications. Transactions also need to be processed to remove sensitive data before being stored in a document database for low-latency retrieval.
+
+What should a solutions architect recommend to meet these requirements?
+
+- [ ] A. Store the transactions data into Amazon DynamoDB. Set up a rule in DynamoDB to remove sensitive data from every transaction upon write. Use DynamoDB Streams to share the transactions data with other applications.
+- [ ] B. Stream the transactions data into Amazon Kinesis Data Firehose to store data in Amazon DynamoDB and Amazon S3. Use AWS Lambda integration with Kinesis Data Firehose to remove sensitive data. Other applications can consume the data stored in Amazon S3.
+- [ ] C. Stream the transactions data into Amazon Kinesis Data Streams. Use AWS Lambda integration to remove sensitive data from every transaction and then store the transactions data in Amazon DynamoDB. Other applications can consume the transactions data off the Kinesis data stream.
+- [ ] D. Store the batched transactions data in Amazon S3 as files. Use AWS Lambda to process every file and remove sensitive data before updating the files in Amazon S3. The Lambda function then stores the data in Amazon DynamoDB. Other applications can consume transaction files stored in Amazon S3.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A.  Turn
+Correct Answer: C
+
+Why this is the correct answer:
+
+- [ ] Scalable, Near-Real-Time Ingestion with Kinesis Data Streams: Amazon Kinesis Data Streams is designed for ingesting and processing large volumes of streaming data in near real-time. It can handle "millions of financial transactions" from a high-traffic application.
+- [ ] Data Processing with Lambda: Kinesis Data Streams integrates seamlessly with AWS Lambda. A Lambda function can be configured to consume records from the stream, perform transformations like "remove sensitive data," and then pass the cleaned data to other services.
+- [ ] Low-Latency Storage with DynamoDB: After processing, the Lambda function can store the sanitized transaction data in Amazon DynamoDB. DynamoDB is a NoSQL document database that provides "low-latency retrieval" and scales to handle high throughput, suitable for serving data to applications.
+- [ ] Sharing with Multiple Applications: "Several other internal applications" can be configured as independent consumers of the Kinesis data stream. They can read and process the transaction data (either raw or after some initial processing by a primary Lambda) in parallel and at their own pace, providing a flexible and scalable way to share data.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: DynamoDB itself does not have built-in "rules" to remove sensitive data upon write in the manner described. While you can use DynamoDB Streams to trigger a Lambda function after data is written to perform transformations, this means sensitive data would first be stored in DynamoDB before being processed. Kinesis Data Streams with Lambda allows processing before it hits the final document database.
+- [ ] Option B is wrong because: Amazon Kinesis Data Firehose is primarily a data delivery service designed to load streaming data into destinations like S3, Redshift, or Amazon OpenSearch Service. While it supports data transformation via Lambda, it's less suited for providing a persistent stream that "several other internal applications" can consume in near real-time for varied purposes compared to Kinesis Data Streams. Consuming from S3 (as suggested for other applications) introduces batch latency rather than near-real-time stream processing.
+- [ ] Option D is wrong because: Storing "batched transactions data in Amazon S3 as files" and then processing these files with Lambda is a batch processing approach, not a "scalable, near-real-time solution" suitable for handling millions of individual financial transactions that need to be shared quickly. This method introduces inherent latency due to batching and file processing.
+
+</details>
+
+<details>
+  <summary>Question 34</summary>
+
+A company hosts its multi-tier applications on AWS. For compliance, governance, auditing, and security, the company must track configuration changes on its AWS resources and record a history of API calls made to these resources.    
+
+What should a solutions architect do to meet these requirements?
+
+- [ ] A. Use AWS CloudTrail to track configuration changes and AWS Config to record API calls. 
+- [ ] B. Use AWS Config to track configuration changes and AWS CloudTrail to record API calls. 
+- [ ] C. Use AWS Config to track configuration changes and Amazon CloudWatch to record API calls. 
+- [ ] D. Use AWS CloudTrail to track configuration changes and Amazon CloudWatch to record API calls.    
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Use AWS Config to track configuration changes and AWS CloudTrail to record API calls. 
+
+Why this is the correct answer:
+
+- [ ] AWS Config for Tracking Configuration Changes: AWS Config is a service that enables you to assess, audit, and evaluate the configurations of your AWS resources. It continuously monitors AWS resource configurations and maintains a history of configuration changes.
+- [ ] This directly addresses the requirement to "track configuration changes on its AWS resources."    
+- [ ] AWS CloudTrail for Recording API Call History: AWS CloudTrail records user activity and API calls made to AWS services.
+- [ ] These logs provide a detailed history of actions taken in your AWS account, including who made the API call, when it was made, from what IP address, and what resources were affected.
+- [ ] This directly addresses the requirement to "record a history of API calls made to these resources."    
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: This option reverses the primary roles of the two services. AWS CloudTrail is for recording API calls, and AWS Config is for tracking configuration changes.    
+- [ ] Option C is wrong because: While Amazon CloudWatch is a monitoring and observability service and can store logs (including CloudTrail logs), it is not the primary service for recording a comprehensive history of API calls for auditing and governance purposes; that is the role of AWS CloudTrail.    
+- [ ] Option D is wrong because: This option incorrectly assigns the roles. AWS CloudTrail tracks API calls, not primarily configuration changes (which is AWS Config's strength). Amazon CloudWatch is for monitoring and does not replace CloudTrail for API call history for audit purposes. 
+
+</details>
+
+<details>
+  <summary>Question 35</summary>
+
+A company is preparing to launch a public-facing web application in the AWS Cloud. The architecture consists of Amazon EC2 instances within a VPC behind an Elastic Load Balancer (ELB).  A third-party service is used for the DNS. The company's solutions architect must recommend a solution to detect and protect against large-scale DDoS attacks.    
+
+Which solution meets these requirements?
+
+- [ ] A. Enable Amazon GuardDuty on the account. 
+- [ ] B. Enable Amazon Inspector on the EC2 instances. 
+- [ ] C. Enable AWS Shield and assign Amazon Route 53 to it. 
+- [ ] D. Enable AWS Shield Advanced and assign the ELB to it.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Enable AWS Shield Advanced and assign the ELB to it. 
+
+Why this is the correct answer:
+
+- [ ] AWS Shield Advanced for Enhanced DDoS Protection: AWS Shield Advanced offers a higher level of protection against larger and more sophisticated Distributed Denial of Service (DDoS) attacks compared to AWS Shield Standard (which provides default protection). For "large-scale DDoS attacks," Shield Advanced is the appropriate service.    
+- [ ] Protecting the Elastic Load Balancer (ELB): The ELB is the entry point for traffic to the web application.  Protecting the ELB with Shield Advanced ensures that volumetric network layer attacks and other types of DDoS attacks targeting the application's frontend are mitigated.    
+- [ ] Detection and Mitigation: Shield Advanced provides detection of DDoS attacks and includes automatic inline mitigations for many common infrastructure (Layer 3 and 4) attacks. For application layer (Layer 7) attacks, it integrates with AWS WAF (Web Application Firewall), allowing you to create custom rules for mitigation. Shield Advanced also provides access to the AWS DDoS Response Team (DRT) for expert assistance during an attack.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Amazon GuardDuty is a threat detection service that monitors for malicious or unauthorized behavior within your AWS environment.  While it might detect activity related to a DDoS attack (e.g., if instances are compromised and participating in an attack, or if there are unusual traffic patterns), GuardDuty itself is not a DDoS mitigation service; it provides alerts and findings, but AWS Shield is designed for DDoS protection.   
+- [ ] Option B is wrong because: Amazon Inspector is a vulnerability management service that scans your EC2 instances for software vulnerabilities and unintended network exposure.  It helps improve the security posture of your instances but does not provide real-time protection against incoming DDoS attacks.   
+- [ ] Option C is wrong because: All AWS customers benefit from AWS Shield Standard protection automatically and at no additional cost. This option mentions enabling "AWS Shield," which likely refers to Shield Standard. While Route 53 can be a target for DNS-based DDoS attacks, and Shield Advanced can protect Route 53 hosted zones, the primary concern for application availability during a large-scale DDoS attack is typically the application endpoint, which in this architecture is the ELB.  Shield Advanced provides more robust protection than Shield Standard and should be associated directly with the application entry points like the ELB for comprehensive protection against attacks aimed at overwhelming the application servers. 
+
+</details>
+
+<details>
+  <summary>Question 36</summary>
+
+A company is building an application in the AWS Cloud. The application will store data in Amazon S3 buckets in two AWS Regions. The company must use an AWS Key Management Service (AWS KMS) customer managed key to encrypt all data that is stored in the S3 buckets. The data in both S3 buckets must be encrypted and decrypted with the same KMS key. The data and the key must be stored in each of the two Regions.
+
+Which solution will meet these requirements with the LEAST operational overhead?
+
+- [ ] A. Create an S3 bucket in each Region. Configure the S3 buckets to use server-side encryption with Amazon S3 managed encryption keys (SSE-S3). Configure replication between the S3 buckets.
+- [ ] B. Create a customer managed multi-Region KMS key. Create an S3 bucket in each Region. Configure replication between the S3 buckets. Configure the application to use the KMS key with client-side encryption.
+- [ ] C. Create a customer managed KMS key and an S3 bucket in each Region. Configure the S3 buckets to use server-side encryption with Amazon S3 managed encryption keys (SSE-S3). Configure replication between the S3 buckets.
+- [ ] D. Create a customer managed KMS key and an S3 bucket in each Region. Configure the S3 buckets to use server-side encryption with AWS KMS keys (SSE-KMS). Configure replication between the S3 buckets.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Create a customer managed multi-Region KMS key. Create an S3 bucket in each Region. Configure replication between the S3 buckets. Configure the application to use the KMS key with client-side encryption.
+
+Why this is the correct answer:
+
+- [ ] Customer Managed Multi-Region KMS Key: The requirement is to use the same AWS KMS customer managed key for encrypting and decrypting data in S3 buckets across two AWS Regions. AWS KMS multi-Region keys are designed for this.
+- [ ] A multi-Region key has the same key ID and key material in all specified Regions, allowing data encrypted in one Region to be decrypted in another using the same logical key.    
+- [ ] Key and Data Stored in Each Region: Multi-Region keys are replicated and thus "stored" in each of the designated Regions.  S3 buckets are regional, so the data is stored in each respective Region.    
+- [ ] Client-Side Encryption: To ensure the data is encrypted with this specific multi-Region KMS key before it's written to S3 in either Region, and to allow the application to use this same key for decryption regardless of the S3 bucket's region, client-side encryption is employed.
+- [ ] The application uses the AWS KMS SDK to interact with the multi-Region KMS key for encryption (before upload) and decryption (after download).    
+- [ ] Least Operational Overhead (from a key consistency perspective): While client-side encryption adds some complexity to the application code, the use of a multi-Region KMS key simplifies ensuring that the exact same encryption key (material and ID) is used across regions.
+- [ ] This avoids the complexity of managing separate regional keys and trying to ensure interoperability or consistent encryption policies if using server-side encryption with regional keys. The operational overhead of creating and managing a multi-Region key itself is relatively low.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: It specifies using server-side encryption with Amazon S3 managed encryption keys (SSE-S3).  The requirement is to use a "customer managed key." SSE-S3 does not meet this.   
+- [ ] Option C is wrong because: This option is contradictory. It mentions creating a customer managed KMS key but then configuring the S3 buckets to use SSE-S3 (S3 managed keys).  These are different encryption methods. If a customer managed KMS key is to be used with server-side encryption, it would be SSE-KMS.   
+- [ ] Option D is wrong because: If "a customer managed KMS key" refers to a standard, regional KMS key created independently in each Region, then these would be different keys, and data encrypted with one could not be decrypted by the other. This would not meet the requirement that "data in both S3 buckets must be encrypted and decrypted with the same KMS key."  While S3 replication with SSE-KMS can work, if the keys in each region are distinct regional keys, the "same key" criteria isn't met. If this option implied using a single multi-Region key with SSE-KMS, it could be viable; however, client-side encryption (Option B) gives the application more direct control to ensure the same key is used for the cryptographic operations across regions before data lands in S3. 
+
+</details>
+
+<details>
+  <summary>Question 37</summary>
+ 
+A company recently launched a variety of new workloads on Amazon EC2 instances in its AWS account. The company needs to create a strategy to access and administer the instances remotely and securely. The company needs to implement a repeatable process that works with native AWS services and follows the AWS Well-Architected Framework.
+
+Which solution will meet these requirements with the LEAST operational overhead?
+
+- [ ] A. Use the EC2 serial console to directly access the terminal interface of each instance for administration.
+- [ ] B. Attach the appropriate IAM role to each existing instance and new instance. Use AWS Systems Manager Session Manager to establish a remote SSH session.
+- [ ] C. Create an administrative SSH key pair. Load the public key into each EC2 instance. Deploy a bastion host in a public subnet to provide a tunnel for administration of each instance.
+- [ ] D. Establish an AWS Site-to-Site VPN connection. Instruct administrators to use their local on-premises machines to connect directly to the instances by using SSH keys across the VPN tunnel.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Attach the appropriate IAM role to each existing instance and new instance. Use AWS Systems Manager Session Manager to establish a remote SSH session.
+
+Why this is the correct answer:
+
+- [ ] AWS Systems Manager Session Manager: Session Manager is a fully managed AWS service that provides secure and auditable instance management without the need to open inbound SSH (port 22) or RDP (port 3389) ports, manage bastion hosts, or maintain SSH keys. This significantly enhances security and reduces operational overhead.
+- [ ] IAM Role for Access Control: Access to instances via Session Manager is controlled through AWS Identity and Access Management (IAM) roles and policies. This allows for granular permissions, adherence to the principle of least privilege, and a repeatable process for granting access. This aligns well with the AWS Well-Architected Framework's security pillar.
+- [ ] Native AWS Service and Low Overhead: Session Manager is a native AWS service, ensuring good integration and support. It eliminates the overhead associated with patching and maintaining bastion hosts, managing SSH key pairs, or configuring VPNs solely for instance administration. Commands and session activity can also be logged to services like S3 or CloudWatch Logs for auditing.
+- [ ] Secure Remote Sessions: Session Manager allows users to start secure shell (SSH) or PowerShell sessions to instances directly from the AWS Management Console, AWS CLI, or via the AWS SDK.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: The EC2 serial console is primarily a troubleshooting tool for instances that are unreachable via normal SSH or RDP (e.g., due to boot issues or network misconfigurations). It is not intended or suitable as a primary method for routine remote administration of a fleet of instances. It offers limited functionality compared to a full shell session.
+- [ ] Option C is wrong because: Managing SSH key pairs (distribution, rotation, revocation) and deploying, maintaining, and securing bastion hosts introduces significant operational overhead and potential security risks. Bastion hosts themselves need to be patched and monitored, and SSH keys can be compromised. Session Manager (Option B) avoids these complexities.
+- [ ] Option D is wrong because: While an AWS Site-to-Site VPN provides secure connectivity between an on-premises network and a VPC, it is primarily for network extension. Relying on it for instance administration still requires managing SSH keys for individual instances. Session Manager offers a more direct, instance-level access control method that doesn't depend on network-level VPNs and enhances security by not requiring open SSH ports on the instances themselves or direct SSH key management for session access. It is generally a more streamlined solution for secure instance access within AWS.
+
+</details>
+
+<details>
+  <summary>Question 38</summary>
+
+A company is hosting a static website on Amazon S3 and is using Amazon Route 53 for DNS. The website is experiencing increased demand from around the world. The company must decrease latency for users who access the website.
+
+Which solution meets these requirements MOST cost-effectively?
+
+- [ ] A. Replicate the S3 bucket that contains the website to all AWS Regions. Add Route 53 geolocation routing entries.
+- [ ] B. Provision accelerators in AWS Global Accelerator. Associate the supplied IP addresses with the S3 bucket. Edit the Route 53 entries to point to the IP addresses of the accelerators.
+- [ ] C. Add an Amazon CloudFront distribution in front of the S3 bucket. Edit the Route 53 entries to point to the CloudFront distribution.
+- [ ] D. Enable S3 Transfer Acceleration on the bucket. Edit the Route 53 entries to point to the new endpoint.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Add an Amazon CloudFront distribution in front of the S3 bucket. Edit the Route 53 entries to point to the CloudFront distribution.
+
+Why this is the correct answer:
+
+- [ ] Amazon CloudFront for Low-Latency Content Delivery: Amazon CloudFront is AWS's content delivery network (CDN).
+- [ ] It caches copies of your static website content (from the S3 origin) at edge locations distributed globally.
+- [ ] When users request content, they are served from the nearest edge location, which significantly "decreases latency."
+- [ ] Integration with S3 and Route 53: CloudFront is designed to work seamlessly with Amazon S3 as an origin for static websites.
+- [ ] After setting up the CloudFront distribution, you update your Amazon Route 53 DNS record for your website's domain to point to the CloudFront distribution's domain name.
+- [ ] MOST Cost-Effective for Static Websites: For delivering static website content globally with low latency, CloudFront is generally the most cost-effective solution. It reduces the load on your S3 origin and optimizes data transfer costs by serving content from edge locations. The pricing model is typically well-suited for website delivery.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Replicating an S3 bucket to all AWS Regions using S3 Cross-Region Replication (CRR) would incur significant storage costs (paying for storage in every region) and data transfer costs for replication. Managing this setup would also have higher operational overhead. While Route 53 geolocation routing could direct users to a nearby regional bucket, CloudFront provides a more extensive network of edge locations and is generally more cost-effective and simpler for caching and delivering static content.
+- [ ] Option B is wrong because: AWS Global Accelerator is designed to improve the performance and availability of global applications by providing static IP addresses and routing user traffic over the AWS global network to optimal regional endpoints. While it can reduce latency for applications, CloudFront is more specifically tailored and usually more cost-effective for caching and delivering static website content from S3. Global Accelerator does not provide the same level of edge caching as CloudFront, which is key for static content latency reduction.
+- [ ] Option D is wrong because: S3 Transfer Acceleration is primarily designed to speed up uploads of data to Amazon S3 over long distances by routing traffic through Amazon CloudFront's edge locations. It does not provide the same benefits for downloading or serving static website content with caching at edge locations to global users as a full CloudFront distribution does. For reducing latency for users accessing a website, a CloudFront distribution is the appropriate service.
+
+</details>
+
+<details>
+  <summary>Question 39</summary>
+
+A company maintains a searchable repository of items on its website. The data is stored in an Amazon RDS for MySQL database table that contains more than 10 million rows. The database has 2 TB of General Purpose SSD storage. There are millions of updates against this data every day through the company's website. The company has noticed that some insert operations are taking 10 seconds or longer. The company has determined that the database storage performance is the problem.
+
+Which solution addresses this performance issue?
+
+- [ ] A. Change the storage type to Provisioned IOPS SSD.
+- [ ] B. Change the DB instance to a memory optimized instance class.
+- [ ] C. Change the DB instance to a burstable performance instance class.
+- [ ] D. Enable Multi-AZ RDS read replicas with MySQL native asynchronous replication.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Change the storage type to Provisioned IOPS SSD.
+
+Why this is the correct answer:
+
+- [ ] Identified Bottleneck is Storage Performance: The question explicitly states, "The company has determined that the database storage performance is the problem."
+- [ ] General Purpose SSD vs. Provisioned IOPS SSD:
+- [ ] Amazon RDS General Purpose SSD (gp2 and gp3) volumes deliver a baseline IOPS performance that scales with storage size and offer the ability to burst IOPS.
+- [ ] For a database with "millions of updates every day" and slow insert operations (10 seconds or longer), it's likely that the current General Purpose SSD storage is hitting its IOPS or throughput limits.
+- [ ] Provisioned IOPS SSD (io1, io2, io2 Block Express) volumes are designed for critical, I/O-intensive database workloads that require sustained high performance and low latency.
+- [ ] You can specify a consistent amount of IOPS when you create the volume. Changing to Provisioned IOPS SSD directly targets the identified storage performance bottleneck by providing a higher and more consistent level of I/O operations per second.
+- [ ] Addresses Slow Inserts: Slow insert operations are a common symptom of storage I/O contention. Upgrading the storage to a higher-performance tier like Provisioned IOPS SSD will provide the necessary throughput to handle the millions of daily updates more efficiently.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: While increasing memory by changing to a memory-optimized instance class can improve database performance by allowing more data to be cached, the problem specifically states that "database storage performance is the problem." If the bottleneck is the disk's ability to handle I/O operations, adding more memory alone will not resolve the slow insert times caused by I/O limitations.
+- [ ] Option C is wrong because: Burstable performance instance classes (like db.t3 or db.t4g for RDS) provide a baseline CPU performance with the ability to burst. The identified issue is with storage performance, not CPU. Moreover, a database handling "millions of updates every day" is likely to require sustained performance that would quickly deplete CPU credits on a burstable instance, leading to further performance degradation.
+- [ ] Option D is wrong because: Multi-AZ deployments for RDS provide high availability and data durability by creating a standby replica. Read replicas are used to offload read traffic from the primary database instance. While read replicas can improve overall application performance by handling read queries, they do not directly improve the performance of write operations (like inserts) on the primary instance. Since the issue is with slow insert operations and the bottleneck is storage performance on the primary, this solution doesn't address the root cause.
+
+</details>
+
+<details>
+  <summary>Question 40</summary>
+
+A company has thousands of edge devices that collectively generate 1 TB of status alerts each day. Each alert is approximately 2 KB in size. A solutions architect needs to implement a solution to ingest and store the alerts for future analysis. The company wants a highly available solution. However, the company needs to minimize costs and does not want to manage additional infrastructure. Additionally, the company wants to keep 14 days of data available for immediate analysis and archive any data older than 14 days.   
+
+What is the MOST operationally efficient solution that meets these requirements?
+
+- [ ] A. Create an Amazon Kinesis Data Firehose delivery stream to ingest the alerts. Configure the Kinesis Data Firehose stream to deliver the alerts to an Amazon S3 bucket. Set up an S3 Lifecycle configuration to transition data to Amazon S3 Glacier after 14 days. 
+- [ ] B. Launch Amazon EC2 instances across two Availability Zones and place them behind an Elastic Load Balancer to ingest the alerts. Create a script on the EC2 instances that will store the alerts in an Amazon S3 bucket. Set up an S3 Lifecycle configuration to transition data to Amazon S3 Glacier after 14 days. 
+- [ ] C. Create an Amazon Kinesis Data Firehose delivery stream to ingest the alerts. Configure the Kinesis Data Firehose stream to deliver the alerts to an Amazon OpenSearch Service (Amazon Elasticsearch Service) cluster. Set up the Amazon OpenSearch Service (Amazon Elasticsearch Service) cluster to take manual snapshots every day and delete data from the cluster that is older than 14 days. 
+- [ ] D. Create an Amazon Simple Queue Service (Amazon SQS) standard queue to ingest the alerts, and set the message retention period to 14 days. Configure consumers to poll the SQS queue, check the age of the message, and analyze the message data as needed. If the message is 14 days old, the consumer should copy the message to an Amazon S3 bucket and delete the message from the SQS queue.    
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Create an Amazon Kinesis Data Firehose delivery stream to ingest the alerts. Configure the Kinesis Data Firehose stream to deliver the alerts to an Amazon S3 bucket. Set up an S3 Lifecycle configuration to transition data to Amazon S3 Glacier after 14 days. 
+
+Why this is the correct answer:
+
+- [ ] Managed Ingestion with Kinesis Data Firehose: Amazon Kinesis Data Firehose is a fully managed service for capturing, transforming, and loading streaming data. It can easily handle the 1 TB of alerts generated daily without requiring the company to manage any underlying infrastructure, thus meeting the "does not want to manage additional infrastructure" and "MOST operationally efficient" requirements.  It is also highly available.   
+- [ ] Cost-Effective Storage with S3: Firehose can deliver the incoming alerts directly to an Amazon S3 bucket. S3 provides durable, scalable, and cost-effective storage for the alerts. Data stored in S3 for the initial 14 days can be easily accessed for "immediate analysis" using query services like Amazon Athena.   
+- [ ] Automated Archival with S3 Lifecycle: An S3 Lifecycle configuration can be set up to automatically transition objects older than 14 days from the S3 standard storage class to a cheaper archival storage class like Amazon S3 Glacier (or S3 Glacier Deep Archive for even lower costs if retrieval times are flexible). This addresses the archival requirement and helps "minimize costs."   
+- [ ] Overall Efficiency: This solution uses serverless and managed services, which greatly reduces operational burden.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: This solution involves managing EC2 instances, an Elastic Load Balancer, and custom scripts for ingestion. This directly contradicts the requirement to "not want to manage additional infrastructure" and is less operationally efficient than a managed service like Kinesis Data Firehose.   
+- [ ] Option C is wrong because: While Amazon OpenSearch Service is suitable for analyzing log data, managing an OpenSearch cluster (even a managed one) generally incurs higher costs and more operational overhead compared to storing data in S3 and querying it with Athena for this use case, especially when cost minimization is a goal. The process of taking manual snapshots and manually deleting old data from OpenSearch is also less operationally efficient than an automated S3 Lifecycle policy.   
+- [ ] Option D is wrong because: Using Amazon SQS with a 14-day message retention period  and then relying on consumers to manually check message age, analyze, and then copy to S3 for archival is a complex and potentially error-prone process. This solution is not as operationally efficient or robust for ingesting and archiving 1 TB of data daily compared to using Kinesis Data Firehose for direct S3 delivery and S3 Lifecycle policies for archival. It also places a significant burden on the consumer logic.
+
+</details>
+
+
+</details>
 
 
 
