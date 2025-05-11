@@ -1573,22 +1573,230 @@ S3 Lifecycle policies are used to manage the lifetime of objects in a bucket by 
 
 </details>
 
+<details>
+  <summary>Question 45</summary>
+  
+A company has a data ingestion workflow that consists of the following:
+
+An Amazon Simple Notification Service (Amazon SNS) topic for notifications about new data deliveries
+An AWS Lambda function to process the data and record metadata
+The company observes that the ingestion workflow fails occasionally because of network connectivity issues. When such a failure occurs, the Lambda function does not ingest the corresponding data unless the company manually reruns the job.
+
+Which combination of actions should a solutions architect take to ensure that the Lambda function ingests all data in the future? (Choose two.)
+
+- [ ] A. Deploy the Lambda function in multiple Availability Zones.
+- [ ] B. Create an Amazon Simple Queue Service (Amazon SQS) queue, and subscribe it to the SNS topic.
+- [ ] C. Increase the CPU and memory that are allocated to the Lambda function.
+- [ ] D. Increase provisioned throughput for the Lambda function.
+- [ ] E. Modify the Lambda function to read from an Amazon Simple Queue Service (Amazon SQS) queue.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Create an Amazon Simple Queue Service (Amazon SQS) queue, and subscribe it to the SNS topic.
+- [ ] E. Modify the Lambda function to read from an Amazon Simple Queue Service (Amazon SQS) queue.
+
+Why these are the correct answers:
+
+This combination creates a more resilient and reliable data ingestion workflow:
+
+B. Create an Amazon Simple Queue Service (Amazon SQS) queue, and subscribe it to the SNS topic.
+- [ ] Decoupling and Durability: SNS is great for fanning out messages, but if a direct Lambda subscriber fails transiently (due to "network connectivity issues"), the message might be lost or retries exhausted without successful processing.
+- [ ] By inserting an SQS queue between SNS and Lambda, the messages sent by SNS are first delivered to the SQS queue. SQS provides durable message storage, acting as a buffer.
+- [ ] If the Lambda function is temporarily unable to process, the messages remain safely in the queue.
+
+E. Modify the Lambda function to read from an Amazon Simple Queue Service (Amazon SQS) queue.
+- [ ] Reliable Processing and Retries: When the Lambda function is configured to use the SQS queue as its event source, it will poll the queue for messages.
+- [ ] If the Lambda function fails to process a message (e.g., due to a temporary network issue when trying to record metadata), the message can remain in the SQS queue (based on its visibility timeout) and be attempted again.
+- [ ] SQS also supports configuring a Dead-Letter Queue (DLQ) to send messages that consistently fail processing after a certain number of retries, allowing for investigation without losing the message.
+- [ ] This setup ensures that messages are not lost due to transient failures and that the Lambda function has a better chance to "ingest all data."
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: AWS Lambda functions automatically run in a highly available environment managed by AWS, which spans multiple Availability Zones. You do not manually deploy Lambda functions to specific AZs in the way you might for EC2 instances. The problem described is about handling transient processing failures and message loss, not about the inherent availability of the Lambda service itself.
+- [ ] Option C is wrong because: While increasing CPU or memory might help if the Lambda function was failing due to resource exhaustion during its processing, the problem states the failures are "because of network connectivity issues." Simply increasing Lambda resources won't solve external network problems or ensure that a message that failed to process due to such an issue is reliably retried and eventually processed.
+- [ ] Option D is wrong because: The term "provisioned throughput" is not directly applicable to AWS Lambda in the context of ensuring message ingestion from SNS or SQS. Lambda scales its execution based on the number of incoming events (or messages polled from a queue). While you can set "Provisioned Concurrency" for Lambda to keep a certain number of execution environments warm and reduce cold starts, it doesn't address the core issue of message durability and retries when failures occur due to external factors like network connectivity. The problem is about not losing data when a single invocation fails.
+
+</details>
+
+<details>
+  <summary>Question 46</summary>
+
+A company has an application that provides marketing services to stores. The services are based on previous purchases by store customers. The stores upload transaction data to the company through SFTP, and the data is processed and analyzed to generate new marketing offers. Some of the files can exceed 200 GB in size.
+
+Recently, the company discovered that some of the stores have uploaded files that contain personally identifiable information (PII) that should not have been included. The company wants administrators to be alerted if PII is shared again. The company also wants to automate remediation.
+
+What should a solutions architect do to meet these requirements with the LEAST development effort?
+
+- [ ] A. Use an Amazon S3 bucket as a secure transfer point. Use Amazon Inspector to scan the objects in the bucket. If objects contain PII, trigger an S3 Lifecycle policy to remove the objects that contain PII.
+- [ ] B. Use an Amazon S3 bucket as a secure transfer point. Use Amazon Macie to scan the objects in the bucket. If objects contain PII, use Amazon Simple Notification Service (Amazon SNS) to trigger a notification to the administrators to remove the objects that contain PII.
+- [ ] C. Implement custom scanning algorithms in an AWS Lambda function. Trigger the function when objects are loaded into the bucket. If objects contain PII, use Amazon Simple Notification Service (Amazon SNS) to trigger a notification to the administrators to remove the objects that contain PII.
+- [ ] D. Implement custom scanning algorithms in an AWS Lambda function. Trigger the function when objects are loaded into the bucket. If objects contain PII, use Amazon Simple Email Service (Amazon SES) to trigger a notification to the administrators and trigger an S3 Lifecycle policy to remove the meats that contain PII.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Use an Amazon S3 bucket as a secure transfer point. Use Amazon Macie to scan the objects in the bucket. If objects contain PII, use Amazon Simple Notification Service (Amazon SNS) to trigger a notification to the administrators to remove the objects that contain PII.
+
+Why this is the correct answer:
+
+- [ ] Amazon S3 as Secure Transfer Point: Using an S3 bucket as the destination for SFTP uploads is a common and secure approach. (Often AWS Transfer Family is used for the SFTP frontend to S3).
+- [ ] Amazon Macie for PII Detection: Amazon Macie is a fully managed data security and data privacy service that uses machine learning and pattern matching to discover and protect sensitive data, such as PII, in Amazon S3. This directly addresses the need to identify files containing PII with the "LEAST development effort," as Macie provides this capability out-of-the-box.   
+- [ ] Alerting with Amazon SNS: When Macie detects PII, it generates findings. These findings can be published to Amazon EventBridge, which can then trigger an Amazon SNS topic. Subscribing administrators to this SNS topic ensures they are alerted when PII is found.
+- [ ] Path to Automated Remediation: While this option focuses on alerting administrators for removal, Macie's findings (via EventBridge) can also be used to trigger AWS Lambda functions for automated remediation actions (e.g., quarantining or deleting the object). This provides a pathway to the "automate remediation" requirement with further configuration, leveraging the initial PII discovery by Macie.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Amazon Inspector is a service that assesses Amazon EC2 instances for vulnerabilities and deviations from security best practices. It does not scan objects within S3 buckets for PII content.
+- [ ] Option C is wrong because: Implementing custom scanning algorithms in an AWS Lambda function to detect PII would require significant development effort, including defining PII patterns, writing the scanning logic, and maintaining it. Amazon Macie offers this as a managed service, which aligns with the "LEAST development effort" requirement.
+- [ ] Option D is wrong because: Similar to option C, this relies on custom scanning algorithms in Lambda, which means high development effort. While SES can send emails, SNS is typically more appropriate for system-generated alerts to administrators. The core issue is the custom development for PII scanning. (The typo "meats" likely means "objects").
+
+</details>
 
 
+<details>
+  <summary>Question 47</summary>
 
+A company needs guaranteed Amazon EC2 capacity in three specific Availability Zones in a specific AWS Region for an upcoming event that will last 1 week.
 
+What should the company do to guarantee the EC2 capacity?
 
+- [ ] A. Purchase Reserved Instances that specify the Region needed.
+- [ ] B. Create an On-Demand Capacity Reservation that specifies the Region needed.
+- [ ] C. Purchase Reserved Instances that specify the Region and three Availability Zones needed.
+- [ ] D. Create an On-Demand Capacity Reservation that specifies the Region and three Availability Zones needed.
 
+</details>
 
+<details>
+  <summary>Answer</summary>
 
+- [ ] D. Create an On-Demand Capacity Reservation that specifies the Region and three Availability Zones needed.
 
+Why this is the correct answer:
 
+- [ ] On-Demand Capacity Reservations: This AWS service allows you to reserve compute capacity for your Amazon EC2 instances in a specific Availability Zone (AZ) for any duration. This ensures that you can launch the required number of instances of a specific type when you need them.
+- [ ] Specificity for Availability Zones: The requirement is for guaranteed capacity in "three specific Availability Zones." On-Demand Capacity Reservations are created for a specific instance type within a specific AZ. The company would create separate capacity reservations for each of the three required AZs.
+- [ ] Guaranteed Capacity for Short Duration: For an event lasting "1 week," On-Demand Capacity Reservations are ideal because they provide the capacity assurance without requiring a long-term commitment (unlike Reserved Instances). You can create them for the duration needed and then cancel them.
+- [ ] Meets Requirements Directly: This option directly addresses the need for guaranteed capacity in specific AZs for a defined short-term period.
 
+Why are the other answers wrong?
 
+- [ ] Option A is wrong because: Regional Reserved Instances provide a billing discount and, for some types, can offer capacity benefits, but they do not guarantee capacity in specific Availability Zones. The capacity benefit of regional RIs is applied more broadly across AZs in a region. The requirement here is for guaranteed capacity in three specific AZs.
+- [ ] Option B is wrong because: While creating an On-Demand Capacity Reservation is the correct service, it must be specified for each particular Availability Zone where the capacity is needed. A capacity reservation that only "specifies the Region needed" without specifying the AZs would not guarantee capacity in the "three specific Availability Zones" required.
+- [ ] Option C is wrong because: Purchasing Reserved Instances (RIs) involves a 1-year or 3-year commitment for a billing discount. While Zonal RIs (Reserved Instances purchased for a specific Availability Zone) do provide a capacity reservation, it is not the most flexible or cost-effective approach for guaranteeing capacity for only a 1-week event due to the long commitment term. On-Demand Capacity Reservations are better suited for short-term capacity assurance without the long-term financial commitment of RIs.
 
+</details>
 
+<details>
+  <summary>Question 48</summary>
 
+A company's website uses an Amazon EC2 instance store for its catalog of items. The company wants to make sure that the catalog is highly available and that the catalog is stored in a durable location.    
 
+What should a solutions architect do to meet these requirements?
+
+- [ ] A. Move the catalog to Amazon ElastiCache for Redis. 
+- [ ] B. Deploy a larger EC2 instance with a larger instance store. 
+- [ ] C. Move the catalog from the instance store to Amazon S3 Glacier Deep Archive. 
+- [ ] D. Move the catalog to an Amazon Elastic File System (Amazon EFS) file system.    
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Move the catalog to an Amazon Elastic File System (Amazon EFS) file system.      
+
+Why this is the correct answer:
+
+- [ ] Durability of Instance Stores: EC2 instance stores provide temporary, block-level storage. The data stored on an instance store volume is lost if the EC2 instance is stopped, hibernated, or terminated. This makes it unsuitable for storing a catalog that needs to be in a "durable location."    
+- [ ] Amazon EFS for Durability and Availability: Amazon Elastic File System (EFS) offers scalable, elastic file storage that is designed for high availability and durability. Data in an EFS file system is stored redundantly across multiple Availability Zones (AZs) within an AWS Region.
+- [ ] This makes it both highly available (as it can withstand an AZ failure) and durable.   
+- [ ] Shared Access: EFS file systems can be mounted and accessed by multiple EC2 instances concurrently, which can be beneficial if the website scales to use more than one instance.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Amazon ElastiCache for Redis is an in-memory caching service. While it can significantly improve the performance of accessing frequently requested data, it is not primarily designed as a durable, persistent storage solution for a catalog. Data in a cache can be lost if a cache node fails (though Redis can be configured with persistence, EFS is a more direct solution for durable file storage).    
+- [ ] Option B is wrong because: Deploying a larger EC2 instance with a larger instance store does not change the fundamental characteristic that instance store volumes are ephemeral. The catalog data would still be at risk of loss if the instance fails or is terminated.    
+- [ ] Option C is wrong because: Amazon S3 Glacier Deep Archive is an extremely low-cost storage class intended for long-term data archiving and digital preservation, where data is rarely accessed, and retrieval times of several hours are acceptable. It is not suitable for hosting an active website catalog that requires frequent and low-latency access.
+
+</details>
+
+<details>
+  <summary>Question 49</summary>
+
+A company stores call transcript files on a monthly basis. Users access the files randomly within 1 year of the call, but users access the files infrequently after 1 year. The company wants to optimize its solution by giving users the ability to query and retrieve files that are less than 1-year-old as quickly as possible. A delay in retrieving older files is acceptable.
+
+Which solution will meet these requirements MOST cost-effectively?
+
+- [ ] A. Store individual files with tags in Amazon S3 Glacier Instant Retrieval. Query the tags to retrieve the files from S3 Glacier Instant Retrieval.
+- [ ] B. Store individual files in Amazon S3 Intelligent-Tiering. Use S3 Lifecycle policies to move the files to S3 Glacier Flexible Retrieval after 1 year. Query and retrieve the files that are in Amazon S3 by using Amazon Athena. Query and retrieve the files that are in S3 Glacier by using S3 Glacier Select.
+- [ ] C. Store individual files with tags in Amazon S3 Standard storage. Store search metadata for each archive in Amazon S3 Standard storage. Use S3 Lifecycle policies to move the files to S3 Glacier Instant Retrieval after 1 year. Query and retrieve the files by searching for metadata from Amazon S3.
+- [ ] D. Store individual files in Amazon S3 Standard storage. Use S3 Lifecycle policies to move the files to S3 Glacier Deep Archive after 1 year. Store search metadata in Amazon RDS. Query the files from Amazon RDS. Retrieve the files from S3 Glacier Deep Archive.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Store individual files in Amazon S3 Intelligent-Tiering. Use S3 Lifecycle policies to move the files to S3 Glacier Flexible Retrieval after 1 year. Query and retrieve the files that are in Amazon S3 by using Amazon Athena. Query and retrieve the files that are in S3 Glacier by using S3 Glacier Select.
+
+Why this is the correct answer:
+
+- [ ] S3 Intelligent-Tiering for Recent Files (< 1 year): For files accessed "randomly within 1 year," S3 Intelligent-Tiering is ideal. It automatically moves data between a frequent access tier (for quick retrieval) and an infrequent access tier to optimize costs based on actual access patterns, without performance impact or retrieval fees between these tiers. This ensures files less than 1 year old can be retrieved "as quickly as possible."
+- [ ] Lifecycle to S3 Glacier Flexible Retrieval for Older Files (> 1 year): After 1 year, when files are "accessed infrequently" and "a delay in retrieving older files is acceptable," an S3 Lifecycle policy can transition these files to S3 Glacier Flexible Retrieval. This storage class is very cost-effective for archival data, with retrieval options ranging from minutes to hours, fitting the "delay is acceptable" criteria.
+- [ ] Querying Capabilities:
+- [ ] For files within S3 Intelligent-Tiering's active tiers (accessible via standard S3 APIs), Amazon Athena can be used for querying (e.g., if the transcripts or their metadata are in a queryable format).
+- [ ] For files archived in S3 Glacier Flexible Retrieval, S3 Glacier Select allows you to perform SQL-like queries directly on the archived object's content without needing to restore the entire object, making it efficient to find and retrieve specific information from older files.
+- [ ] MOST Cost-Effective Overall: This solution balances performance for newer files with aggressive cost savings for older, infrequently accessed files, along with appropriate query capabilities for both states.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Storing all files, including those actively and randomly accessed within the first year, directly in S3 Glacier Instant Retrieval would be more expensive for storage than using S3 Intelligent-Tiering for that initial period. S3 Glacier Instant Retrieval is an archive tier, albeit with fast retrieval, but it's designed for data that is rarely accessed overall.
+- [ ] Option C is wrong because: Using S3 Standard for the first year is less cost-optimal than S3 Intelligent-Tiering if access patterns are indeed random and include periods of infrequent access even within that first year. While S3 Glacier Instant Retrieval is a good option for archiving data that needs quick access, S3 Glacier Flexible Retrieval (as in option B) generally offers lower storage costs if some retrieval delay (minutes to hours) is acceptable for files older than a year.
+- [ ] Option D is wrong because: S3 Glacier Deep Archive is the lowest-cost storage, but its retrieval times are typically 12 hours or more. While a delay is acceptable, this might be longer than necessary or practical. More significantly, storing search metadata in Amazon RDS introduces the cost and operational overhead of managing a relational database. A combination of S3 object metadata, Athena, and S3 Glacier Select often provides a more cost-effective and integrated querying solution for data stored in S3 and its archive tiers.
+
+</details>
+
+<details>
+  <summary>Question 50</summary>
+
+A company has a production workload that runs on 1,000 Amazon EC2 Linux instances. The workload is powered by third-party software. The company needs to patch the third-party software on all EC2 instances as quickly as possible to remediate a critical security vulnerability.    
+
+What should a solutions architect do to meet these requirements?
+
+- [ ] A. Create an AWS Lambda function to apply the patch to all EC2 instances. 
+- [ ] B. Configure AWS Systems Manager Patch Manager to apply the patch to all EC2 instances. 
+- [ ] C. Schedule an AWS Systems Manager maintenance window to apply the patch to all EC2 instances. 
+- [ ] D. Use AWS Systems Manager Run Command to run a custom command that applies the patch to all EC2 instances.    
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Use AWS Systems Manager Run Command to run a custom command that applies the patch to all EC2 instances.    
+
+Why this is the correct answer:
+
+- [ ] AWS Systems Manager Run Command for Immediate Execution: AWS Systems Manager Run Command allows you to remotely and securely execute commands on a fleet of managed instances (including EC2 instances) at scale. For a "critical security vulnerability" that needs to be remediated "as quickly as possible," Run Command provides the ability to immediately execute the necessary custom scripts or commands to apply the patch for the "third-party software."    
+- [ ] Scalability and Targeting: Run Command can target a large number of instances (like 1,000) simultaneously based on tags, resource groups, or individual instance IDs. This ensures the patch is applied broadly and quickly.
+- [ ] Custom Commands for Third-Party Software: Since it's a patch for third-party software, it will likely require specific commands or a custom script for installation, which Run Command can execute.
+
+Why are the other answers wrong?
+
+- [ ] A. Create an AWS Lambda function to apply the patch to all EC2 instances.    
+While Lambda can automate tasks, using it to orchestrate patching across 1,000 EC2 instances (which might involve establishing connections, executing commands remotely, handling state, and managing errors for each instance) would be a complex custom solution to build and manage, especially for urgent deployment. AWS Systems Manager provides purpose-built tools for this.
+- [ ] B. Configure AWS Systems Manager Patch Manager to apply the patch to all EC2 instances.    
+AWS Systems Manager Patch Manager is designed to automate the patching of operating systems and some common applications based on defined patch baselines and schedules. While it can be extended for some application patching, it is generally more structured and might not be the quickest method for deploying an urgent, custom patch for specific "third-party software" that isn't covered by standard patch baselines. Run Command offers more direct control for immediate, custom actions.
+- [ ] C. Schedule an AWS Systems Manager maintenance window to apply the patch to all EC2 instances.    
+Maintenance windows are used to define recurring schedules for performing potentially disruptive actions like patching to minimize impact on production workloads. The requirement here is to remediate a "critical security vulnerability" "as quickly as possible." Waiting for a scheduled maintenance window or setting one up might introduce unacceptable delays. Run Command allows for immediate execution.
+
+</details>
 
 </details>
 
