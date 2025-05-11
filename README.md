@@ -747,15 +747,326 @@ Why are the other answers wrong?
 </details>
 
 
+<details>
+  <summary>Question 22</summary>
+  
+A solutions architect is using Amazon S3 to design the storage architecture of a new digital media application. The media files must be resilient to the loss of an Availability Zone. Some files are accessed frequently while other files are rarely accessed in an unpredictable pattern. The solutions architect must minimize the costs of storing and retrieving the media files.
+
+Which storage option meets these requirements?
+
+- [ ]  A. S3 Standard
+- [ ]  B. S3 Intelligent-Tiering
+- [ ]  C. S3 Standard-Infrequent Access (S3 Standard-IA)
+- [ ]  D. S3 One Zone-Infrequent Access (S3 One Zone-IA)
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ]  B. S3 Intelligent-Tiering
+
+Why this is the correct answer:
+
+- [ ] Resilience to Availability Zone Loss: S3 Intelligent-Tiering stores data across multiple Availability Zones (AZs) by default, just like S3 Standard and S3 Standard-IA. This means it is resilient to the loss of a single AZ.    
+- [ ] Handles Unpredictable Access Patterns: The S3 Intelligent-Tiering storage class is specifically designed for data with unknown, changing, or unpredictable access patterns.
+- [ ] It automatically monitors access patterns and moves objects that have not been accessed for a certain period to a lower-cost infrequent access tier.
+- [ ] If an object in the infrequent access tier is accessed, it is automatically moved back to the frequent access tier. This is done without performance impact or retrieval fees between these two tiers.
+- [ ] This perfectly matches the requirement for files accessed "frequently while other files are rarely accessed in an unpredictable pattern."    
+- [ ] Cost Minimization: By automatically tiering data based on access, S3 Intelligent-Tiering helps to minimize storage costs without the operational overhead of creating and managing S3 Lifecycle policies for data with unpredictable access.
+- [ ] It provides the performance of S3 Standard for frequently accessed objects and the cost savings of an infrequent access tier for objects that become cold.
+- [ ] There are no retrieval fees when data is moved between the frequent and infrequent access tiers within S3 Intelligent-Tiering.    
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: S3 Standard is designed for frequently accessed data and provides high durability and availability across multiple AZs.  However, it is not the most cost-effective option if a significant portion of the media files are rarely accessed, as it has a higher storage cost compared to infrequent access tiers.  It doesn't automatically optimize costs for unpredictable access patterns.    
+- [ ] Option C is wrong because: S3 Standard-Infrequent Access (S3 Standard-IA) is designed for data that is accessed less frequently but requires rapid access when needed and is resilient to AZ loss. While it offers lower storage costs than S3 Standard, it has data retrieval fees. For "unpredictable access patterns," if data thought to be infrequent is suddenly accessed frequently, these retrieval fees could add up and might negate the storage cost savings. S3 Intelligent-Tiering avoids this retrieval fee concern between its main tiers.    
+- [ ] Option D is wrong because: S3 One Zone-Infrequent Access (S3 One Zone-IA) stores data in a single Availability Zone. This means it is not resilient to the loss of an Availability Zone, which is a specific requirement ("media files must be resilient to the loss of an Availability Zone").  While it is a lower-cost option, it doesn't meet the resiliency criteria.
+
+</details>
+
+<details>
+  <summary>Question 23</summary>
+
+A company is storing backup files by using Amazon S3 Standard storage. The files are accessed frequently for 1 month. However, the files are not accessed after 1 month. The company must keep the files indefinitely.
+
+Which storage solution will meet these requirements MOST cost-effectively?
+
+- [ ]  A. Configure S3 Intelligent-Tiering to automatically migrate objects.
+- [ ]  B. Create an S3 Lifecycle configuration to transition objects from S3 Standard to S3 Glacier Deep Archive after 1 month.
+- [ ]  C. Create an S3 Lifecycle configuration to transition objects from S3 Standard to S3 Standard-Infrequent Access (S3 Standard-IA) after 1 month.
+- [ ]  D. Create an S3 Lifecycle configuration to transition objects from S3 Standard to S3 One Zone-Infrequent Access (S3 One Zone-IA) after 1 month.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ]  B. Create an S3 Lifecycle configuration to transition objects from S3 Standard to S3 Glacier Deep Archive after 1 month.
+
+Why this is the correct answer:
+
+- [ ] Predictable Access Pattern: The problem states a clear and predictable access pattern: files are accessed frequently for the first month and then not accessed thereafter, but must be kept indefinitely.
+- [ ] S3 Glacier Deep Archive for Long-Term, Cold Storage: Amazon S3 Glacier Deep Archive is the lowest-cost storage class in Amazon S3 and is designed for long-term data archiving where data is rarely accessed (e.g., once or twice a year) and retrieval times of several hours are acceptable.
+- [ ] Since the backup files are not accessed after 1 month and must be kept indefinitely, transitioning them to S3 Glacier Deep Archive is the MOST cost-effective solution for long-term storage.
+- [ ] S3 Lifecycle Configuration: An S3 Lifecycle configuration can be easily set up to automatically transition objects from S3 Standard (where they reside for the first month of frequent access) directly to S3 Glacier Deep Archive after 30 days (or 1 month).
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: S3 Intelligent-Tiering is optimized for data with unknown, changing, or unpredictable access patterns. In this scenario, the access pattern is known and predictable. While S3 Intelligent-Tiering can eventually move data to archive access tiers, for data that is definitively cold and will not be accessed after a specific period, a direct lifecycle transition to S3 Glacier Deep Archive is generally more cost-effective and straightforward. S3 Intelligent-Tiering also incurs a small per-object monitoring and automation fee.
+- [ ] Option C is wrong because: S3 Standard-Infrequent Access (S3 Standard-IA) is designed for data that is accessed less frequently but still requires rapid access when needed. While it has lower storage costs than S3 Standard, its storage costs are significantly higher than S3 Glacier Deep Archive. Given that the files are not accessed at all after one month and must be kept indefinitely, S3 Standard-IA is not the most cost-effective long-term archival solution.
+- [ ] Option D is wrong because: S3 One Zone-Infrequent Access (S3 One Zone-IA) stores data in a single Availability Zone. This means it is not resilient to the physical loss of that Availability Zone. For backup files that must be kept "indefinitely," relying on a storage class with lower durability (due to being single-AZ) is generally not advisable, especially when multi-AZ archival options like S3 Glacier Deep Archive offer very low costs with higher durability. The priority for indefinite backups should include durability.
+
+</details>
+
+<details>
+  <summary>Question 24</summary>
+   
+A company observes an increase in Amazon EC2 costs in its most recent bill. The billing team notices unwanted vertical scaling of instance types for a couple of EC2 instances. A solutions architect needs to create a graph comparing the last 2 months of EC2 costs and perform an in-depth analysis to identify the root cause of the vertical scaling.
+
+How should the solutions architect generate the information with the LEAST operational overhead?
+
+- [ ] A. Use AWS Budgets to create a budget report and compare EC2 costs based on instance types.
+- [ ] B. Use Cost Explorer's granular filtering feature to perform an in-depth analysis of EC2 costs based on instance types.
+- [ ] C. Use graphs from the AWS Billing and Cost Management dashboard to compare EC2 costs based on instance types for the last 2 months.
+- [ ] D. Use AWS Cost and Usage Reports to create a report and send it to an Amazon S3 bucket. Use Amazon QuickSight with Amazon S3 as a source to generate an interactive graph based on instance types.
 
 
 
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ]   B. Use Cost Explorer's granular filtering feature to perform an in-depth analysis of EC2 costs based on instance types.
+
+Why this is the correct answer:
+
+- [ ] AWS Cost Explorer for Analysis: AWS Cost Explorer is an interactive tool that allows you to visualize, understand, and manage your AWS costs and usage over time.
+- [ ] It is specifically designed for ad-hoc analysis and exploration of cost data.
+- [ ] Graphing and Comparison: Cost Explorer can easily generate graphs comparing costs over specified periods, such as the last 2 months.
+- [ ] Granular Filtering by Instance Type: A key feature of Cost Explorer is its ability to filter and group cost and usage data by various dimensions, including service (EC2), region, usage type, and critically for this scenario, instance type. This allows the solutions architect to drill down into EC2 costs, identify trends related to specific instance types, and investigate the "unwanted vertical scaling."
+- [ ] Least Operational Overhead: Using Cost Explorer's built-in interface and features for this type of analysis requires minimal setup. The data is readily available, and the tool provides the necessary graphing and filtering capabilities out-of-the-box. This aligns with the requirement for the "LEAST operational overhead."
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: AWS Budgets is primarily used for setting spending limits and receiving alerts when costs or usage exceed (or are forecasted to exceed) those limits. While budget reports can provide some insights, Cost Explorer is the more appropriate tool for detailed, ad-hoc investigation and root cause analysis of cost spikes or specific usage patterns like changes in instance types.
+- [ ] Option C is wrong because: The AWS Billing and Cost Management dashboard provides a high-level overview of your AWS spending (e.g., month-to-date spend by service, cost trends). While it offers some basic graphs, it generally lacks the deep, granular filtering and analytical capabilities of Cost Explorer needed to perform an "in-depth analysis" to identify the root cause of vertical scaling by instance type over a 2-month period.
+- [ ] Option D is wrong because: AWS Cost and Usage Reports (CUR) provide the most detailed cost and usage data, but analyzing this data typically requires additional tools. Setting up CUR, configuring delivery to an S3 bucket, and then using Amazon QuickSight (or another BI tool) to ingest, prepare, and visualize this data involves significantly more setup, configuration, and operational overhead compared to using Cost Explorer directly for this specific task. While powerful for complex reporting, it's not the solution with the "LEAST operational overhead" for this scenario.
+
+</details>
 
 
+<details>
+  <summary>Question 25</summary>
 
+A company is designing an application. The application uses an AWS Lambda function to receive information through Amazon API Gateway and to store the information in an Amazon Aurora PostgreSQL database. During the proof-of-concept stage, the company has to increase the Lambda quotas significantly to handle the high volumes of data that the company needs to load into the database.
 
+A solutions architect must recommend a new design to improve scalability and minimize the configuration effort.
 
+Which solution will meet these requirements?
 
+- [ ] A. Refactor the Lambda function code to Apache Tomcat code that runs on Amazon EC2 instances. Connect the database by using native Java Database Connectivity (JDBC) drivers.
+- [ ] B. Change the platform from Aurora to Amazon DynamoDB. Provision a DynamoDB Accelerator (DAX) cluster. Use the DAX client SDK to point the existing DynamoDB API calls at the DAX cluster.
+- [ ] C. Set up two Lambda functions. Configure one function to receive the information. Configure the other function to load the information into the database. Integrate the Lambda functions by using Amazon Simple Notification Service (Amazon SNS).
+- [ ] D. Set up two Lambda functions. Configure one function to receive the information. Configure the other function to load the information into the database. Integrate the Lambda functions by using an Amazon Simple Queue Service (Amazon SQS) queue.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Set up two Lambda functions. Configure one function to receive the information. Configure the other function to load the information into the database. Integrate the Lambda functions by using an Amazon Simple Queue Service (Amazon SQS) queue.
+
+Why this is the correct answer:
+
+- [ ] Decoupling with SQS for Scalability and Resilience: The core issue is handling "high volumes of data" that stressed the original Lambda function, requiring quota increases. By introducing an Amazon SQS queue, you decouple the data ingestion (from API Gateway) from the database writing process.
+- [ ] The first Lambda function (or API Gateway directly) receives the information and quickly places it as a message onto an SQS queue. This is a fast operation.
+- [ ] The SQS queue acts as a durable buffer, holding these messages.
+- [ ] The second Lambda function is configured to process messages from the SQS queue and write them to the Aurora PostgreSQL database. This function can process messages at a rate that the database can comfortably handle, preventing it from being overwhelmed.
+- [ ] Improved Scalability: SQS can handle massive throughput of messages. The Lambda functions can scale independently. The receiving Lambda can scale to handle bursts from API Gateway, and the database-writing Lambda can scale based on the queue depth, with its concurrency potentially limited to avoid overloading the database. This effectively manages the "high volumes of data."
+- [ ] Minimized Configuration Effort (for the new design): This serverless pattern (API Gateway -> SQS -> Lambda -> Database) is a common and well-supported architecture. While it adds an SQS queue and potentially a second Lambda, it leverages managed services and generally involves less ongoing configuration and operational overhead for scaling and maintenance compared to moving to EC2 instances (Option A). It addresses the Lambda scaling issue without a complete platform overhaul (Option B).
+- [ ] Resilience: If the database-writing Lambda fails or is temporarily throttled, messages remain in the SQS queue for later processing (potentially with a Dead-Letter Queue for error handling), improving the overall resilience of the data loading process.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Refactoring to an Apache Tomcat application running on Amazon EC2 instances introduces significant operational overhead (managing servers, patching, scaling EC2 infrastructure) compared to the serverless Lambda approach. This contradicts the goal of minimizing configuration effort, especially for scaling and maintenance.
+- [ ] Option B is wrong because: Changing the database platform from Amazon Aurora PostgreSQL (a relational database) to Amazon DynamoDB (a NoSQL database) is a major architectural shift. This would likely require substantial changes to the application's data model, query patterns, and overall code, which is far from "minimizing configuration effort" in the context of solving a Lambda scaling problem. While DynamoDB with DAX is highly scalable, this solution doesn't directly address the Lambda processing bottleneck without extensive rework.
+- [ ] Option C is wrong because: While Amazon SNS can be used to trigger a Lambda function, SQS is generally a better choice for buffering and decoupling when there's a work queue involved, especially for tasks like writing to a database that might have rate limitations. SQS provides features like message visibility timeouts, retry mechanisms, and dead-letter queues (DLQs) that are very useful for managing asynchronous task processing. SNS is more suited for fan-out notification patterns to multiple, independent subscribers. For a one-to-one handoff with buffering, SQS is preferred.
+
+</details>
+
+<details>
+  <summary>Question 26</summary>
+
+A company needs to review its AWS Cloud deployment to ensure that its Amazon S3 buckets do not have unauthorized configuration changes.
+
+What should a solutions architect do to accomplish this goal?
+
+- [ ] A. Turn on AWS Config with the appropriate rules.
+- [ ] B. Turn on AWS Trusted Advisor with the appropriate checks.
+- [ ] C. Turn on Amazon Inspector with the appropriate assessment template.
+- [ ] D. Turn on Amazon S3 server access logging. Configure Amazon EventBridge (Amazon CloudWatch Events).
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Turn on AWS Config with the appropriate rules.
+
+Why this is the correct answer:
+
+- [ ] AWS Config for Configuration Auditing: AWS Config is a service that enables you to assess, audit, and evaluate the configurations of your AWS resources. It continuously monitors and records resource configurations and allows you to automate the evaluation of recorded configurations against desired configurations.   
+- [ ] Detecting Unauthorized Changes: For Amazon S3 buckets, AWS Config can track configuration changes such as bucket policies, ACLs, versioning settings, and more. You can use AWS Config Rules (predefined or custom) to define your desired configurations (e.g., no public read access, logging enabled). If an S3 bucket configuration deviates from these rules or an unauthorized change is made, AWS Config will flag it. This directly helps in ensuring that S3 buckets "do not have unauthorized configuration changes."
+- [ ] Configuration History: AWS Config maintains a history of configuration changes, which is valuable for auditing and troubleshooting.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: AWS Trusted Advisor provides recommendations to help you follow AWS best practices across cost optimization, performance, security, fault tolerance, and service limits. While it may offer some checks related to S3 security (like identifying buckets with open access permissions), it's primarily a guidance tool and does not provide the continuous, detailed configuration tracking, auditing, and history features that AWS Config offers for identifying specific unauthorized changes.
+- [ ] Option C is wrong because: Amazon Inspector is an automated security assessment service that focuses on identifying vulnerabilities and deviations from best practices within your Amazon EC2 instances (e.g., checking for software vulnerabilities, network exposure). It does not monitor or audit the configurations of Amazon S3 buckets.
+- [ ] Option D is wrong because: Amazon S3 server access logging records all requests made to an S3 bucket, which is useful for access auditing. Amazon EventBridge (formerly CloudWatch Events) can react to API calls made to S3. While you could potentially build a complex custom solution using these services to infer configuration changes, AWS Config is the purpose-built service for comprehensive configuration auditing and tracking with significantly less operational overhead. AWS Config provides a managed and integrated solution for this specific requirement.
+
+</details>
+
+<details>
+  <summary>Question 27</summary>
+
+A company is launching a new application and will display application metrics on an Amazon CloudWatch dashboard. The company's product manager needs to access this dashboard periodically. The product manager does not have an AWS account. A solutions architect must provide access to the product manager by following the principle of least privilege.
+
+Which solution will meet these requirements?
+
+- [ ] A. Share the dashboard from the CloudWatch console. Enter the product manager's email address, and complete the sharing steps. Provide a shareable link for the dashboard to the product manager.
+- [ ] B. Create an IAM user specifically for the product manager. Attach the CloudWatchReadOnlyAccess AWS managed policy to the user. Share the new login credentials with the product manager. Share the browser URL of the correct dashboard with the product manager.
+- [ ] C. Create an IAM user for the company's employees. Attach the ViewOnlyAccess AWS managed policy to the IAM user. Share the new login credentials with the product manager. Ask the product manager to navigate to the CloudWatch console and locate the dashboard by name in the Dashboards section.
+- [ ] D. Deploy a bastion server in a public subnet. When the product manager requires access to the dashboard, start the server and share the RDP credentials. On the bastion server, ensure that the browser is configured to open the dashboard URL with cached AWS credentials that have appropriate permissions to view the dashboard.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Share the dashboard from the CloudWatch console. Enter the product manager's email address, and complete the sharing steps. Provide a shareable link for the dashboard to the product manager.
+
+Why this is the correct answer:
+
+- [ ] CloudWatch Dashboard Sharing Feature: Amazon CloudWatch allows you to share dashboards with individuals outside of your AWS account, including those who do not have AWS credentials. You can share a dashboard publicly (not recommended for sensitive data but possible) or with specific email addresses. The recipient receives a unique link to access the dashboard.    
+- [ ] No AWS Account Required for Product Manager: This method directly addresses the constraint that "The product manager does not have an AWS account."    
+- [ ] Principle of Least Privilege: Sharing a specific dashboard grants view-only access to only that dashboard's content. The product manager does not gain access to the AWS Management Console or any other AWS resources, adhering strictly to the principle of least privilege.    
+- [ ] Simplicity and Low Operational Overhead: This is the simplest and most straightforward method, involving minimal configuration and no need to manage IAM users or credentials for the product manager.    
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: This solution requires creating an IAM user for the product manager, which contradicts the statement that "The product manager does not have an AWS account."  While using the CloudWatchReadOnlyAccess policy is more specific than ViewOnlyAccess, the creation of an IAM user for an external party who only needs dashboard access is unnecessary overhead when a direct sharing feature exists.    
+- [ ] Option C is wrong because: Similar to option B, this involves creating an IAM user. Furthermore, the ViewOnlyAccess AWS managed policy grants read-only access to all AWS services and resources in the account. This is a significant violation of the principle of least privilege when the requirement is solely to view a single CloudWatch dashboard.    
+- [ ] Option D is wrong because: Deploying and managing a bastion server, handling RDP credentials, and relying on cached AWS credentials for browser access is an extremely complex, insecure, and operationally intensive solution for providing view-only access to a CloudWatch dashboard.  It introduces multiple potential security vulnerabilities and significant overhead.   
+
+</details>
+
+<details>
+  <summary>Question 28</summary>
+
+A company is migrating applications to AWS. The applications are deployed in different accounts. The company manages the accounts centrally by using AWS Organizations. The company's security team needs a single sign-on (SSO) solution across all the company's accounts. The company must continue managing the users and groups in its on-premises self-managed Microsoft Active Directory.
+
+Which solution will meet these requirements?
+
+- [ ] A. Enable AWS Single Sign-On (AWS SSO) from the AWS SSO console. Create a one-way forest trust or a one-way domain trust to connect the company's self-managed Microsoft Active Directory with AWS SSO by using AWS Directory Service for Microsoft Active Directory.
+- [ ] B. Enable AWS Single Sign-On (AWS SSO) from the AWS SSO console. Create a two-way forest trust to connect the company's self-managed Microsoft Active Directory with AWS SSO by using AWS Directory Service for Microsoft Active Directory.
+- [ ] C. Use AWS Directory Service. Create a two-way trust relationship with the company's self-managed Microsoft Active Directory.
+- [ ] D. Deploy an identity provider (IdP) on premises. Enable AWS Single Sign-On (AWS SSO) from the AWS SSO console.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Enable AWS Single Sign-On (AWS SSO) from the AWS SSO console. Create a two-way forest trust to connect the company's self-managed Microsoft Active Directory with AWS SSO by using AWS Directory Service for Microsoft Active Directory.
+
+Why this is the correct answer:
+
+- [ ] AWS Single Sign-On (AWS IAM Identity Center): AWS Single Sign-On (now known as AWS IAM Identity Center) is the recommended service for centrally managing SSO access to multiple AWS accounts within an AWS Organization, as well as to business applications.
+- [ ] Integration with On-Premises Active Directory: To allow users from an on-premises self-managed Microsoft Active Directory to use IAM Identity Center, you typically use AWS Directory Service for Microsoft Active Directory (AWS Managed Microsoft AD) as an intermediary.
+- [ ] A trust relationship is established between your on-premises AD and the AWS Managed Microsoft AD.
+- [ ] Two-Way Forest Trust: A two-way trust (either forest or domain, though forest trust is often broader) allows users and groups from the on-premises AD to be recognized and authenticated by the AWS Managed Microsoft AD. This AWS Managed Microsoft AD is then configured as the identity source for IAM Identity Center.
+- [ ] This setup ensures that user and group management continues to happen in the on-premises AD, and these identities can be used to sign in via IAM Identity Center to access assigned AWS accounts and permission sets.
+- [ ] The two-way nature of the trust facilitates the necessary authentication and authorization lookups.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While a one-way trust might allow some level of authentication, a two-way trust is generally required or recommended for full functionality when integrating an on-premises AD with AWS Managed Microsoft AD for IAM Identity Center. The AWS Managed AD needs to be able to authenticate users from the on-premises AD, and users in the on-premises AD need to be able to authenticate against resources that trust the AWS Managed AD. A two-way trust typically provides more seamless integration for this scenario.
+- [ ] Option C is wrong because: Simply creating an AWS Directory Service (e.g., AWS Managed Microsoft AD) and establishing a two-way trust with the on-premises AD allows for AD-based authentication for resources that are domain-joined or AD-aware (like specific EC2 instances). However, it does not, by itself, provide the centralized single sign-on portal and management of access across all AWS accounts in the organization that AWS IAM Identity Center offers. IAM Identity Center is the key component for SSO to AWS accounts.
+- [ ] Option D is wrong because: While deploying an on-premises Identity Provider (IdP) like ADFS and using SAML 2.0 federation is a valid way to achieve SSO to AWS, this option is vague about how it integrates with AWS IAM Identity Center. If the goal is to leverage IAM Identity Center's features for managing access across the AWS Organization using existing on-premises AD identities, the path involving AWS Managed Microsoft AD and a trust relationship (as described in options A and B) is a common pattern. This option also doesn't specify the connection mechanism between the on-premises IdP and AWS SSO for using on-premises AD users.
+
+</details>
+
+<details>
+  <summary>Question 29</summary>
+
+A company provides a Voice over Internet Protocol (VoIP) service that uses UDP connections. The service consists of Amazon EC2 instances that run in an Auto Scaling group. The company has deployments across multiple AWS Regions. The company needs to route users to the Region with the lowest latency. The company also needs automated failover between Regions.
+
+Which solution will meet these requirements?
+
+- [ ] A. Deploy a Network Load Balancer (NLB) and an associated target group. Associate the target group with the Auto Scaling group. Use the NLB as an AWS Global Accelerator endpoint in each Region.
+- [ ] B. Deploy an Application Load Balancer (ALB) and an associated target group. Associate the target group with the Auto Scaling group. Use the ALB as an AWS Global Accelerator endpoint in each Region.
+- [ ] C. Deploy a Network Load Balancer (NLB) and an associated target group. Associate the target group with the Auto Scaling group. Create an Amazon Route 53 latency record that points to aliases for each NLB. Create an Amazon CloudFront distribution that uses the latency record as an origin.
+- [ ] D. Deploy an Application Load Balancer (ALB) and an associated target group. Associate the target group with the Auto Scaling group. Create an Amazon Route 53 weighted record that points to aliases for each ALB. Deploy an Amazon CloudFront distribution that uses the weighted record as an origin.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Deploy a Network Load Balancer (NLB) and an associated target group. Associate the target group with the Auto Scaling group. Use the NLB as an AWS Global Accelerator endpoint in each Region.
+
+Why this is the correct answer:
+
+- [ ] Network Load Balancer (NLB) for UDP: The VoIP service uses UDP connections. NLB operates at the transport layer (Layer 4) and supports both TCP and UDP traffic, making it suitable for this use case.    
+- [ ] AWS Global Accelerator for Low Latency and Failover: AWS Global Accelerator improves the availability and performance of your applications with local or global users.
+- [ ] It directs traffic to optimal endpoints over the AWS global network. This helps in routing users to the Region with the "lowest latency."
+- [ ] Global Accelerator also provides "automated failover between Regions" by continuously monitoring the health of regional endpoints (the NLBs in this case) and routing traffic only to healthy ones.    
+- [ ] NLB as Global Accelerator Endpoint: NLBs in each of the multiple AWS Regions can be configured as endpoints for Global Accelerator.  This allows Global Accelerator to manage and direct traffic to the appropriate regional deployment.   
+- [ ] Auto Scaling Integration: The NLB's target group is associated with the Auto Scaling group of EC2 instances, ensuring that traffic within each region is distributed across healthy, scalable instances.    
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: Application Load Balancer (ALB) operates at the application layer (Layer 7) and supports HTTP, HTTPS, and gRPC protocols. It does not support UDP traffic, which is a requirement for the VoIP service.    
+- [ ] Option C is wrong because: While Amazon Route 53 latency-based routing can direct users to the region with the lowest latency, and NLB handles UDP, Amazon CloudFront is a content delivery network (CDN) primarily designed for caching and delivering web content (HTTP/HTTPS). It is not suitable for distributing real-time UDP traffic for a VoIP service. AWS Global Accelerator is better designed for non-HTTP use cases like UDP and for providing static IP addresses that act as a fixed entry point.    
+- [ ] Option D is wrong because: This option has multiple issues. As mentioned, ALB does not support UDP.  Amazon CloudFront is not suitable for UDP traffic distribution.  Also, Amazon Route 53 weighted records distribute traffic based on predefined weights, not primarily on dynamic lowest latency routing or the automated failover capabilities that Global Accelerator provides for global applications. 
+
+</details>
+
+<details>
+  <summary>Question 30</summary>
+
+A development team runs monthly resource-intensive tests on its general purpose Amazon RDS for MySQL DB instance with Performance Insights enabled. The testing lasts for 48 hours once a month and is the only process that uses the database. The team wants to reduce the cost of running the tests without reducing the compute and memory attributes of the DB instance.
+
+Which solution meets these requirements MOST cost-effectively?
+
+- [ ] A. Stop the DB instance when tests are completed. Restart the DB instance when required.
+- [ ] B. Use an Auto Scaling policy with the DB instance to automatically scale when tests are completed.
+- [ ] C. Create a snapshot when tests are completed. Terminate the DB instance and restore the snapshot when required.
+- [ ] D. Modify the DB instance to a low-capacity instance when tests are completed. Modify the DB instance again when required.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Create a snapshot when tests are completed. Terminate the DB instance and restore the snapshot when required.
+
+Why this is the correct answer:
+
+- [ ] Significant Cost Savings: The database is only used for 48 hours (2 days) a month. By creating a snapshot of the DB instance after testing, terminating the instance, and then restoring it from the snapshot before the next testing cycle, the company avoids paying for DB instance hours for the majority of the month (approximately 28 days). You only pay for the storage of the snapshot, which is significantly cheaper than running an RDS instance. This makes it the "MOST cost-effectively" solution.
+- [ ] Maintains Compute and Memory Attributes: When the instance is restored from the snapshot, it can be launched with the same instance class (compute and memory attributes) as the original, ensuring that the testing environment is consistent.
+- [ ] Data Preservation: The snapshot preserves all the data from the DB instance at the time the snapshot was taken.    
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While stopping an Amazon RDS DB instance does stop billing for the instance hours, you are still billed for the provisioned storage. More critically, an RDS instance can only be stopped for a maximum of 7 consecutive days. After 7 days, AWS automatically starts the instance. Since the tests are run "once a month," this means the instance would be automatically started multiple times between tests, incurring unnecessary costs.    
+- [ ] Option B is wrong because: Amazon RDS for MySQL (general purpose, not Aurora Serverless) does not have an "Auto Scaling policy" that scales the primary DB instance's compute capacity down to zero or significantly reduces its cost when idle in the way EC2 Auto Scaling does for instances. While Aurora Serverless offers compute scaling, the question refers to a "general purpose Amazon RDS for MySQL DB instance."
+- [ ] Option D is wrong because: Modifying a DB instance to a lower-capacity instance type when tests are completed and then modifying it back before the next tests involves instance modification operations. These operations can take time and might involve downtime (though RDS attempts to minimize this for Multi-AZ instances). Furthermore, even a low-capacity instance still incurs charges for instance hours and storage throughout the month. Terminating the instance (as in option C) eliminates the instance hour charges entirely during the idle period, making it more cost-effective. 
+
+</details>
 
 
 </details>
@@ -780,20 +1091,10 @@ Why are the other answers wrong?
 
 
 
-
-
-
-
-
-<details>
-  <summary>==Questions X-X==</summary>
-
-  
-
 <details>
   <summary>Question X</summary>
 
-- [ ]    
+- [ ] A.  Turn  
 
 
 </details>
@@ -806,6 +1107,13 @@ Why are the other answers wrong?
 
 </details>
 
+
+
+
+<details>
+  <summary>==Questions X-X==</summary>
+
+  
 
 
 </details>
