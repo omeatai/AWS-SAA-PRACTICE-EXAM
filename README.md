@@ -4025,6 +4025,249 @@ Why are the other answers wrong?
 
 </details>
 
+<details>
+  <summary>==Questions 111-120==</summary>
+
+<details>
+  <summary>Question 111</summary>
+
+A company recently migrated a message processing system to AWS. The system receives messages into an ActiveMQ queue running on an Amazon EC2 instance. Messages are processed by a consumer application running on Amazon EC2. The consumer application processes the messages and writes results to a MySQL database running on Amazon EC2. The company wants this application to be highly available with low operational complexity.
+
+Which architecture offers the HIGHEST availability?
+
+- [ ] A. Add a second ActiveMQ server to another Availability Zone. Add an additional consumer EC2 instance in another Availability Zone. Replicate the MySQL database to another Availability Zone.
+- [ ] B. Use Amazon MQ with active/standby brokers configured across two Availability Zones. Add an additional consumer EC2 instance in another Availability Zone. Replicate the MySQL database to another Availability Zone.
+- [ ] C. Use Amazon MQ with active/standby brokers configured across two Availability Zones. Add an additional consumer EC2 instance in another Availability Zone. Use Amazon RDS for MySQL with Multi-AZ enabled.
+- [ ] D. Use Amazon MQ with active/standby brokers configured across two Availability Zones. Add an Auto Scaling group for the consumer EC2 instances across two Availability Zones. Use Amazon RDS for MySQL with Multi-AZ enabled.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Use Amazon MQ with active/standby brokers configured across two Availability Zones. Add an Auto Scaling group for the consumer EC2 instances across two Availability Zones. Use Amazon RDS for MySQL with Multi-AZ enabled.
+
+Why this is the correct answer:
+
+This solution leverages managed services and Auto Scaling for the highest availability and reduced operational complexity:
+
+- [ ] Amazon MQ for Message Broker: Migrating the self-managed ActiveMQ on EC2 to Amazon MQ (which supports ActiveMQ as an engine) provides a managed message broker service. Configuring Amazon MQ with active/standby brokers across two - [ ] Availability Zones ensures high availability for the message queue itself, with automatic failover. This significantly reduces operational complexity compared to managing ActiveMQ on EC2.
+- [ ] Auto Scaling Group for Consumer EC2 Instances: Placing the consumer EC2 instances into an Auto Scaling group that spans across two Availability Zones ensures that the message processing tier is both highly available and scalable. If an instance or an AZ fails, the Auto Scaling group can launch new instances in healthy AZs to maintain processing capacity.
+- [ ] Amazon RDS for MySQL with Multi-AZ: Migrating the self-managed MySQL database on EC2 to Amazon RDS for MySQL with the Multi-AZ deployment option provides a highly available and durable database. RDS Multi-AZ automatically creates and maintains a synchronous standby replica in a different AZ. In the event of a primary database failure or AZ outage, RDS automatically fails over to the standby replica, minimizing downtime. This is far less operationally complex than self-managing database replication and failover.
+- [ ] This combination provides high availability across all critical components (message queue, consumer application, database) using managed services where possible, thus reducing operational burden.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While it attempts to introduce redundancy, it relies on self-managing the ActiveMQ servers and self-managing MySQL database replication across Availability Zones. This involves significant operational overhead for setup, maintenance, patching, and ensuring reliable failover compared to using managed AWS services.
+- [ ] Option B is wrong because: It correctly suggests using Amazon MQ for the message broker. However, for the consumer application, simply adding "an additional consumer EC2 instance in another Availability Zone" does not provide the same level of automated scaling, health checking, and instance replacement as an Auto Scaling group. More critically, "Replicate the MySQL database to another Availability Zone" implies a self-managed replication for MySQL on EC2, which is less available and more operationally complex than using Amazon RDS Multi-AZ.
+- [ ] Option C is wrong because: This option is better as it includes Amazon MQ and Amazon RDS for MySQL with Multi-AZ, which are good choices. However, for the consumer EC2 instances, only "Add an additional consumer EC2 instance in another Availability Zone" is mentioned. An Auto Scaling group (as in option D) provides superior availability and scalability for the consumer tier by automatically managing the desired number of instances and replacing unhealthy ones across AZs.
+
+</details>
+  
+<details>
+  <summary>Question 112</summary>
+
+A company hosts a containerized web application on a fleet of on-premises servers that process incoming requests. The number of requests is growing quickly. The on-premises servers cannot handle the increased number of requests. The company wants to move the application to AWS with minimum code changes and minimum development effort.
+
+Which solution will meet these requirements with the LEAST operational overhead?
+
+- [ ] A. Use AWS Fargate on Amazon Elastic Container Service (Amazon ECS) to run the containerized web application with Service Auto Scaling. Use an Application Load Balancer to distribute the incoming requests.
+- [ ] B. Use two Amazon EC2 instances to host the containerized web application. Use an Application Load Balancer to distribute the incoming requests.
+- [ ] C. Use AWS Lambda with a new code that uses one of the supported languages. Create multiple Lambda functions to support the load. Use Amazon API Gateway as an entry point to the Lambda functions.
+- [ ] D. Use a high performance computing (HPC) solution such as AWS ParallelCluster to establish an HPC cluster that can process the incoming requests at the appropriate scale.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Use AWS Fargate on Amazon Elastic Container Service (Amazon ECS) to run the containerized web application with Service Auto Scaling. Use an Application Load Balancer to distribute the incoming requests.
+
+Why this is the correct answer:
+
+- [ ] Leveraging Existing Containerization: The application is already containerized. Amazon Elastic Container Service (ECS) is a fully managed container orchestration service that makes it easy to run, stop, and manage Docker containers on a cluster. This aligns with "minimum code changes."   
+- [ ] AWS Fargate for Serverless Compute: AWS Fargate is a serverless compute engine for containers that works with Amazon ECS. When using Fargate, you do not need to provision, configure, or manage the underlying EC2 instances. AWS handles the server management. This directly addresses the requirement for the "LEAST operational overhead" and simplifies scaling.
+- [ ] Service Auto Scaling: Amazon ECS services running on Fargate can be configured with Service Auto Scaling to automatically adjust the number of running container tasks based on demand (e.g., CPU or memory utilization, or custom metrics). This handles the "growing quickly" number of requests.
+- [ ] Application Load Balancer (ALB): An ALB is well-suited to distribute incoming HTTP/HTTPS traffic across the container tasks managed by ECS on Fargate, providing a scalable and highly available frontend.
+- [ ] Minimum Development Effort: Since the application is already containerized, deploying it to ECS on Fargate generally requires minimal development effort beyond defining the task definitions and service configurations.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: Simply using "two Amazon EC2 instances" to host the application does not offer a scalable solution for a rapidly growing number of requests and involves higher operational overhead for managing the instances, container runtime, and scaling compared to Fargate. It's not designed to handle quick growth efficiently.
+- [ ] Option C is wrong because: Migrating a containerized web application to AWS Lambda would likely require significant code changes and refactoring to fit Lambda's event-driven, stateless execution model. This contradicts the "minimum code changes and minimum development effort" requirement. While Lambda is serverless, it's a different paradigm than running existing containers.
+- [ ] Option D is wrong because: AWS ParallelCluster is designed for orchestrating and managing High-Performance Computing (HPC) clusters, typically for batch processing, scientific research, or complex simulations. It is not an appropriate or cost-effective solution for hosting a general "containerized web application" that processes incoming user requests.
+
+</details>
+
+<details>
+  <summary>Question 113</summary>
+
+A company uses 50 TB of data for reporting. The company wants to move this data from on premises to AWS. A custom application in the company's data center runs a weekly data transformation job. The company plans to pause the application until the data transfer is complete and needs to begin the transfer process as soon as possible. The data center does not have any available network bandwidth for additional workloads. A solutions architect must transfer the data and must configure the transformation job to continue to run in the AWS Cloud.
+
+Which solution will meet these requirements with the LEAST operational overhead?
+
+- [ ] A. Use AWS DataSync to move the data. Create a custom transformation job by using AWS Glue.
+- [ ] B. Order an AWS Snowcone device to move the data. Deploy the transformation application to the device.
+- [ ] C. Order an AWS Snowball Edge Storage Optimized device. Copy the data to the device. Create a custom transformation job by using AWS Glue.
+- [ ] D. Order an AWS Snowball Edge Storage Optimized device that includes Amazon EC2 compute. Copy the data to the device. Create a new EC2 instance on AWS to run the transformation application.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Order an AWS Snowball Edge Storage Optimized device. Copy the data to the device. Create a custom transformation job by using AWS Glue.
+
+Why this is the correct answer:
+
+This solution addresses the key constraints: large data volume (50 TB), no available network bandwidth for transfer, and the need to run transformations in AWS with minimal operational overhead.
+
+- [ ] AWS Snowball Edge Storage Optimized for Data Transfer: Given that the "data center does not have any available network bandwidth for additional workloads," an online transfer method is not feasible. For 50 TB of data, an AWS Snowball Edge Storage Optimized device is a suitable offline data transfer solution. The company can order the device, copy the 50 TB of data to it on-premises, and then ship it to AWS for ingestion into Amazon S3. This allows the transfer to "begin as soon as possible" without impacting existing network bandwidth.
+- [ ] AWS Glue for Data Transformation in the Cloud: Once the data is in Amazon S3, AWS Glue can be used to perform the "weekly data transformation job." AWS Glue is a fully managed ETL (extract, transform, and load) service that is serverless. This means there are no servers to manage, and it aligns with the requirement for the "LEAST operational overhead" for running the transformation job in the AWS Cloud.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: AWS DataSync is an online data transfer service. The problem statement explicitly says, "The data center does not have any available network bandwidth for additional workloads," making DataSync unsuitable for the initial large data transfer.
+- [ ] Option B is wrong because: An AWS Snowcone device has a limited storage capacity (typically up to 8 TB for HDD or 14 TB for SSD). For 50 TB of data, multiple Snowcone devices would be required, which is less efficient than a single Snowball Edge device. While Snowcone supports edge compute, deploying and running the transformation application directly on the device is not the most straightforward way to have the job "continue to run in the AWS Cloud" long-term with least operational overhead. AWS Glue is better for cloud-based ETL.
+- [ ] Option D is wrong because: While using an AWS Snowball Edge Storage Optimized device for the transfer is correct, setting up and managing a new EC2 instance on AWS to run the existing transformation application involves more operational overhead (patching, OS management, scaling) compared to using a serverless ETL service like AWS Glue. The requirement is for the "LEAST operational overhead" for the transformation job in the cloud.
+
+</details>
+
+<details>
+  <summary>Question 114</summary>
+
+A company has created an image analysis application in which users can upload photos and add photo frames to their images. The users upload images and metadata to indicate which photo frames they want to add to their images. The application uses a single Amazon EC2 instance and Amazon DynamoDB to store the metadata. The application is becoming more popular, and the number of users is increasing. The company expects the number of concurrent users to vary significantly depending on the time of day and day of week. The company must ensure that the application can scale to meet the needs of the growing user base.
+
+Which solution meets these requirements?
+
+- [ ] A. Use AWS Lambda to process the photos. Store the photos and metadata in DynamoDB.
+- [ ] B. Use Amazon Kinesis Data Firehose to process the photos and to store the photos and metadata.
+- [ ] C. Use AWS Lambda to process the photos. Store the photos in Amazon S3. Retain DynamoDB to store the metadata.
+- [ ] D. Increase the number of EC2 instances to three. Use Provisioned IOPS SSD (io2) Amazon Elastic Block Store (Amazon EBS) volumes to store the photos and metadata.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Use AWS Lambda to process the photos. Store the photos in Amazon S3. Retain DynamoDB to store the metadata.
+
+Why this is the correct answer:
+
+This solution leverages serverless and managed services for scalability and efficiency:
+
+- [ ] AWS Lambda for Photo Processing: AWS Lambda is a serverless compute service that can execute code in response to events (e.g., an image upload). It automatically scales based on the number of incoming requests, making it ideal for handling the "varying significantly" number of concurrent users and the growing user base. Using Lambda to process photos (add frames) offloads this compute-intensive task from a fixed EC2 instance.
+- [ ] Amazon S3 for Storing Photos: Amazon S3 is the most appropriate service for storing image files. It is highly scalable, durable, and cost-effective for storing large amounts of user-generated content like photos.
+- [ ] Retain DynamoDB for Metadata: The question states the application already uses Amazon DynamoDB to store metadata, and DynamoDB is excellent for this purpose due to its scalability, low latency, and flexible schema. Retaining DynamoDB for metadata is a sound choice.
+- [ ] Scalability: This architecture (Lambda for processing, S3 for photo storage, DynamoDB for metadata) is inherently scalable. Each component can scale independently to meet demand.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While using AWS Lambda for processing and DynamoDB for metadata is good, storing entire photo files (which can be several megabytes or more) directly in Amazon DynamoDB is generally not recommended or cost-effective. DynamoDB has an item size limit (400 KB), and storing large binary objects is better suited for Amazon S3.
+- [ ] Option B is wrong because: Amazon Kinesis Data Firehose is a service for loading streaming data into data lakes, data stores, and analytics services. It is not designed for interactive image processing tasks like adding photo frames based on user requests, nor is it a primary storage solution for individual image files and their metadata in the context of a user-facing application.
+- [ ] Option D is wrong because: Simply increasing the number of EC2 instances to a fixed number (three) is not a solution that "can scale to meet the needs of the growing user base" dynamically or handle significantly varying demand cost-effectively. It can lead to either under-provisioning (poor performance during peaks) or over-provisioning (wasted cost during lulls). Storing photos and metadata on EBS volumes attached to EC2 instances is also less scalable and more operationally intensive than using S3 and DynamoDB.
+
+</details>
+
+<details>
+  <summary>Question 115</summary>
+
+A medical records company is hosting an application on Amazon EC2 instances. The application processes customer data files that are stored on Amazon S3. The EC2 instances are hosted in public subnets. The EC2 instances access Amazon S3 over the internet, but they do not require any other network access. A new requirement mandates that the network traffic for file transfers take a private route and not be sent over the internet.
+
+Which change to the network architecture should a solutions architect recommend to meet this requirement?
+
+- [ ] A. Create a NAT gateway. Configure the route table for the public subnets to send traffic to Amazon S3 through the NAT gateway.
+- [ ] B. Configure the security group for the EC2 instances to restrict outbound traffic so that only traffic to the S3 prefix list is permitted.
+- [ ] C. Move the EC2 instances to private subnets. Create a VPC endpoint for Amazon S3, and link the endpoint to the route table for the private subnets.
+- [ ] D. Remove the internet gateway from the VPC. Set up an AWS Direct Connect connection, and route traffic to Amazon S3 over the Direct Connect connection.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Move the EC2 instances to private subnets. Create a VPC endpoint for Amazon S3, and link the endpoint to the route table for the private subnets.
+
+Why this is the correct answer:
+
+This solution addresses both security best practices and the specific requirement for private S3 access:
+
+- [ ] Move EC2 Instances to Private Subnets: Hosting application instances, especially those processing sensitive data like medical records, in public subnets is generally not recommended if they do not need direct inbound internet access. Moving them to private subnets enhances their security posture by removing direct internet exposure.
+- [ ] VPC Endpoint for Amazon S3 (Gateway Endpoint): A VPC gateway endpoint for S3 allows instances within your VPC to communicate with Amazon S3 without traffic traversing the public internet. Traffic routes privately within the AWS network. This directly meets the requirement that "network traffic for file transfers take a private route and not be sent over the internet."
+- [ ] Link Endpoint to Route Table: The gateway endpoint is associated with the route tables of the private subnets where the EC2 instances reside. This ensures that traffic destined for S3 from these instances is routed through the private endpoint.
+- [ ] No Other Network Access Needed: The problem states the EC2 instances "do not require any other network access" (implying general internet access beyond S3 is not needed). This makes the private subnet with a VPC endpoint for S3 an ideal and secure configuration.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: A NAT gateway is used to enable instances in private subnets to initiate outbound connections to the internet. If the instances are already in public subnets, they would typically use an Internet Gateway for internet access. Routing traffic from public subnets through a NAT gateway to access S3 is an incorrect use of NAT gateways and doesn't ensure a private route in the intended way; a VPC endpoint is the proper solution.
+- [ ] Option B is wrong because: Security groups act as firewalls at the instance level. Restricting outbound traffic to the S3 prefix list is a good security measure to limit what the EC2 instances can connect to. However, it does not change the network path of the traffic. If the instances are in public subnets and an Internet Gateway is present, traffic to S3 public endpoints might still traverse the internet or AWS public network space. This does not guarantee a "private route."
+- [ ] Option D is wrong because:
+Removing the internet gateway from the VPC would cut off all direct internet access for resources that might legitimately need it (though the question states these EC2s don't need other internet access).
+AWS Direct Connect is a service for establishing a dedicated private network connection from an on-premises environment to AWS. It is not the primary mechanism for ensuring EC2 instances within a VPC access S3 privately. A VPC endpoint is the direct solution for intra-AWS private connectivity to S3 from a VPC.
+
+</details>
+
+<details>
+  <summary>Question 116</summary>
+
+A company uses a popular content management system (CMS) for its corporate website. However, the required patching and maintenance are burdensome. The company is redesigning its website and wants a new solution. The website will be updated four times a year and does not need to have any dynamic content available. The solution must provide high scalability and enhanced security.
+
+Which combination of changes will meet these requirements with the LEAST operational overhead? (Choose two.)
+
+- [ ] A. Configure Amazon CloudFront in front of the website to use HTTPS functionality.
+- [ ] B. Deploy an AWS WAF web ACL in front of the website to provide HTTPS functionality.
+- [ ] C. Create and deploy an AWS Lambda function to manage and serve the website content.
+- [ ] D. Create the new website and an Amazon S3 bucket. Deploy the website on the S3 bucket with static website hosting enabled.
+- [ ] E. Create the new website. Deploy the website by using an Auto Scaling group of Amazon EC2 instances behind an Application Load Balancer.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Configure Amazon CloudFront in front of the website to use HTTPS functionality.
+- [ ] D. Create the new website and an Amazon S3 bucket. Deploy the website on the S3 bucket with static website hosting enabled.
+
+Why these are the correct answers:
+
+This solution leverages serverless and managed services for a static website, which is ideal for low operational overhead, high scalability, and enhanced security.
+
+D. Create the new website and an Amazon S3 bucket. Deploy the website on the S3 bucket with static website hosting enabled.
+- [ ] Static Content Hosting on S3: The requirement states the website "does not need to have any dynamic content available" and is updated infrequently (four times a year). Amazon S3 is an excellent choice for hosting static websites (HTML, CSS, JavaScript, images). It is highly durable, scalable, and very cost-effective.
+- [ ] Least Operational Overhead: S3 static website hosting is serverless, meaning there are no servers to manage, patch, or scale, thus minimizing operational overhead.
+
+A. Configure Amazon CloudFront in front of the website to use HTTPS functionality.
+- [ ] HTTPS and Enhanced Security: Amazon CloudFront is a global content delivery network (CDN). You can configure it with an SSL/TLS certificate (e.g., a free one from AWS Certificate Manager) to serve your website content over HTTPS, which enhances security. CloudFront also helps protect against common DDoS attacks by absorbing traffic at its distributed edge locations.
+- [ ] High Scalability and Performance: CloudFront caches your static content from the S3 origin at edge locations around the world, closer to your users. This provides high scalability to handle traffic spikes and significantly improves website loading performance by reducing latency.
+- [ ] Integration: CloudFront integrates seamlessly with S3 as an origin.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: AWS WAF (Web Application Firewall) is a service that helps protect web applications from common web exploits that could affect application availability, compromise security, or consume excessive resources. While WAF is important for security and often used with CloudFront or an Application Load Balancer, it does not directly "provide HTTPS functionality." HTTPS termination is handled by services like CloudFront or ALBs using SSL/TLS certificates.   
+- [ ] Option C is wrong because: Using AWS Lambda to manage and serve the content of a purely static website is an overly complex and less efficient solution compared to S3 static website hosting. While Lambda can be used to serve dynamic content or as part of a serverless backend, for hosting static files, S3 is more straightforward, cost-effective, and operationally simpler.
+- [ ] Option E is wrong because: Deploying a static website using an Auto Scaling group of Amazon EC2 instances behind an Application Load Balancer is a solution designed for dynamic applications or those requiring server-side compute. For a website with no dynamic content, this approach incurs unnecessary costs (for EC2 instances, ALB) and significantly higher operational overhead (managing instances, patching, OS updates) compared to the S3 and CloudFront serverless model.
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</details>
 
 
 
