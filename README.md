@@ -1800,9 +1800,711 @@ Maintenance windows are used to define recurring schedules for performing potent
 
 </details>
 
+<details>
+  <summary>==Questions 51-60==</summary>
 
+<details>
+  <summary>Question 51</summary>
 
+A company is developing an application that provides order shipping statistics for retrieval by a REST API. The company wants to extract the shipping statistics, organize the data into an easy-to-read HTML format, and send the report to several email addresses at the same time every morning.
 
+Which combination of steps should a solutions architect take to meet these requirements? (Choose two.)
+
+- [ ] A. Configure the application to send the data to Amazon Kinesis Data Firehose.
+- [ ] B. Use Amazon Simple Email Service (Amazon SES) to format the data and to send the report by email.
+- [ ] C. Create an Amazon EventBridge (Amazon CloudWatch Events) scheduled event that invokes an AWS Glue job to query the application's API for the data.
+- [ ] D. Create an Amazon EventBridge (Amazon CloudWatch Events) scheduled event that invokes an AWS Lambda function to query the application's API for the data.
+- [ ] E. Store the application data in Amazon S3. Create an Amazon Simple Notification Service (Amazon SNS) topic as an S3 event destination to send the report by email.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Use Amazon Simple Email Service (Amazon SES) to format the data and to send the report by email.
+- [ ] D. Create an Amazon EventBridge (Amazon CloudWatch Events) scheduled event that invokes an AWS Lambda function to query the application's API for the data.
+
+Why these are the correct answers:
+
+- [ ] D. Create an Amazon EventBridge (Amazon CloudWatch Events) scheduled event that invokes an AWS Lambda function to query the application's API for the data.
+Scheduled Execution: To send the report "at the same time every morning," a scheduled trigger is needed. Amazon EventBridge (formerly CloudWatch Events) allows you to create scheduled rules (e.g., using a cron expression) that can trigger various AWS services.
+Data Extraction and Formatting: An AWS Lambda function is well-suited to be invoked by the EventBridge schedule. The Lambda function can then make a request to the application's REST API to "extract the shipping statistics." Once the data is retrieved, the Lambda function can "organize the data into an easy-to-read HTML format." Lambda is a serverless compute service ideal for such event-driven tasks.
+- [ ] B. Use Amazon Simple Email Service (Amazon SES) to format the data and to send the report by email.
+Email Delivery: Amazon Simple Email Service (SES) is a cloud-based email sending service designed to send notification and transactional emails. It can be used by the Lambda function (from option D) to "send the report to several email addresses."
+Sending HTML Emails: While the Lambda function would primarily handle the HTML formatting of the report content, SES is capable of sending emails with HTML content, allowing the "easy-to-read HTML format" to be delivered effectively.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Amazon Kinesis Data Firehose is designed for capturing, transforming, and loading streaming data into data lakes, data stores, and analytics services. It is not suitable for querying a REST API on a schedule to extract statistics for a daily email report.
+- [ ] Option C is wrong because: While Amazon EventBridge is appropriate for scheduling, using an AWS Glue job for this task is overly complex and not its primary design purpose. AWS Glue is an ETL (extract, transform, and load) service more suited for large-scale data processing and cataloging, typically involving data stores like S3 or databases, rather than querying a REST API for a daily report and formatting HTML for email. An AWS Lambda function is more lightweight and fitting for this scenario.
+- [ ] Option E is wrong because: This option suggests storing data in S3 and using S3 event notifications with Amazon SNS. The primary data source is a REST API, not new objects being written to S3 that would trigger an event. While SNS can send email notifications, it is generally more for simple notifications, and SES (as in option B) provides more robust capabilities for sending formatted HTML emails, managing sender reputation, and handling bounces or complaints, which is more suitable for sending reports.
+
+</details>
+
+<details>
+  <summary>Question 52</summary>
+
+A company wants to migrate its on-premises application to AWS. The application produces output files that vary in size from tens of gigabytes to hundreds of terabytes. The application data must be stored in a standard file system structure. The company wants a solution that scales automatically, is highly available, and requires minimum operational overhead.
+
+Which solution will meet these requirements?
+
+- [ ] A. Migrate the application to run as containers on Amazon Elastic Container Service (Amazon ECS). Use Amazon S3 for storage.
+- [ ] B. Migrate the application to run as containers on Amazon Elastic Kubernetes Service (Amazon EKS). Use Amazon Elastic Block Store (Amazon EBS) for storage.
+- [ ] C. Migrate the application to Amazon EC2 instances in a Multi-AZ Auto Scaling group. Use Amazon Elastic File System (Amazon EFS) for storage.
+- [ ] D. Migrate the application to Amazon EC2 instances in a Multi-AZ Auto Scaling group. Use Amazon Elastic Block Store (Amazon EBS) for storage.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Migrate the application to Amazon EC2 instances in a Multi-AZ Auto Scaling group. Use Amazon Elastic File System (Amazon EFS) for storage.
+
+Why this is the correct answer:
+
+- [ ] Standard File System Structure (Amazon EFS): The requirement that "application data must be stored in a standard file system structure" points towards a service like Amazon EFS. EFS provides elastic, scalable file storage that uses the Network File System (NFS) protocol, which is a standard file system interface. EC2 instances can mount an EFS file system just like any network file share.
+- [ ] Scales Automatically (EFS and Auto Scaling): EFS storage capacity scales automatically up or down as you add or remove files, so you don't need to provision storage in advance. Running the application on EC2 instances within a Multi-AZ Auto Scaling group allows the compute tier to scale automatically based on demand.
+- [ ] Highly Available (EFS and Multi-AZ Auto Scaling): EFS is designed for high availability and durability by storing data redundantly across multiple Availability Zones (AZs) within a region. A Multi-AZ Auto Scaling group ensures that the application instances are also distributed across multiple AZs for high availability.
+- [ ] Minimum Operational Overhead: EFS is a fully managed service, removing the need to manage file servers or storage infrastructure. EC2 Auto Scaling also reduces the operational burden of managing the compute fleet.
+- [ ] Handles Large Files/Datasets: EFS can store petabytes of data and supports large individual file sizes, suitable for "output files that vary in size from tens of gigabytes to hundreds of terabytes" (this likely refers to total dataset size, as individual files in EFS have a limit, but the system as a whole can scale).
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While ECS is a good option for running containerized applications, Amazon S3 is an object storage service. It does not provide a standard, mountable file system structure that an application expecting POSIX-like file system semantics can directly use without modification or tools like S3FS (which can have performance implications). The requirement is for a "standard file system structure."
+- [ ] Option B is wrong because: Amazon Elastic Block Store (EBS) provides block-level storage volumes for EC2 instances. A standard EBS volume can only be attached to a single EC2 instance at a time within a specific AZ. While EKS can manage containers, if these containers need shared access to a "standard file system structure" across multiple nodes (especially across AZs for high availability), EBS is not the direct solution. EFS or FSx would be better for shared file storage.
+- [ ] Option D is wrong because: Similar to option B, using EBS with EC2 instances in an Auto Scaling group means each instance would typically have its own isolated EBS volume(s). This does not provide a shared "standard file system structure" that can be concurrently accessed by all instances in the Auto Scaling group, which is often implied when an application needs a common file system.
+
+</details>
+
+<details>
+  <summary>Question 53</summary>
+
+A company needs to store its accounting records in Amazon S3. The records must be immediately accessible for 1 year and then must be archived for an additional 9 years. No one at the company, including administrative users and root users, can be able to delete the records during the entire 10-year period. The records must be stored with maximum resiliency.
+
+Which solution will meet these requirements?
+
+- [ ] A. Store the records in S3 Glacier for the entire 10-year period. Use an access control policy to deny deletion of the records for a period of 10 years.
+- [ ] B. Store the records by using S3 Intelligent-Tiering. Use an IAM policy to deny deletion of the records. After 10 years, change the IAM policy to allow deletion.
+- [ ] C. Use an S3 Lifecycle policy to transition the records from S3 Standard to S3 Glacier Deep Archive after 1 year. Use S3 Object Lock in compliance mode for a period of 10 years.
+- [ ] D. Use an S3 Lifecycle policy to transition the records from S3 Standard to S3 One Zone-Infrequent Access (S3 One Zone-IA) after 1 year. Use S3 Object Lock in governance mode for a period of 10 years.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Use an S3 Lifecycle policy to transition the records from S3 Standard to S3 Glacier Deep Archive after 1 year. Use S3 Object Lock in compliance mode for a period of 10 years.
+
+Why this is the correct answer:
+
+Immediate Accessibility and Archival:
+- [ ] Storing records initially in Amazon S3 Standard (implied, as lifecycle policies transition from a storage class) ensures they are "immediately accessible for 1 year."    
+- [ ] An S3 Lifecycle policy can then "transition the records from S3 Standard to S3 Glacier Deep Archive after 1 year." S3 Glacier Deep Archive is designed for long-term, low-cost archival storage, fitting the "archived for an additional 9 years" requirement.    
+- [ ] Non-Deletion by Anyone (S3 Object Lock in Compliance Mode):
+- [ ] S3 Object Lock in compliance mode is a Write-Once-Read-Many (WORM) model. When an object version is locked in compliance mode, its retention mode cannot be changed, and its retention period cannot be shortened by any user, including the root user in the AWS account, for the duration of the specified retention period (10 years in this case).  This stringently meets the requirement that "No one at the company, including administrative users and root users, can be able to delete the records during the entire 10-year period."    
+- [ ] Maximum Resiliency:
+- [ ] Amazon S3 Standard and S3 Glacier Deep Archive both store data redundantly across multiple (at least three) Availability Zones within an AWS Region, providing "maximum resiliency."    
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Storing records directly in S3 Glacier (e.g., S3 Glacier Flexible Retrieval or S3 Glacier Deep Archive) from the beginning does not allow for immediate accessibility during the first year, as standard retrievals from these services take minutes to hours.  While an access control policy can deny deletions, it can typically be modified or bypassed by users with sufficient privileges (like root or administrators), unlike S3 Object Lock in compliance mode.    
+- [ ] Option B is wrong because: An IAM policy denying deletion can be altered or overridden by users with the necessary administrative permissions, including the root user. This does not provide the same level of immutability as S3 Object Lock in compliance mode, which is needed to ensure "No one... can be able to delete the records."  S3 Intelligent-Tiering is for optimizing costs based on access patterns but doesn't inherently provide the stringent deletion protection required.   
+- [ ] Option D is wrong because:
+S3 One Zone-Infrequent Access (S3 One Zone-IA) stores data in a single Availability Zone.  This does not offer "maximum resiliency" as data would be lost if that single AZ experiences a failure.    
+S3 Object Lock in governance mode allows users with specific IAM permissions (s3:BypassGovernanceRetention) to override the lock settings or delete objects. This does not meet the requirement that "No one... can be able to delete the records."  Compliance mode is stricter.
+
+</details>
+
+<details>
+  <summary>Question 54</summary>
+
+A company runs multiple Windows workloads on AWS. The company's employees use Windows file shares that are hosted on two Amazon EC2 instances. The file shares synchronize data between themselves and maintain duplicate copies. The company wants a highly available and durable storage solution that preserves how users currently access the files.
+
+What should a solutions architect do to meet these requirements?
+
+- [ ] A. Migrate all the data to Amazon S3. Set up IAM authentication for users to access files.
+- [ ] B. Set up an Amazon S3 File Gateway. Mount the S3 File Gateway on the existing EC2 instances.
+- [ ] C. Extend the file share environment to Amazon FSx for Windows File Server with a Multi-AZ configuration. Migrate all the data to FSx for Windows File Server.
+- [ ] D. Extend the file share environment to Amazon Elastic File System (Amazon EFS) with a Multi-AZ configuration. Migrate all the data to Amazon EFS.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A.  Turn
+Correct Answer: C
+
+Why this is the correct answer:
+
+- [ ] Amazon FSx for Windows File Server: This service provides fully managed, native Microsoft Windows file systems, which means it supports the SMB (Server Message Block) protocol used by Windows file shares. This directly addresses the requirement to "preserve how users currently access the files".   
+- [ ] High Availability and Durability: Amazon FSx for Windows File Server supports Multi-AZ deployments. In a Multi-AZ configuration, FSx automatically provisions and maintains a standby file server in a different Availability Zone, and data is synchronously replicated. This ensures high availability and enhances durability, protecting against the loss of an AZ.   
+- [ ] Replaces EC2-based File Shares: Migrating the data to FSx for Windows File Server replaces the existing solution of two EC2 instances manually synchronizing data, which can be complex and less reliable. FSx is a managed service designed for this purpose, reducing operational overhead.
+- [ ] Preserves Access Patterns: Users can continue to access the file shares using their existing Windows credentials (as FSx integrates with Active Directory) and familiar drive mapping methods.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Amazon S3 is an object storage service. While it's highly durable and scalable, it does not natively provide SMB file share access. Users would need to change how they access files (e.g., via S3 APIs, console, or third-party tools), which does not "preserve how users currently access the files".   
+- [ ] Option B is wrong because: While an Amazon S3 File Gateway can provide an SMB interface to data stored in S3, mounting this gateway on the existing EC2 instances that currently host the shares doesn't fully replace the EC2-based solution with a more robust, managed file server. The goal is to improve the availability and durability of the storage solution itself, and FSx for Windows File Server directly provides a managed Windows file system.   
+- [ ] Option D is wrong because: Amazon Elastic File System (Amazon EFS) is a file storage service that uses the NFS (Network File System) protocol. While EFS is highly available and scalable, Windows environments typically use the SMB protocol for file sharing. Using EFS would require Windows clients to use an NFS client or other workarounds, which does not "preserve how users currently access the files"  in a native Windows file share manner.
+
+</details>
+
+<details>
+  <summary>Question 55</summary>
+
+A solutions architect is developing a VPC architecture that includes multiple subnets. The architecture will host applications that use Amazon EC2 instances and Amazon RDS DB instances. The architecture consists of six subnets in two Availability Zones. Each Availability Zone includes a public subnet, a private subnet, and a dedicated subnet for databases. Only EC2 instances that run in the private subnets can have access to the RDS databases.
+
+Which solution will meet these requirements?
+
+- [ ] A. Create a new route table that excludes the route to the public subnets' CIDR blocks. Associate the route table with the database subnets.
+- [ ] B. Create a security group that denies inbound traffic from the security group that is assigned to instances in the public subnets. Attach the security group to the DB instances.
+- [ ] C. Create a security group that allows inbound traffic from the security group that is assigned to instances in the private subnets. Attach the security group to the DB instances.
+- [ ] D. Create a new peering connection between the public subnets and the private subnets. Create a different peering connection between the private subnets and the database subnets.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Create a security group that allows inbound traffic from the security group that is assigned to instances in the private subnets. Attach the security group to the DB instances.
+
+Why this is the correct answer:
+
+- [ ] Security Groups for Instance-Level Access Control: Security groups act as stateful virtual firewalls for your instances (including EC2 and RDS) to control inbound and outbound traffic. They operate at the instance level.
+- [ ] Referencing Security Groups as a Source: A key feature of security groups is that you can specify another security group as the source for an inbound rule. This allows instances associated with the source security group to access instances associated with the destination security group on the specified ports and protocols.
+- [ ] Meeting the Requirement:
+- [ ] You would have a security group (e.g., sg-private-app) attached to the EC2 instances running in the private subnets.
+- [ ] You would have a security group (e.g., sg-database) attached to the RDS DB instances in the database subnets.
+- [ ] In the inbound rules of sg-database, you would add a rule that allows traffic on the database port (e.g., 3306 for MySQL, 5432 for PostgreSQL) and specifies sg-private-app as the source. This configuration ensures that only EC2 instances in the private subnets (those associated with sg-private-app) can initiate connections to the RDS databases. All other traffic would be implicitly denied by the security group.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Route tables control the routing of traffic at the subnet level (i.e., where network packets are sent). While they are essential for connectivity between subnets, they do not provide the fine-grained, stateful, instance-level access control that security groups offer. Modifying route tables for the database subnets wouldn't specifically grant or deny access from instances in private subnets based on instance identity or group membership.
+- [ ] Option B is wrong because: Security groups work on an "allow list" principle. By default, all inbound traffic is denied unless explicitly allowed by an inbound rule. There is no explicit "deny" rule in security groups. To achieve the desired outcome, you should allow traffic from the intended source (private subnets' instances) rather than trying to explicitly deny traffic from other sources like public subnets.
+- [ ] Option D is wrong because: VPC peering connections are used to enable private network connectivity between two different VPCs. The scenario describes subnets (public, private, database) that are all part of the same VPC architecture. Therefore, VPC peering is not relevant or necessary for controlling access between these subnets. Access control within a single VPC is managed using security groups and Network Access Control Lists (NACLs).
+
+</details>
+
+<details>
+  <summary>Question 56</summary>
+
+A company has registered its domain name with Amazon Route 53. The company uses Amazon API Gateway in the ca-central-1 Region as a public interface for its backend microservice APIs. Third-party services consume the APIs securely. The company wants to design its API Gateway URL with the company's domain name and corresponding certificate so that the third-party services can use HTTPS.
+
+Which solution will meet these requirements?
+
+- [ ] A. Create stage variables in API Gateway with Name="Endpoint-URL" and Value="Company Domain Name" to overwrite the default URL. Import the public certificate associated with the company's domain name into AWS Certificate Manager (ACM).
+- [ ] B. Create Route 53 DNS records with the company's domain name. Point the alias record to the Regional API Gateway stage endpoint. Import the public certificate associated with the company's domain name into AWS Certificate Manager (ACM) in the us-east-1 Region.
+- [ ] C. Create a Regional API Gateway endpoint. Associate the API Gateway endpoint with the company's domain name. Import the public certificate associated with the company's domain name into AWS Certificate Manager (ACM) in the same Region. Attach the certificate to the API Gateway endpoint. Configure Route 53 to route traffic to the API Gateway endpoint.
+- [ ] D. Create a Regional API Gateway endpoint. Associate the API Gateway endpoint with the company's domain name. Import the public certificate associated with the company's domain name into AWS Certificate Manager (ACM) in the us-east-1 Region. Attach the certificate to the API Gateway APIs. Create Route 53 DNS records with the company's domain name. Point an A record to the company's domain name.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Create a Regional API Gateway endpoint. Associate the API Gateway endpoint with the company's domain name. Import the public certificate associated with the company's domain name into AWS Certificate Manager (ACM) in the same Region. Attach the certificate to the API Gateway endpoint. Configure Route 53 to route traffic to the API Gateway endpoint.
+
+Why this is the correct answer:
+
+- [ ] Custom Domain Name for API Gateway: Amazon API Gateway allows you to set up a custom domain name (e.g., api.yourcompany.com) for your APIs. This involves creating a custom domain name resource within API Gateway.
+- [ ] Regional Endpoint and Certificate Location: The question states the API Gateway is in the ca-central-1 Region, implying a Regional API endpoint. For Regional API Gateway custom domain names, the SSL/TLS certificate must be imported into or provisioned by AWS Certificate Manager (ACM) in the same AWS Region as the API Gateway (i.e., ca-central-1).
+- [ ] Certificate Association: The imported public certificate from ACM is then associated with the custom domain name configuration in API Gateway.
+- [ ] Route 53 Configuration: Finally, you create a DNS record (typically an Alias record for AWS resources) in Amazon Route 53 to point your custom domain name (e.g., api.yourcompany.com) to the API Gateway regional custom domain name target that API Gateway provides after you configure the custom domain.
+- [ ] This sequence correctly sets up a custom domain with HTTPS for a Regional API Gateway endpoint.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Stage variables in API Gateway are used for passing configuration settings to your API stages (like different backend endpoints for dev vs. prod). They cannot be used to overwrite the default API Gateway URL with a custom domain name.
+- [ ] Option B is wrong because: For a Regional API Gateway custom domain, the ACM certificate must be in the same Region as the API Gateway instance (ca-central-1 in this case). ACM certificates in us-east-1 are required for Edge-Optimized API Gateway endpoints (which use Amazon CloudFront) or for CloudFront distributions themselves, not for regional custom domains.
+- [ ] Option D is wrong because: This option also incorrectly states that the ACM certificate for a Regional API Gateway custom domain should be in us-east-1. Additionally, creating an A record pointing the "company's domain name" to itself is a circular reference and incorrect. The DNS record needs to point the custom domain to the API Gateway's specific target domain name provided for custom domains.
+
+</details>
+
+<details>
+  <summary>Question 57</summary>
+
+A company is running a popular social media website. The website gives users the ability to upload images to share with other users. The company wants to make sure that the images do not contain inappropriate content. The company needs a solution that minimizes development effort.
+
+What should a solutions architect do to meet these requirements?
+
+- [ ] A. Use Amazon Comprehend to detect inappropriate content. Use human review for low-confidence predictions.
+- [ ] B. Use Amazon Rekognition to detect inappropriate content. Use human review for low-confidence predictions.
+- [ ] C. Use Amazon SageMaker to detect inappropriate content. Use ground truth to label low-confidence predictions.
+- [ ] D. Use AWS Fargate to deploy a custom machine learning model to detect inappropriate content. Use ground truth to label low-confidence predictions.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Use Amazon Rekognition to detect inappropriate content. Use human review for low-confidence predictions.
+
+Why this is the correct answer:
+
+- [ ] Amazon Rekognition for Image Moderation: Amazon Rekognition is an AWS service that provides pre-trained machine learning models for image and video analysis. It includes specific content moderation capabilities to detect inappropriate, unwanted, or offensive content (e.g., nudity, violence, suggestive content) in images and videos. This directly addresses the requirement to ensure images do not contain inappropriate content.
+- [ ] Minimizes Development Effort: As a managed service with pre-trained models, Amazon Rekognition requires significantly less development effort compared to building, training, and deploying a custom machine learning model using services like Amazon SageMaker or a custom deployment on Fargate. You can integrate Rekognition into your application using its API.
+- [ ] Human Review for Low-Confidence Predictions: Rekognition provides confidence scores for its moderation labels. For cases where the confidence score is low, it's a common best practice to implement a human review workflow (e.g., using Amazon Augmented AI - A2I, or a custom system) to ensure accuracy and handle ambiguous content appropriately.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Amazon Comprehend is a natural language processing (NLP) service designed to extract insights from text. It is not suitable for analyzing image content to detect inappropriate visuals.
+- [ ] Option C is wrong because: Amazon SageMaker is a comprehensive machine learning platform for building, training, and deploying custom ML models. While you could theoretically build a custom image moderation model with SageMaker, this would involve substantial development effort (data collection, labeling, model training, and deployment), which contradicts the requirement to "minimize development effort." Rekognition offers this functionality out-of-the-box.
+- [ ] Option D is wrong because: Developing a custom machine learning model and deploying it on AWS Fargate would also require significant development effort to create and train the model, similar to using SageMaker. This approach does not leverage pre-built AWS AI services for common tasks like content moderation and therefore does not minimize development effort.
+
+</details>
+
+<details>
+  <summary>Question 58</summary>
+
+A company wants to run its critical applications in containers to meet requirements for scalability and availability. The company prefers to focus on maintenance of the critical applications. The company does not want to be responsible for provisioning and managing the underlying infrastructure that runs the containerized workload.
+
+What should a solutions architect do to meet these requirements?
+
+- [ ] A. Use Amazon EC2 instances, and install Docker on the instances.
+- [ ] B. Use Amazon Elastic Container Service (Amazon ECS) on Amazon EC2 worker nodes.
+- [ ] C. Use Amazon Elastic Container Service (Amazon ECS) on AWS Fargate.
+- [ ] D. Use Amazon EC2 instances from an Amazon Elastic Container Service (Amazon ECS)-optimized Amazon Machine Image (AMI).
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Use Amazon Elastic Container Service (Amazon ECS) on AWS Fargate.
+
+Why this is the correct answer:
+
+- [ ] Amazon Elastic Container Service (Amazon ECS) for Container Orchestration: ECS is a fully managed container orchestration service that simplifies deploying, managing, and scaling containerized applications. This helps meet the requirements for running applications in containers for scalability and availability.    
+- [ ] AWS Fargate for Serverless Compute: AWS Fargate is a serverless, pay-as-you-go compute engine for containers that works with both Amazon ECS and Amazon EKS. When using Fargate with ECS, you do not need to provision, configure, scale, or manage the underlying virtual machines (EC2 instances). AWS handles all the infrastructure management. This directly addresses the company's desire to "not want to be responsible for provisioning and managing the underlying infrastructure" and allows them to "focus on maintenance of the critical applications."    
+- [ ] Scalability and Availability: ECS with Fargate allows you to define your application, specify CPU and memory requirements, define networking and IAM policies, and launch. It handles scaling and availability aspects without requiring server management.    
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Using Amazon EC2 instances and installing Docker manually means the company would be fully responsible for provisioning, managing, patching, and scaling the EC2 instances, as well as managing the Docker environment and potentially the container orchestration. This directly contradicts the requirement of not wanting to manage the underlying infrastructure.    
+- [ ] Option B is wrong because: Using Amazon ECS with the EC2 launch type (on Amazon EC2 worker nodes) still requires the company to provision, manage, and scale the cluster of EC2 instances that run the containers. While ECS manages the containers, the underlying server infrastructure management remains the company's responsibility.    
+- [ ] Option D is wrong because: Using EC2 instances from an ECS-optimized AMI simplifies the setup of EC2 instances for an ECS cluster (EC2 launch type), but it still means the company is responsible for managing those EC2 instances (patching, scaling, security). This does not remove the responsibility for the underlying infrastructure.
+
+</details>
+
+<details>
+  <summary>Question 59</summary>
+
+A company hosts more than 300 global websites and applications. The company requires a platform to analyze more than 30 TB of clickstream data each day.
+
+What should a solutions architect do to transmit and process the clickstream data?
+
+- [ ] A. Design an AWS Data Pipeline to archive the data to an Amazon S3 bucket and run an Amazon EMR cluster with the data to generate analytics.
+- [ ] B. Create an Auto Scaling group of Amazon EC2 instances to process the data and send it to an Amazon S3 data lake for Amazon Redshift to use for analysis.
+- [ ] C. Cache the data to Amazon CloudFront. Store the data in an Amazon S3 bucket. When an object is added to the S3 bucket. run an AWS Lambda function to process the data for analysis.
+- [ ] D. Collect the data from Amazon Kinesis Data Streams. Use Amazon Kinesis Data Firehose to transmit the data to an Amazon S3 data lake. Load the data in Amazon Redshift for analysis.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Collect the data from Amazon Kinesis Data Streams. Use Amazon Kinesis Data Firehose to transmit the data to an Amazon S3 data lake. Load the data in Amazon Redshift for analysis.
+
+Why this is the correct answer:
+
+- [ ] Amazon Kinesis Data Streams for Real-Time Ingestion: For collecting high-volume (30 TB/day) clickstream data from hundreds of global sources in real-time, Amazon Kinesis Data Streams is a suitable and scalable ingestion service. It can handle a continuous flow of data.
+- [ ] Amazon Kinesis Data Firehose for Delivery to S3 Data Lake: Kinesis Data Firehose can take data from Kinesis Data Streams (or directly from data producers) and reliably load it into destinations like Amazon S3. It can also batch, compress, and encrypt the data before delivery, which is efficient for building an S3 data lake with large volumes of clickstream data.
+- [ ] Amazon Redshift for Analysis: Amazon Redshift is a petabyte-scale data warehouse service optimized for complex analytical queries on large datasets. Loading data from an S3 data lake into Redshift is a common and effective pattern for analyzing clickstream data to derive insights.
+- [ ] Scalable and Managed Pipeline: This combination of services provides a robust, scalable, and largely managed pipeline for ingesting, storing, and analyzing large volumes of clickstream data with less operational overhead than building custom solutions.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: AWS Data Pipeline is a service for orchestrating scheduled, batch data movement and transformation workflows. While it can involve S3 and EMR, Kinesis services are generally better suited for ingesting and preparing continuous, high-volume real-time data like clickstream data.
+- [ ] Option B is wrong because: Building a custom solution with an Auto Scaling group of EC2 instances to process 30 TB of clickstream data daily would involve significant development and operational overhead for managing the instances, the data processing logic, and ensuring scalability and fault tolerance. Managed services like Kinesis offer these capabilities with less effort.
+- [ ] Option C is wrong because: Amazon CloudFront is a content delivery network (CDN) used for caching and delivering web content to users with low latency; it's not a primary tool for collecting clickstream data for backend analysis. While AWS Lambda can process data from S3, processing 30 TB of data daily using Lambda triggered by S3 object creation might be inefficient for this scale compared to stream processing or batch analytics services like EMR or Redshift for the analysis part. The ingestion via Kinesis is also missing.
+
+</details>
+
+<details>
+  <summary>Question 60</summary>
+
+A company has a website hosted on AWS. The website is behind an Application Load Balancer (ALB) that is configured to handle HTTP and HTTPS separately. The company wants to forward all requests to the website so that the requests will use HTTPS.
+
+What should a solutions architect do to meet this requirement?
+
+- [ ] A. Update the ALB's network ACL to accept only HTTPS traffic.
+- [ ] B. Create a rule that replaces the HTTP in the URL with HTTPS.
+- [ ] C. Create a listener rule on the ALB to redirect HTTP traffic to HTTPS.
+- [ ] D. Replace the ALB with a Network Load Balancer configured to use Server Name Indication (SNI).
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Create a listener rule on the ALB to redirect HTTP traffic to HTTPS.
+
+Why this is the correct answer:
+
+- [ ] Application Load Balancer (ALB) Listener Rules: ALBs allow you to define listeners for different ports and protocols (e.g., HTTP on port 80 and HTTPS on port 443). For each listener, you can configure rules that determine how requests are routed.
+- [ ] HTTP to HTTPS Redirection: A common and recommended practice is to configure the HTTP listener (on port 80) with a rule that performs a redirect action.
+- [ ] This rule will automatically redirect all incoming HTTP requests to the corresponding HTTPS URL (on port 443).
+- [ ] This ensures that users who try to access the site via HTTP are seamlessly forwarded to the secure HTTPS version. This is a built-in feature of ALBs designed for this exact purpose.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Network ACLs (NACLs) operate at the subnet level and are stateless firewalls. While you could use a NACL to block HTTP traffic, it would not "forward" or "redirect" requests to HTTPS; it would simply drop or deny the HTTP requests. The goal is to ensure users end up on HTTPS, not just block HTTP. Furthermore, ALB nodes are managed by AWS, and manipulating their direct NACLs is not the standard way to control ALB behavior.
+- [ ] Option B is wrong because: This statement is too vague. While the outcome is to have the URL use HTTPS, it doesn't specify how or where this rule would be implemented. Option C provides the specific, AWS-native mechanism (ALB listener rule) to achieve this at the load balancer level, which is the appropriate place for this kind of infrastructure-level redirection.
+- [ ] Option D is wrong because:
+Network Load Balancers (NLBs) operate at Layer 4 (transport layer) and are not as feature-rich for HTTP/HTTPS traffic management as ALBs, which operate at Layer 7 (application layer). ALBs are better suited for tasks like HTTP to HTTPS redirection.
+Server Name Indication (SNI) is a TLS extension that allows a server to present multiple certificates on the same IP address and port, enabling hosting of multiple SSL-secured websites on one server. While NLBs do support SNI (for TLS listeners), SNI itself is not a mechanism for redirecting HTTP traffic to HTTPS.
+
+</details>
+
+</details>
+
+<details>
+  <summary>==Questions 61-70==</summary>
+
+<details>
+  <summary>Question 61</summary>
+
+A company is developing a two-tier web application on AWS. The company's developers have deployed the application on an Amazon EC2 instance that connects directly to a backend Amazon RDS database. The company must not hardcode database credentials in the application. The company must also implement a solution to automatically rotate the database credentials on a regular basis.
+
+Which solution will meet these requirements with the LEAST operational overhead?
+
+- [ ] A. Store the database credentials in the instance metadata. Use Amazon EventBridge (Amazon CloudWatch Events) rules to run a scheduled AWS Lambda function that updates the RDS credentials and instance metadata at the same time.
+- [ ] B. Store the database credentials in a configuration file in an encrypted Amazon S3 bucket. Use Amazon EventBridge (Amazon CloudWatch Events) rules to run a scheduled AWS Lambda function that updates the RDS credentials and the credentials in the configuration file at the same time. Use S3 Versioning to ensure the ability to fall back to previous values.
+- [ ] C. Store the database credentials as a secret in AWS Secrets Manager. Turn on automatic rotation for the secret. Attach the required permission to the EC2 role to grant access to the secret.
+- [ ] D. Store the database credentials as encrypted parameters in AWS Systems Manager Parameter Store. Turn on automatic rotation for the encrypted parameters. Attach the required permission to the EC2 role to grant access to the encrypted parameters.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Store the database credentials as a secret in AWS Secrets Manager. Turn on automatic rotation for the secret. Attach the required permission to the EC2 role to grant access to the secret.
+
+Why this is the correct answer:
+
+- [ ] AWS Secrets Manager for Secure Credential Management: AWS Secrets Manager is specifically designed to help you protect access to your applications, services, and IT resources without the upfront investment and ongoing maintenance costs of operating your own infrastructure. It allows you to store database credentials securely. This meets the requirement to not hardcode credentials.   
+- [ ] Automatic Rotation: A key feature of Secrets Manager is its ability to automatically rotate secrets for supported services like Amazon RDS on a schedule you define. This directly addresses the requirement for automatic credential rotation with minimal operational overhead, as AWS manages the rotation process.
+- [ ] Secure Access via IAM Roles: The application running on the EC2 instance can be granted permissions to retrieve the database credentials from Secrets Manager by attaching an appropriate IAM role to the EC2 instance. The application code would then fetch the credentials from Secrets Manager at runtime.
+- [ ] Least Operational Overhead: This solution relies on a fully managed AWS service for both storing and automatically rotating credentials, which is the most straightforward approach with the least ongoing management effort.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Storing sensitive database credentials directly in EC2 instance metadata is not a secure practice, as instance metadata is accessible from within the instance. Building a custom rotation solution with EventBridge and Lambda adds operational overhead compared to the managed rotation offered by Secrets Manager.
+- [ ] Option B is wrong because: While storing credentials in an encrypted S3 bucket is more secure than hardcoding, it still requires custom logic for the application to retrieve and decrypt the credentials. The rotation process via EventBridge and Lambda is also a custom solution, which means more development and maintenance effort (higher operational overhead) compared to using Secrets Manager's built-in rotation capabilities.
+- [ ] Option D is wrong because: AWS Systems Manager Parameter Store can store secrets securely (as SecureString parameters) and integrate with IAM for access control. However, while Parameter Store can be integrated with AWS Lambda to build custom rotation logic, its native, out-of-the-box automatic rotation capabilities for RDS database credentials are not as direct or comprehensive as those provided by AWS Secrets Manager. Secrets Manager is the preferred service for fully managed, automatic rotation of RDS credentials, resulting in less operational overhead for this specific task.
+
+</details>  
+
+<details>
+  <summary>Question 62</summary>
+  
+A company is deploying a new public web application to AWS. The application will run behind an Application Load Balancer (ALB). The application needs to be encrypted at the edge with an SSL/TLS certificate that is issued by an external certificate authority (CA). The certificate must be rotated each year before the certificate expires.
+
+What should a solutions architect do to meet these requirements?
+
+- [ ] A. Use AWS Certificate Manager (ACM) to issue an SSL/TLS certificate. Apply the certificate to the ALB. Use the managed renewal feature to automatically rotate the certificate.
+- [ ] B. Use AWS Certificate Manager (ACM) to issue an SSL/TLS certificate. Import the key material from the certificate. Apply the certificate to the ALB. Use the managed renewal feature to automatically rotate the certificate.
+- [ ] C. Use AWS Certificate Manager (ACM) Private Certificate Authority to issue an SSL/TLS certificate from the root CA. Apply the certificate to the ALB. Use the managed renewal feature to automatically rotate the certificate.
+- [ ] D. Use AWS Certificate Manager (ACM) to import an SSL/TLS certificate. Apply the certificate to the ALB. Use Amazon EventBridge (Amazon CloudWatch Events) to send a notification when the certificate is nearing expiration. Rotate the certificate manually.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Use AWS Certificate Manager (ACM) to import an SSL/TLS certificate. Apply the certificate to the ALB. Use Amazon EventBridge (Amazon CloudWatch Events) to send a notification when the certificate is nearing expiration. Rotate the certificate manually.
+
+Why this is the correct answer:
+
+- [ ] Using an Externally Issued Certificate: The requirement states that the SSL/TLS certificate is "issued by an external certificate authority (CA)."
+- [ ] Importing into ACM: AWS Certificate Manager (ACM) allows you to import third-party SSL/TLS certificates that you've obtained from an external CA. Once imported, these certificates can be used with integrated AWS services like Application Load Balancers (ALBs).
+- [ ] Applying to ALB: After the certificate is imported into ACM, it can be associated with the ALB's HTTPS listener to enable SSL/TLS termination at the load balancer.
+- [ ] Manual Rotation for Imported Certificates: ACM's automatic managed renewal feature only applies to public certificates that are issued by ACM. For certificates that are imported into ACM from an external CA, ACM does not manage their renewal. The company is responsible for renewing the certificate with the external CA and then re-importing the new certificate into ACM before the existing one expires.
+- [ ] Notification for Expiration: To manage this manual rotation process, it's a best practice to set up notifications. Amazon EventBridge (formerly CloudWatch Events) can be used with ACM to detect when an imported certificate is nearing its expiration date. An EventBridge rule can then trigger a notification (e.g., via Amazon SNS to email administrators) to remind them to rotate the certificate manually.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: This suggests using ACM to issue an SSL/TLS certificate. However, the requirement is to use a certificate "issued by an external certificate authority." While ACM can issue public certificates (which do support managed renewal), this option doesn't align with the given constraint about the certificate's origin.
+- [ ] Option B is wrong because: This option is contradictory. It first says "Use AWS Certificate Manager (ACM) to issue an SSL/TLS certificate" and then "Import the key material from the certificate." If ACM issues the certificate, you don't separately import its key material in that manner. Furthermore, it still relies on managed renewal, which isn't available for externally issued certificates.
+- [ ] Option C is wrong because: AWS Certificate Manager (ACM) Private Certificate Authority (PCA) is used to create and manage private SSL/TLS certificates for internal use cases (e.g., within your organization's private network, for encrypting traffic between internal services). For a "public web application" that needs to be trusted by users' browsers, a publicly trusted certificate is required, not one issued by a private CA (unless the private CA's root is distributed to all clients, which is not typical for public applications).
+
+</details>
+
+<details>
+  <summary>Question 63</summary>
+ 
+A company runs its infrastructure on AWS and has a registered base of 700,000 users for its document management application. The company intends to create a product that converts large .pdf files to .jpg image files. The .pdf files average 5 MB in size. The company needs to store the original files and the converted files.
+
+A solutions architect must design a scalable solution to accommodate demand that will grow rapidly over time.
+
+Which solution meets these requirements MOST cost-effectively?
+
+- [ ] A. Save the .pdf files to Amazon S3. Configure an S3 PUT event to invoke an AWS Lambda function to convert the files to .jpg format and store them back in Amazon S3.
+- [ ] B. Save the .pdf files to Amazon DynamoDB. Use the DynamoDB Streams feature to invoke an AWS Lambda function to convert the files to .jpg format and store them back in DynamoDB.
+- [ ] C. Upload the .pdf files to an AWS Elastic Beanstalk application that includes Amazon EC2 instances, Amazon Elastic Block Store (Amazon EBS) storage, and an Auto Scaling group. Use a program in the EC2 instances to convert the files to .jpg format. Save the .pdf files and the .jpg files in the EBS store.
+- [ ] D. Upload the .pdf files to an AWS Elastic Beanstalk application that includes Amazon EC2 instances, Amazon Elastic File System (Amazon EFS) storage, and an Auto Scaling group. Use a program in the EC2 instances to convert the file to .jpg format. Save the .pdf files and the .jpg files in the EBS store.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Save the .pdf files to Amazon S3. Configure an S3 PUT event to invoke an AWS Lambda function to convert the files to .jpg format and store them back in Amazon S3.
+
+Why this is the correct answer:
+
+- [ ] Amazon S3 for Scalable and Cost-Effective Storage: Amazon S3 is the ideal service for storing both the original .pdf files and the converted .jpg files. S3 offers virtually unlimited scalability, high durability, and is very cost-effective for storing files of any size.
+- [ ] S3 Event Triggers for Automation: When a new .pdf file is uploaded to S3 (a PUT event), S3 can be configured to automatically trigger an AWS Lambda function. This provides an event-driven architecture.
+- [ ] AWS Lambda for Serverless Conversion: AWS Lambda is a serverless compute service that can execute code in response to events. A Lambda function can be written to take the S3 object key of the uploaded .pdf, perform the conversion to .jpg format (using appropriate libraries), and then store the resulting .jpg file back into an S3 bucket (possibly a different bucket or prefix).
+- [ ] Scalability and Cost-Effectiveness: This serverless approach is highly scalable. Lambda automatically scales based on the number of incoming S3 events (uploads). You only pay for the S3 storage used and the Lambda compute time consumed during the conversion. This is generally the MOST cost-effective solution for event-driven file processing, especially when demand can grow rapidly, as you don't pay for idle compute resources. It also has minimal operational overhead.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: Amazon DynamoDB is a NoSQL key-value and document database. While it can store small binary objects (up to 400 KB per item), it is not designed or cost-effective for storing 5 MB .pdf files directly. S3 is the appropriate service for this type of file storage.
+- [ ] Option C is wrong because: Using AWS Elastic Beanstalk with Amazon EC2 instances to perform the conversion introduces the overhead of managing servers, even with Elastic Beanstalk's automation. This solution is less cost-effective than Lambda because you pay for EC2 instances even when no files are being processed. Storing files on Amazon EBS volumes is also less scalable and durable for this use case compared to S3, especially if you need to share or access these files from multiple places or ensure their long-term persistence independently of EC2 instances.
+- [ ] Option D is wrong because: Similar to option C, this relies on EC2 instances managed by Elastic Beanstalk, which is less cost-effective and has higher operational overhead than a serverless Lambda approach for this task. While Amazon EFS provides shared file storage, S3 is generally more cost-effective and scalable for storing large numbers of original and converted image files. The option also confusingly mentions saving files to EBS store at the end, despite mentioning EFS.
+
+</details>
+
+<details>
+  <summary>Question 64</summary>
+
+A company has more than 5 TB of file data on Windows file servers that run on premises. Users and applications interact with the data each day.
+
+The company is moving its Windows workloads to AWS. As the company continues this process, the company requires access to AWS and on-premises file storage with minimum latency. The company needs a solution that minimizes operational overhead and requires no significant changes to the existing file access patterns. The company uses an AWS Site-to-Site VPN connection for connectivity to AWS.
+
+What should a solutions architect do to meet these requirements?
+
+- [ ] A. Deploy and configure Amazon FSx for Windows File Server on AWS. Move the on-premises file data to FSx for Windows File Server. Reconfigure the workloads to use FSx for Windows File Server on AWS.
+- [ ] B. Deploy and configure an Amazon S3 File Gateway on premises. Move the on-premises file data to the S3 File Gateway. Reconfigure the on-premises workloads and the cloud workloads to use the S3 File Gateway.
+- [ ] C. Deploy and configure an Amazon S3 File Gateway on premises. Move the on-premises file data to Amazon S3. Reconfigure the workloads to use either Amazon S3 directly or the S3 File Gateway. depending on each workload's location.
+- [ ] D. Deploy and configure Amazon FSx for Windows File Server on AWS. Deploy and configure an Amazon FSx File Gateway on premises. Move the on-premises file data to the FSx File Gateway. Configure the cloud workloads to use FSx for Windows File Server on AWS. Configure the on-premises workloads to use the FSx File Gateway.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Deploy and configure Amazon FSx for Windows File Server on AWS. Deploy and configure an Amazon FSx File Gateway on premises. Move the on-premises file data to the FSx File Gateway. Configure the cloud workloads to use FSx for Windows File Server on AWS. Configure the on-premises workloads to use the FSx File Gateway.
+
+Why this is the correct answer:
+
+- [ ] Hybrid Access with Minimized Latency: The core requirement is to provide low-latency access to file storage for both on-premises users/applications and new workloads being moved to AWS during the migration process.
+- [ ] Amazon FSx for Windows File Server in AWS: This provides a fully managed, native Windows file system in the AWS Cloud, suitable for the Windows workloads being migrated. It supports SMB, Active Directory integration, and other Windows-native features.
+- [ ] Amazon FSx File Gateway On-Premises: The Amazon FSx File Gateway (a specific type of AWS Storage Gateway) is deployed on-premises. It provides low-latency access for on-premises users and applications to their file data that is stored and managed in Amazon FSx for Windows File Server in the cloud. It does this by caching frequently accessed data locally on the gateway.
+- [ ] Preserves Access Patterns: On-premises users continue to access files via SMB through the FSx File Gateway, and cloud workloads access the data directly from FSx for Windows File Server via SMB. This requires "no significant changes to the existing file access patterns."
+- [ ] Minimizes Operational Overhead: Both FSx for Windows File Server and FSx File Gateway are managed services, reducing the operational burden on the company.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: This option describes a full migration of data and workloads to FSx for Windows File Server on AWS. It doesn't address the requirement for on-premises workloads to maintain low-latency access to the file storage during the transition period. It's a destination state, not a hybrid solution for the migration process.
+- [ ] Option B is wrong because: An Amazon S3 File Gateway provides an SMB interface to data stored in Amazon S3. While it can offer on-premises caching, Amazon FSx for Windows File Server (as in option D) provides a richer set of Windows-native file system features (like DFS Namespaces, fine-grained ACLs, shadow copies) that are often critical for Windows workloads. The FSx File Gateway is specifically optimized to work with FSx for Windows File Server, making it a more tailored solution for this scenario.
+- [ ] Option C is wrong because: This also uses an S3 File Gateway. Requiring workloads to use Amazon S3 directly (for some workloads) would change the file access pattern from SMB to S3 API calls, which contradicts the requirement of "no significant changes to the existing file access patterns."
+
+</details>
+
+<details>
+  <summary>Question 65</summary>
+
+A hospital recently deployed a RESTful API with Amazon API Gateway and AWS Lambda. The hospital uses API Gateway and Lambda to upload reports that are in PDF format and JPEG format. The hospital needs to modify the Lambda code to identify protected health information (PHI) in the reports.
+
+Which solution will meet these requirements with the LEAST operational overhead?
+
+- [ ] A. Use existing Python libraries to extract the text from the reports and to identify the PHI from the extracted text.
+- [ ] B. Use Amazon Textract to extract the text from the reports. Use Amazon SageMaker to identify the PHI from the extracted text.
+- [ ] C. Use Amazon Textract to extract the text from the reports. Use Amazon Comprehend Medical to identify the PHI from the extracted text.
+- [ ] D. Use Amazon Rekognition to extract the text from the reports. Use Amazon Comprehend Medical to identify the PHI from the extracted text.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Use Amazon Textract to extract the text from the reports. Use Amazon Comprehend Medical to identify the PHI from the extracted text.
+
+Why this is the correct answer:
+
+- [ ] Amazon Textract for Text Extraction: Amazon Textract is a machine learning (ML) service that automatically extracts text, handwriting, and data from scanned documents, PDFs, and images (like JPEGs). This is ideal for getting the textual content out of the "PDF format and JPEG format" reports.   
+- [ ] Amazon Comprehend Medical for PHI Identification: Amazon Comprehend Medical is a HIPAA-eligible natural language processing (NLP) service that uses ML to extract relevant medical information, including Protected Health Information (PHI), from unstructured text. It is specifically trained for medical text and can identify entities like PHI, medical conditions, medications, etc. This directly addresses the need to "identify protected health information (PHI) in the reports."
+- [ ] Least Operational Overhead: Using these two fully managed AWS AI services (Textract and Comprehend Medical) within the Lambda function requires significantly less development effort and ongoing operational overhead compared to building custom solutions. There's no need to train custom models or manage underlying infrastructure for these tasks.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Relying on existing Python libraries for both text extraction (from potentially complex PDFs and image-based JPEGs which would require OCR) and accurate PHI identification would involve significant development effort, library selection, integration, testing, and maintenance. Identifying PHI accurately with general-purpose libraries can be challenging. This approach does not offer the "LEAST operational overhead."
+- [ ] Option B is wrong because: While Amazon Textract is appropriate for text extraction, Amazon SageMaker is a platform for building, training, and deploying custom machine learning models. Using SageMaker to identify PHI would mean the hospital needs to develop, train, and manage its own ML model for this purpose. This is a complex and time-consuming process with high development and operational overhead, directly contradicting the "LEAST operational overhead" requirement.
+- [ ] Option D is wrong because: While Amazon Rekognition can detect text in images (and would work for JPEGs), Amazon Textract is generally more specialized and robust for extracting text from document formats like PDFs and JPEGs containing forms or dense text. Amazon Comprehend Medical is the correct choice for PHI identification. The combination of Textract and Comprehend Medical (as in option C) is more specifically tailored for extracting text from documents and then identifying medical information.
+
+</details>
+
+<details>
+  <summary>Question 66</summary>
+
+A company has an application that generates a large number of files, each approximately 5 MB in size. The files are stored in Amazon S3. Company policy requires the files to be stored for 4 years before they can be deleted. Immediate accessibility is always required as the files contain critical business data that is not easy to reproduce. The files are frequently accessed in the first 30 days of the object creation but are rarely accessed after the first 30 days.
+
+Which storage solution is MOST cost-effective?
+
+- [ ] A. Create an S3 bucket lifecycle policy to move files from S3 Standard to S3 Glacier 30 days from object creation. Delete the files 4 years after object creation.
+- [ ] B. Create an S3 bucket lifecycle policy to move files from S3 Standard to S3 One Zone-Infrequent Access (S3 One Zone-IA) 30 days from object creation. Delete the files 4 years after object creation.
+- [ ] C. Create an S3 bucket lifecycle policy to move files from S3 Standard to S3 Standard-Infrequent Access (S3 Standard-IA) 30 days from object creation. Delete the files 4 years after object creation.
+- [ ] D. Create an S3 bucket lifecycle policy to move files from S3 Standard to S3 Standard-Infrequent Access (S3 Standard-IA) 30 days from object creation. Move the files to S3 Glacier 4 years after object creation.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Create an S3 bucket lifecycle policy to move files from S3 Standard to S3 Standard-Infrequent Access (S3 Standard-IA) 30 days from object creation. Delete the files 4 years after object creation.
+
+Why this is the correct answer:
+
+- [ ] Initial Storage in S3 Standard: For the first 30 days, when files are "frequently accessed," storing them in Amazon S3 Standard is appropriate as it offers low latency and high throughput performance for frequently accessed data.
+- [ ] Transition to S3 Standard-Infrequent Access (S3 Standard-IA): After 30 days, the files are "rarely accessed," but "Immediate accessibility is always required." S3 Standard-IA is designed for data that is accessed less frequently but requires millisecond access when needed. It offers a lower storage cost than S3 Standard, making it cost-effective for this phase. It also maintains high durability by storing data across multiple Availability Zones.
+- [ ] Lifecycle Policy for Automation: An S3 Lifecycle policy can be configured to automatically transition objects from S3 Standard to S3 Standard-IA after 30 days. The same policy can also be configured to delete the objects after 4 years, meeting the company's retention policy.
+- [ ] Cost-Effectiveness and Requirements Met: This solution balances the need for immediate accessibility throughout the 4-year retention period with cost optimization by moving data to a lower-cost tier after the initial frequent access period.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Amazon S3 Glacier (referring to S3 Glacier Flexible Retrieval or S3 Glacier Deep Archive) is designed for archiving, and data retrieval typically takes minutes to hours. This does not meet the requirement that "Immediate accessibility is always required" for the files throughout their 4-year lifecycle. (Note: S3 Glacier Instant Retrieval offers immediate access from an archive tier, but S3 Standard-IA is generally more suitable for infrequently accessed data that isn't cold enough for a dedicated archive tier if immediate access is paramount and access is just infrequent, not archival-rare).
+- [ ] Option B is wrong because: S3 One Zone-Infrequent Access (S3 One Zone-IA) stores data in only a single Availability Zone. While it is a lower-cost option, it is not suitable for "critical business data that is not easy to reproduce" because if that single Availability Zone fails, the data would be lost. This does not provide the necessary durability for critical data.
+- [ ] Option D is wrong because: The company policy requires the files to be "deleted" after 4 years, not moved to another storage tier like S3 Glacier. This option introduces an unnecessary archival step instead of deletion after the 4-year retention period.
+
+</details>
+
+<details>
+  <summary>Question 67</summary>
+
+A company hosts an application on multiple Amazon EC2 instances. The application processes messages from an Amazon SQS queue, writes to an Amazon RDS table, and deletes the message from the queue. Occasional duplicate records are found in the RDS table. The SQS queue does not contain any duplicate messages.
+
+What should a solutions architect do to ensure messages are being processed once only?
+
+- [ ] A. Use the CreateQueue API call to create a new queue.
+- [ ] B. Use the AddPermission API call to add appropriate permissions.
+- [ ] C. Use the ReceiveMessage API call to set an appropriate wait time.
+- [ ] D. Use the ChangeMessageVisibility API call to increase the visibility timeout.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Use the ChangeMessageVisibility API call to increase the visibility timeout.
+
+Why this is the correct answer:
+
+- [ ] Understanding SQS Message Lifecycle and Visibility Timeout: When a consumer (in this case, an EC2 instance) retrieves a message from an SQS queue, the message isn't immediately deleted. Instead, it becomes "invisible" for a period called the visibility timeout. During this time, other consumers cannot see or process this message. The consumer is expected to process the message and then explicitly delete it from the queue.
+- [ ] Cause of Duplicate Processing: If the application takes longer to process the message (write to RDS and then delete from SQS) than the configured visibility timeout, the message will become visible again in the queue. Another EC2 instance (or even the same instance if it retries) might then pick up this "reappeared" message and process it again, leading to duplicate records in the RDS table. The problem states the queue itself doesn't have duplicates, so the issue is with the processing.
+- [ ] Increasing Visibility Timeout: By using the ChangeMessageVisibility API call (or configuring it on the queue settings) to increase the visibility timeout to a value that is safely longer than the maximum expected time to process and delete a message, you ensure that a message does not become visible again prematurely. This gives the initial processing instance enough time to complete its work and delete the message, preventing other instances from picking it up and causing duplicate processing.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Creating a new queue does not solve the underlying problem of how messages are being processed from the existing queue. The issue is not with the queue itself containing duplicates but with the processing logic leading to messages being processed more than once.
+- [ ] Option B is wrong because: The AddPermission API call is used to grant other AWS accounts or services permissions to use the SQS queue. Incorrect permissions would likely lead to an inability to process messages or access denied errors, rather than causing duplicate processing of successfully retrieved messages.
+- [ ] Option C is wrong because: Setting an appropriate wait time for the ReceiveMessage API call enables long polling. Long polling reduces the number of empty responses when polling the queue and can make message retrieval more efficient and cost-effective. However, it does not directly prevent a message from being processed multiple times if the visibility timeout is too short for the actual processing duration.
+
+</details>
+
+<details>
+  <summary>Question 68</summary>
+ 
+A solutions architect is designing a new hybrid architecture to extend a company's on-premises infrastructure to AWS. The company requires a highly available connection with consistent low latency to an AWS Region. The company needs to minimize costs and is willing to accept slower traffic if the primary connection fails.
+
+What should the solutions architect do to meet these requirements?
+
+- [ ] A. Provision an AWS Direct Connect connection to a Region. Provision a VPN connection as a backup if the primary Direct Connect connection fails.
+- [ ] B. Provision a VPN tunnel connection to a Region for private connectivity. Provision a second VPN tunnel for private connectivity and as a backup if the primary VPN connection fails.
+- [ ] C. Provision an AWS Direct Connect connection to a Region. Provision a second Direct Connect connection to the same Region as a backup if the primary Direct Connect connection fails.
+- [ ] D. Provision an AWS Direct Connect connection to a Region. Use the Direct Connect failover attribute from the AWS CLI to automatically create a backup connection if the primary Direct Connect connection fails.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Provision an AWS Direct Connect connection to a Region. Provision a VPN connection as a backup if the primary Direct Connect connection fails.
+
+Why this is the correct answer:
+
+- [ ] AWS Direct Connect for Primary, Low-Latency Connection: AWS Direct Connect provides a dedicated physical network connection from your on-premises environment to AWS. This is ideal for achieving "consistent low latency" and can be configured for high availability (e.g., using redundant connections or connections to different Direct Connect locations).
+- [ ] VPN as a Cost-Effective Backup: An AWS Site-to-Site VPN connection routes traffic over the public internet. It is a more cost-effective option than a second Direct Connect connection and can serve as a reliable backup.
+- [ ] Meeting Cost and Failover Requirements: The company "needs to minimize costs and is willing to accept slower traffic if the primary connection fails." Using a VPN as a backup to Direct Connect aligns with this. The VPN will typically have higher latency and lower throughput than Direct Connect, but it provides a failover path at a lower cost than a redundant Direct Connect link. Failover from Direct Connect to VPN can be configured using dynamic routing (BGP).
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: While using two VPN tunnels can provide redundancy, VPN connections rely on the public internet and may not consistently provide the "consistent low latency" required for the primary connection, especially compared to what Direct Connect offers.
+- [ ] Option C is wrong because: Provisioning a second AWS Direct Connect connection for backup provides the highest level of availability and consistent performance for the backup path. However, it is also the most expensive option for a backup connection. This contradicts the requirement to "minimize costs," especially given the company's willingness to accept slower traffic on failover.
+- [ ] Option D is wrong because: There is no such thing as a "Direct Connect failover attribute from the AWS CLI to automatically create a backup connection." Failover mechanisms for Direct Connect involve network routing configurations (typically using BGP) to a pre-provisioned backup path (like another Direct Connect connection or a VPN). The backup connection needs to exist beforehand; it's not automatically created upon failure by a CLI attribute.
+
+</details>
+
+<details>
+  <summary>Question 69</summary>
+
+A company is running a business-critical web application on Amazon EC2 instances behind an Application Load Balancer. The EC2 instances are in an Auto Scaling group. The application uses an Amazon Aurora PostgreSQL database that is deployed in a single Availability Zone. The company wants the application to be highly available with minimum downtime and minimum loss of data.
+
+Which solution will meet these requirements with the LEAST operational effort?
+
+- [ ] A. Place the EC2 instances in different AWS Regions. Use Amazon Route 53 health checks to redirect traffic. Use Aurora PostgreSQL Cross-Region Replication.
+- [ ] B. Configure the Auto Scaling group to use multiple Availability Zones. Configure the database as Multi-AZ. Configure an Amazon RDS Proxy instance for the database.
+- [ ] C. Configure the Auto Scaling group to use one Availability Zone. Generate hourly snapshots of the database. Recover the database from the snapshots in the event of a failure.
+- [ ] D. Configure the Auto Scaling group to use multiple AWS Regions. Write the data from the application to Amazon S3. Use S3 Event Notifications to launch an AWS Lambda function to write the data to the database.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Configure the Auto Scaling group to use multiple Availability Zones. Configure the database as Multi-AZ. Configure an Amazon RDS Proxy instance for the database.
+
+Why this is the correct answer:
+
+- [ ] Auto Scaling Group Across Multiple Availability Zones: Distributing the EC2 instances across multiple Availability Zones (AZs) within the same region ensures that the application tier remains available even if one AZ experiences an outage. The Application Load Balancer will route traffic to healthy instances in the available AZs.
+- [ ] Aurora PostgreSQL Multi-AZ Deployment: The current database is in a single AZ, which is a single point of failure. Configuring the Amazon Aurora PostgreSQL database as a Multi-AZ deployment is crucial for high availability. Aurora automatically provisions and maintains a synchronous standby replica in a different AZ. In case of a primary database failure or an AZ outage, Aurora performs an automatic failover to the standby replica, typically within minutes, thus minimizing downtime and ensuring minimum data loss (RPO is near zero for synchronous replication).
+- [ ] Amazon RDS Proxy: Amazon RDS Proxy is a fully managed, highly available database proxy that sits between your application and your RDS/Aurora database. It helps improve application resilience by managing and sharing database connections. During a database failover (like an Aurora Multi-AZ failover), RDS Proxy can maintain open application connections and seamlessly connect to the newly promoted database instance, reducing the impact of failovers on the application and often leading to faster recovery times for the application. This further contributes to "minimum downtime."
+- [ ] Least Operational Effort: This solution leverages managed AWS services (Auto Scaling, Aurora Multi-AZ, RDS Proxy) that automate many of the complexities associated with achieving high availability, requiring the least operational effort from the company.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While deploying across multiple AWS Regions with Cross-Region Replication provides disaster recovery capabilities, it is significantly more complex and involves higher operational effort than a Multi-AZ deployment within a single region for achieving high availability. Aurora Cross-Region Replication is asynchronous, which means there could be some data loss (RPO > 0) in a failover scenario. This is more of a DR strategy than a primary HA strategy aimed at "minimum downtime and minimum loss of data" which is first typically addressed by Multi-AZ.
+- [ ] Option C is wrong because: Configuring the Auto Scaling group in a single Availability Zone makes the application tier vulnerable to an AZ failure. Generating hourly snapshots and recovering from them means a potential data loss of up to one hour (RPO = 1 hour) and a recovery time (RTO) that would likely be much longer than "minimum downtime" allows for a business-critical application.
+- [ ] Option D is wrong because: Deploying across multiple AWS Regions for the Auto Scaling group is complex for high availability. Using Amazon S3 as an intermediary data store before writing to the database introduces unnecessary latency, complexity, and potential points of failure in the critical data path for a transactional application. This is not a standard or efficient pattern for achieving high database availability.
+
+</details>
+
+<details>
+  <summary>Question 70</summary>
+
+A company's HTTP application is behind a Network Load Balancer (NLB). The NLB's target group is configured to use an Amazon EC2 Auto Scaling group with multiple EC2 instances that run the web service. The company notices that the NLB is not detecting HTTP errors for the application. These errors require a manual restart of the EC2 instances that run the web service. The company needs to improve the application's availability without writing custom scripts or code.
+
+What should a solutions architect do to meet these requirements?
+
+- [ ] A. Enable HTTP health checks on the NLB, supplying the URL of the company's application.
+- [ ] B. Add a cron job to the EC2 instances to check the local application's logs once each minute. If HTTP errors are detected. the application will restart.
+- [ ] C. Replace the NLB with an Application Load Balancer. Enable HTTP health checks by supplying the URL of the company's application. Configure an Auto Scaling action to replace unhealthy instances.
+- [ ] D. Create an Amazon CloudWatch alarm that monitors the UnhealthyHostCount metric for the NLB. Configure an Auto Scaling action to replace unhealthy instances when the alarm is in the ALARM state.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Replace the NLB with an Application Load Balancer. Enable HTTP health checks by supplying the URL of the company's application. Configure an Auto Scaling action to replace unhealthy instances.
+
+Why this is the correct answer:
+
+- [ ] Application-Level Health Checks with ALB: The problem states that the Network Load Balancer (NLB) is not detecting HTTP errors. NLBs operate at Layer 4 (transport layer) and perform health checks at the TCP level or basic HTTP checks. Application Load Balancers (ALBs), however, operate at Layer 7 (application layer) and can perform more sophisticated HTTP/HTTPS health checks. ALBs can check for specific HTTP status codes (e.g., expecting a 200 OK from a specific path) and can more reliably detect application-level errors. Replacing the NLB with an ALB allows for proper detection of HTTP errors.
+- [ ] Auto Scaling Based on ALB Health Checks: Once an ALB is in place with appropriate HTTP health checks, it will mark instances as unhealthy if they return HTTP errors. The EC2 Auto Scaling group can then be configured to use these ELB (ALB) health checks. When an instance is marked unhealthy by the ALB, the Auto Scaling group can automatically terminate that instance and launch a new one to replace it. This improves application availability by automating the recovery from failing instances.
+- [ ] No Custom Scripts or Code: This solution uses built-in AWS features (ALB health checks and Auto Scaling group actions) and does not require writing any custom scripts or code for health detection or instance remediation.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While NLBs do offer HTTP/HTTPS health checks, they are generally less granular than ALB health checks for detecting application-specific HTTP errors. If the NLB is currently "not detecting HTTP errors," simply enabling or tweaking its existing HTTP health checks might not be sufficient if the issue lies in the depth of checking required, which ALBs handle better.
+- [ ] Option B is wrong because: Adding a cron job to check logs and restart the application involves writing custom scripts, which directly contradicts the requirement to achieve the solution "without writing custom scripts or code."
+- [ ] Option D is wrong because: If the NLB's health checks are not correctly identifying the instances as unhealthy when they are returning HTTP errors (as stated in the problem: "NLB is not detecting HTTP errors"), then the UnhealthyHostCount metric for the NLB will not be accurate. An alarm based on this potentially inaccurate metric would not reliably trigger the Auto Scaling action to replace the genuinely unhealthy instances. The root cause of the health check inadequacy needs to be addressed first.
+
+</details>
+
+</details>
 
 
 
