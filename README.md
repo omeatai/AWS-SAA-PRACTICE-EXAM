@@ -3637,6 +3637,273 @@ Why are the other answers wrong?
 
 </details>
 
+</details>
+
+<details>
+  <summary>==Questions 101-110==</summary>
+
+<details>
+  <summary>Question 101</summary>
+ 
+A solutions architect is designing a VPC with public and private subnets. The VPC and subnets use IPv4 CIDR blocks. There is one public subnet and one private subnet in each of three Availability Zones (AZs) for high availability. An internet gateway is used to provide internet access for the public subnets. The private subnets require access to the internet to allow Amazon EC2 instances to download software updates.
+
+What should the solutions architect do to enable Internet access for the private subnets?
+
+- [ ] A. Create three NAT gateways, one for each public subnet in each AZ. Create a private route table for each AZ that forwards non-VPC traffic to the NAT gateway in its AZ.
+- [ ] B. Create three NAT instances, one for each private subnet in each AZ. Create a private route table for each AZ that forwards non-VPC traffic to the NAT instance in its AZ.
+- [ ] C. Create a second internet gateway on one of the private subnets. Update the route table for the private subnets that forward non-VPC traffic to the private internet gateway.
+- [ ] D. Create an egress-only internet gateway on one of the public subnets. Update the route table for the private subnets that forward non-VPC traffic to the egress-only Internet gateway.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Create three NAT gateways, one for each public subnet in each AZ. Create a private route table for each AZ that forwards non-VPC traffic to the NAT gateway in it
+
+Why this is the correct answer:
+
+- [ ] NAT Gateways for Private Subnet Outbound Access: Amazon EC2 instances in private subnets need a way to access the internet for tasks like downloading software updates without being directly exposed to incoming traffic from the internet. NAT (Network Address Translation) gateways are designed for this purpose. They allow instances in private subnets to initiate outbound IPv4 traffic to the internet but prevent unsolicited inbound connections.
+- [ ] High Availability Across Availability Zones: The architecture has three Availability Zones (AZs) for high availability. To ensure that internet access for private subnets remains available even if one AZ has an issue, it's a best practice to deploy a NAT gateway in a public subnet in each AZ.
+- [ ] Zonal Routing for Resilience and Cost: Each private subnet (or the group of private subnets within a specific AZ) should have its route table configured to direct internet-bound traffic (0.0.0.0/0) to the NAT gateway located in its own AZ. This avoids cross-AZ data transfer costs for NAT gateway traffic and ensures that the failure of a NAT gateway in one AZ does not impact the internet connectivity of private subnets in other AZs.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: While NAT instances can also provide NAT functionality, NAT gateways are AWS-managed, offering higher availability, greater bandwidth, and less administrative effort (no need to patch or manage the instance OS) compared to self-managed NAT instances. For a new design emphasizing high availability, NAT gateways are preferred. Also, placing NAT instances in private subnets is incorrect; they need to be in a public subnet with a route to the internet gateway.
+- [ ] Option C is wrong because: A VPC can have only one Internet Gateway (IGW) attached to it. It's not possible to create a "second internet gateway." Furthermore, Internet Gateways are for providing direct, two-way internet access, typically for public subnets, not for providing outbound-only access for private subnets.
+- [ ] Option D is wrong because: An Egress-Only Internet Gateway is used specifically for IPv6 traffic. It allows instances in your VPC to initiate outbound connections over IPv6 to the internet while preventing the internet from initiating IPv6 connections to your instances. The question specifies that the VPC and subnets use "IPv4 CIDR blocks," and the common need for software updates implies IPv4 internet access. An egress-only internet gateway does not provide IPv4 outbound connectivity.
+
+</details>  
+
+<details>
+  <summary>Question 102</summary>
+
+A company wants to migrate an on-premises data center to AWS. The data center hosts an SFTP server that stores its data on an NFS-based file system. The server holds 200 GB of data that needs to be transferred. The server must be hosted on an Amazon EC2 instance that uses an Amazon Elastic File System (Amazon EFS) file system.
+
+Which combination of steps should a solutions architect take to automate this task? (Choose two.)
+
+- [ ] A. Launch the EC2 instance into the same Availability Zone as the EFS file system.
+- [ ] B. Install an AWS DataSync agent in the on-premises data center.
+- [ ] C. Create a secondary Amazon Elastic Block Store (Amazon EBS) volume on the EC2 instance for the data.
+- [ ] D. Manually use an operating system copy command to push the data to the EC2 instance.
+- [ ] E. Use AWS DataSync to create a suitable location configuration for the on-premises SFTP server.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Install an AWS DataSync agent in the on-premises data center.
+- [ ] E. Use AWS DataSync to create a suitable location configuration for the on-premises SFTP server.
+
+Why these are the correct answers:
+
+This solution focuses on automating the transfer of 200 GB of data from an on-premises NFS file system (backing an SFTP server) to an Amazon EFS file system in AWS.
+
+B. Install an AWS DataSync agent in the on-premises data center.
+- [ ] AWS DataSync Agent: To use AWS DataSync for transferring data from an on-premises location, you need to deploy a DataSync agent (a virtual machine) in your on-premises environment.
+- [ ] This agent will access your on-premises NFS file system and manage the data transfer to AWS.
+
+E. Use AWS DataSync to create a suitable location configuration for the on-premises SFTP server.
+- [ ] DataSync Locations and Task: Once the agent is deployed and activated, you configure AWS DataSync by creating a source location that points to your on-premises NFS file system (which backs the SFTP server) and a destination location that points to your Amazon EFS file system in AWS.
+- [ ] Then, you create a DataSync task to manage the automated transfer of data between these locations. DataSync handles the scheduling, monitoring, data validation, and optimization of the transfer.
+- [ ] This combination provides an automated, efficient, and managed way to transfer the data.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While an EC2 instance needs to be in a VPC with mount targets for the EFS file system (which exist in specific AZs), EFS itself is a regional service designed to be accessible from any AZ within the region where it's created. This step is related to how the EC2 instance accesses EFS after migration, not directly a step in automating the data transfer from on-premises. The core of the automation is DataSync.
+- [ ] Option C is wrong because: The requirement clearly states that the new SFTP server hosted on an EC2 instance must use an Amazon EFS file system, not an EBS volume, for its data. Creating an EBS volume contradicts this requirement.
+- [ ] Option D is wrong because: Manually using operating system copy commands (like scp, rsync, or cp over an NFS mount) is not an "automated task" in the context of a managed migration service like DataSync. Manual copies lack the built-in scheduling, monitoring, error handling, data validation, and transfer optimization features that DataSync provides, and they would require more manual intervention, especially for 200 GB of data.
+
+</details>
+
+<details>
+  <summary>Question 103</summary>
+
+A company has an AWS Glue extract, transform, and load (ETL) job that runs every day at the same time. The job processes XML data that is in an Amazon S3 bucket. New data is added to the S3 bucket every day. A solutions architect notices that AWS Glue is processing all the data during each run.
+
+What should the solutions architect do to prevent AWS Glue from reprocessing old data?
+
+- [ ] A. Edit the job to use job bookmarks.
+- [ ] B. Edit the job to delete data after the data is processed.
+- [ ] C. Edit the job by setting the NumberOfWorkers field to 1.
+- [ ] D. Use a FindMatches machine learning (ML) transform.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Edit the job to use job bookmarks.
+
+Why this is the correct answer:
+
+- [ ] AWS Glue Job Bookmarks: AWS Glue job bookmarks are a feature that allows AWS Glue to keep track of data that has already been processed during previous runs of an ETL job. When job bookmarks are enabled and used correctly, on subsequent runs, the Glue job will only process new data that has arrived in the Amazon S3 bucket (or other source) since the last successful run.
+- [ ] Preventing Reprocessing of Old Data: This directly addresses the problem described: "AWS Glue is processing all the data during each run." By enabling job bookmarks, the job will skip the old, already processed data and only focus on the new XML data added daily.
+- [ ] Suitable for Incremental Processing: This is the standard mechanism in AWS Glue for achieving incremental processing of data from sources like S3 where new files are added over time.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: Editing the job to delete data after it is processed might not be a desirable or safe approach. The source data in S3 might be needed for other purposes, auditing, re-running the ETL job in case of issues, or historical record-keeping. Deleting source data is a destructive action and not the primary method for preventing reprocessing.
+- [ ] Option C is wrong because: The NumberOfWorkers field in an AWS Glue job configuration relates to the number of Data Processing Units (DPUs) allocated to the job, which affects its processing capacity and parallelism. Setting this field to 1 would reduce the job's performance and make it run slower, but it would not, by itself, prevent the job from reprocessing old data if job bookmarks are not enabled.
+- [ ] Option D is wrong because: The FindMatches ML transform in AWS Glue is used for identifying duplicate or matching records within a dataset (e.g., for data deduplication or record linkage). It is not a feature designed to prevent an ETL job from reprocessing input files that have already been processed in previous runs.
+
+</details>
+
+<details>
+  <summary>Question 104</summary>
+ 
+A solutions architect must design a highly available infrastructure for a website. The website is powered by Windows web servers that run on Amazon EC2 instances. The solutions architect must implement a solution that can mitigate a large-scale DDoS attack that originates from thousands of IP addresses. Downtime is not acceptable for the website.
+
+Which actions should the solutions architect take to protect the website from such an attack? (Choose two.)
+
+- [ ] A. Use AWS Shield Advanced to stop the DDoS attack.
+- [ ] B. Configure Amazon GuardDuty to automatically block the attackers.
+- [ ] C. Configure the website to use Amazon CloudFront for both static and dynamic content.
+- [ ] D. Use an AWS Lambda function to automatically add attacker IP addresses to VPC network ACLS.
+- [ ] E. Use EC2 Spot Instances in an Auto Scaling group with a target tracking scaling policy that is set to 80% CPU utilization.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Use AWS Shield Advanced to stop the DDoS attack.
+- [ ] C. Configure the website to use Amazon CloudFront for both static and dynamic content.
+
+Why these are the correct answers:
+
+This solution combines a CDN with advanced DDoS protection services:
+
+A. Use AWS Shield Advanced to stop the DDoS attack.
+- [ ] Enhanced DDoS Protection: AWS Shield Advanced provides significantly more robust protection against larger and more sophisticated Distributed Denial of Service (DDoS) attacks compared to the default AWS Shield Standard.
+- [ ] It offers detection and mitigation against volumetric network layer attacks, state-exhaustion attacks, and application layer attacks (when used with AWS WAF).
+- [ ] Access to DDoS Response Team (DRT): Shield Advanced customers get 24/7 access to the AWS DDoS Response Team (DRT) for assistance during an attack, which is crucial when "Downtime is not acceptable."
+- [ ] Cost Protection: It also provides cost protection against usage spikes on protected resources like CloudFront, ELB, and EC2 that might result from a DDoS attack.
+
+C. Configure the website to use Amazon CloudFront for both static and dynamic content.
+- [ ] Distributed Attack Absorption: Amazon CloudFront is a global content delivery network (CDN) with a large network of edge locations.
+- [ ] This distributed infrastructure can absorb many common infrastructure-level DDoS attacks (like SYN floods or UDP reflection attacks) at the edge, preventing them from reaching your origin servers.
+- [ ] Reduced Attack Surface: By serving content from the edge, CloudFront reduces the direct exposure of your origin EC2 instances.
+- [ ] Integration with WAF and Shield: CloudFront integrates seamlessly with AWS WAF (for application-layer filtering) and AWS Shield, providing a layered security approach at the edge.
+- [ ] This combination is highly effective in mitigating DDoS attacks.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: Amazon GuardDuty is a threat detection service that monitors for malicious activity and unauthorized behavior within your AWS environment. While it can help detect indicators of a DDoS attack or compromised resources, GuardDuty itself does not automatically block attackers or provide DDoS mitigation. It provides findings that can then be used to trigger other responses, but it's not a primary mitigation tool.
+- [ ] Option D is wrong because: While it's possible to build a custom solution using AWS Lambda to dynamically update VPC Network ACLs (NACLs) based on detected malicious IP addresses, this approach has limitations for "large-scale DDoS attacks originating from thousands of IP addresses." NACLs have rule limits, and managing dynamic updates at this scale can be complex, slow to react, and operationally burdensome compared to dedicated DDoS mitigation services like AWS Shield and AWS WAF.
+- [ ] Option E is wrong because: EC2 Spot Instances can be terminated by AWS with a two-minute notice if AWS needs the capacity back. Relying on Spot Instances for a critical website where "Downtime is not acceptable" is risky, especially during a DDoS attack which could cause unpredictable load and instance behavior. While Auto Scaling helps with legitimate traffic, Spot Instances are not a DDoS mitigation strategy.
+
+</details>
+
+<details>
+  <summary>Question 105</summary>
+
+A company is preparing to deploy a new serverless workload. A solutions architect must use the principle of least privilege to configure permissions that will be used to run an AWS Lambda function. An Amazon EventBridge (Amazon CloudWatch Events) rule will invoke the function.
+
+Which solution meets these requirements?
+
+- [ ] A. Add an execution role to the function with lambda:InvokeFunction as the action and * as the principal.
+- [ ] B. Add an execution role to the function with lambda:InvokeFunction as the action and Service: https://www.google.com/url?sa=E&amp;source=gmail&amp;q=lambda.amazonaws.com as the principal.
+- [ ] C. Add a resource-based policy to the function with lambda:* as the action and Service: https://www.google.com/url?sa=E&amp;source=gmail&amp;q=events.amazonaws.com as the principal.
+- [ ] D. Add a resource-based policy to the function with lambda:InvokeFunction as the action and Service: https://www.google.com/url?sa=E&amp;source=gmail&amp;q=events.amazonaws.com as the principal.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Add a resource-based policy to the function with lambda:InvokeFunction as the action and Service: https://www.google.com/url?sa=E&amp;source=gmail&amp;q=events.amazonaws.com as the principal.
+
+Why this is the correct answer:
+
+- [ ] Resource-Based Policy for Lambda Invocation: To allow an AWS service like Amazon EventBridge to invoke an AWS Lambda function, you need to grant permission to the EventBridge service principal in the Lambda function's resource-based policy (also known as the function policy).
+- [ ] Principle of Least Privilege - Action: The specific action that EventBridge needs to invoke the Lambda function is lambda:InvokeFunction. Granting only this action, rather than a wildcard like lambda:*, adheres to the principle of least privilege.
+- [ ] Principle of Least Privilege - Principal: The principal that needs this permission is the EventBridge service itself, which is specified as Service: events.amazonaws.com.
+- [ ] This configuration specifically allows only the EventBridge service to invoke this particular Lambda function, which is the most secure and least privileged setup for this scenario.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: It describes configuring an IAM execution role, which defines what the Lambda function can do (its permissions to access other AWS services), not who can invoke the Lambda function. The Principal in an execution role's trust policy should be Service: lambda.amazonaws.com (allowing the Lambda service to assume the role), not * (which is too permissive). lambda:InvokeFunction is an action granted to an invoker, not typically an action performed by the function itself through its execution role in this context.
+- [ ] Option B is wrong because: This also incorrectly focuses on the execution role for granting invocation permission. The principal Service: lambda.amazonaws.com is correct for the trust policy of an execution role, but this doesn't grant EventBridge permission to invoke the function.
+- [ ] Option C is wrong because: While using a resource-based policy for the Lambda function and specifying Service: events.amazonaws.com as the principal are correct steps, granting the lambda:* action is too permissive. This would allow EventBridge to perform all possible Lambda actions on the function (e.g., delete the function, update its configuration), which violates the principle of least privilege. Only lambda:InvokeFunction is required.
+
+</details>
+
+<details>
+  <summary>Question 106</summary>
+
+A company is preparing to store confidential data in Amazon S3. For compliance reasons, the data must be encrypted at rest. Encryption key usage must be logged for auditing purposes. Keys must be rotated every year.
+
+Which solution meets these requirements and is the MOST operationally efficient?
+
+- [ ] A. Server-side encryption with customer-provided keys (SSE-C)
+- [ ] B. Server-side encryption with Amazon S3 managed keys (SSE-S3)
+- [ ] C. Server-side encryption with AWS KMS keys (SSE-KMS) with manual rotation
+- [ ] D. Server-side encryption with AWS KMS keys (SSE-KMS) with automatic rotation
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Server-side encryption with AWS KMS keys (SSE-KMS) with automatic rotation
+
+Why this is the correct answer:
+
+- [ ] Server-Side Encryption with AWS KMS keys (SSE-KMS): This option encrypts data at rest in Amazon S3 using encryption keys managed in AWS Key Management Service (KMS). This provides strong encryption and allows for centralized key management.
+- [ ] Logging of Key Usage: AWS KMS is integrated with AWS CloudTrail. All API calls made to KMS, including when S3 uses a KMS key for encryption or decryption (as with SSE-KMS), are logged in CloudTrail. This provides an audit trail of key usage, meeting the requirement for logging.
+- [ ] Automatic Key Rotation: AWS KMS supports automatic annual rotation of the key material for customer master keys (CMKs) that are customer managed (you create them in KMS, and AWS rotates the backing key material). This meets the requirement that "Keys must be rotated every year" with minimal manual intervention.
+- [ ] MOST Operationally Efficient: Using SSE-KMS with automatic key rotation is highly operationally efficient. AWS manages the encryption process, the secure storage of the keys, the automatic rotation of key material, and the logging of key usage through CloudTrail. This significantly reduces the operational burden on the company compared to managing keys and rotation manually.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: With Server-Side Encryption with Customer-Provided Keys (SSE-C), the company is responsible for managing the encryption keys themselves. This includes key generation, secure storage, rotation, and providing the key with every request to S3. This involves significant operational overhead and complexity, and AWS does not manage or log these customer-provided keys in KMS/CloudTrail in the same way.
+- [ ] Option B is wrong because: Server-Side Encryption with Amazon S3 Managed Keys (SSE-S3) uses encryption keys that are fully managed by Amazon S3. While this is very simple and encrypts data at rest, it provides less control and less detailed audit information about key usage compared to SSE-KMS. The rotation of these S3-managed keys is handled by AWS, but the customer has no direct control or visibility into this process, and the auditing of key usage for compliance might not be as robust as with SSE-KMS.
+- [ ] Option C is wrong because: While SSE-KMS is the correct encryption method, relying on "manual rotation" of KMS keys introduces operational overhead. The administrator would need to remember to rotate the keys annually and perform the rotation steps. Automatic rotation (as in option D) is more operationally efficient and less prone to human error for meeting the annual rotation requirement.
+
+</details>
+
+<details>
+  <summary>Question 107</summary>
+
+A bicycle sharing company is developing a multi-tier architecture to track the location of its bicycles during peak operating hours. The company wants to use these data points in its existing analytics platform. A solutions architect must determine the most viable multi-tier option to support this architecture. The data points must be accessible from the REST API.
+
+Which action meets these requirements for storing and retrieving location data?
+
+- [ ] A. Use Amazon Athena with Amazon S3.
+- [ ] B. Use Amazon API Gateway with AWS Lambda.
+- [ ] C. Use Amazon QuickSight with Amazon Redshift.
+- [ ] D. Use Amazon API Gateway with Amazon Kinesis Data Analytics.
+
+Correct Answer: B
+
+Why this is the correct answer:
+
+This question focuses on the components needed for storing and retrieving location data that must be accessible via a REST API, and then subsequently used in an analytics platform.
+
+Amazon API Gateway for REST API: Amazon API Gateway is a fully managed service that makes it easy for developers to create, publish, maintain, monitor, and secure APIs at any scale. This directly addresses the requirement that "The data points must be accessible from the REST API." API Gateway would serve as the frontend for these API calls.
+AWS Lambda for Backend Logic (Storing and Retrieving): AWS Lambda functions can be integrated with API Gateway to provide the backend logic. When API Gateway receives a request (e.g., to store a new location or retrieve a location), it can invoke a Lambda function. This Lambda function would then contain the code to interact with a suitable database or storage service (like Amazon DynamoDB, which is often used for such use cases due to its scalability and low latency, though the specific database isn't named in this option) to perform the actual "storing and retrieving location data."
+Multi-Tier Architecture and Viability: This combination forms a scalable, serverless backend, fitting a multi-tier architecture. The data, once stored by this mechanism, can then be fed into the "existing analytics platform."
+Why are the other answers wrong?
+
+Option A is wrong because: Amazon Athena is a serverless query service primarily used for analyzing data in Amazon S3 using standard SQL. While S3 could store location data and Athena could analyze it (fitting the "analytics platform" part), Athena is not designed for real-time transactional storing and retrieving of individual data points via a low-latency REST API, especially for tracking active bicycle locations.
+Option C is wrong because: Amazon QuickSight is a business intelligence (BI) service used for creating visualizations and dashboards. Amazon Redshift is a data warehousing service. Both are components of an analytics platform but are not the primary tools for building a REST API to store and retrieve individual, real-time location data points for a tracking system.
+Option D is wrong because: While Amazon API Gateway is correct for the REST API frontend, Amazon Kinesis Data Analytics is designed for real-time processing and analysis of streaming data. It's not a storage service from which individual data points would typically be retrieved via an API in the context of a simple store/retrieve pattern. Data would flow through Kinesis Data Analytics for analysis, not be stored in it for API-based retrieval of specific records.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A.  Turn
+
+
+</details>
+
+
+
+
 
 
 
