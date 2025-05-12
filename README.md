@@ -2506,7 +2506,379 @@ Why are the other answers wrong?
 
 </details>
 
+<details>
+  <summary>==Questions 71-80==</summary>
 
+<details>
+  <summary>Question 71</summary>
+
+A company runs a shopping application that uses Amazon DynamoDB to store customer information. In case of data corruption, a solutions architect needs to design a solution that meets a recovery point objective (RPO) of 15 minutes and a recovery time objective (RTO) of 1 hour.
+
+What should the solutions architect recommend to meet these requirements?
+
+- [ ] A. Configure DynamoDB global tables. For RPO recovery, point the application to a different AWS Region.
+- [ ] B. Configure DynamoDB point-in-time recovery. For RPO recovery, restore to the desired point in time.
+- [ ] C. Export the DynamoDB data to Amazon S3 Glacier on a daily basis. For RPO recovery, import the data from S3 Glacier to DynamoDB.
+- [ ] D. Schedule Amazon Elastic Block Store (Amazon EBS) snapshots for the DynamoDB table every 15 minutes. For RPO recovery, restore the DynamoDB table by using the EBS snapshot.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Configure DynamoDB point-in-time recovery. For RPO recovery, restore to the desired point in time.
+
+Why this is the correct answer:
+
+- [ ] DynamoDB Point-in-Time Recovery (PITR): Amazon DynamoDB point-in-time recovery (PITR) provides continuous backups of your table data. When enabled, DynamoDB backs up your data with per-second granularity, and you can restore your table to any single second during the preceding 35 days.
+- [ ] Meeting RPO of 15 minutes: Since PITR allows restoration to any second within the retention period, it can easily meet a Recovery Point Objective (RPO) of 15 minutes. If data corruption occurs, you can restore the table to a state just moments before the corruption event.
+- [ ] Meeting RTO of 1 hour: Restoring a DynamoDB table using PITR creates a new table with the restored data. The time it takes to restore a table depends on its size and other factors, but for many common table sizes, the restoration process can be completed well within a 1-hour Recovery Time Objective (RTO).
+- [ ] Designed for Data Corruption: PITR is specifically designed to protect against accidental writes or deletes (i.e., data corruption) by allowing you to revert the table to a previous state.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: DynamoDB global tables provide a multi-region, multi-active database solution, primarily for disaster recovery from regional outages and for providing low-latency access to globally distributed users. If data corruption occurs in one region, that corrupted data will replicate to the other regions. Global tables do not inherently protect against logical data corruption within the table itself by allowing a rollback to a previous point in time.
+- [ ] Option C is wrong because: Exporting DynamoDB data to Amazon S3 Glacier on a daily basis would result in an RPO of up to 24 hours, which does not meet the 15-minute RPO requirement. Additionally, retrieving data from S3 Glacier typically takes minutes to hours, and then importing it back into DynamoDB would add further to the recovery time, likely exceeding the 1-hour RTO.
+- [ ] Option D is wrong because: Amazon DynamoDB is a fully managed NoSQL database service. Users do not directly manage its underlying storage with Amazon EBS volumes in a way that would allow them to take EBS snapshots. DynamoDB has its own native backup and restore mechanisms, such as on-demand backups and point-in-time recovery. This option describes an incorrect method for backing up DynamoDB.
+
+</details>  
+
+<details>
+  <summary>Question 72</summary>
+ 
+A company runs a photo processing application that needs to frequently upload and download pictures from Amazon S3 buckets that are located in the same AWS Region. A solutions architect has noticed an increased cost in data transfer fees and needs to implement a solution to reduce these costs.
+
+How can the solutions architect meet this requirement?
+
+- [ ] A. Deploy Amazon API Gateway into a public subnet and adjust the route table to route S3 calls through it.
+- [ ] B. Deploy a NAT gateway into a public subnet and attach an endpoint policy that allows access to the S3 buckets.
+- [ ] C. Deploy the application into a public subnet and allow it to route through an internet gateway to access the S3 buckets.
+- [ ] D. Deploy an S3 VPC gateway endpoint into the VPC and attach an endpoint policy that allows access to the S3 buckets.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Deploy an S3 VPC gateway endpoint into the VPC and attach an endpoint policy that allows access to the S3 buckets.
+
+Why this is the correct answer:
+
+- [ ] Reducing S3 Data Transfer Costs within a VPC: When EC2 instances (or other resources within a VPC) access Amazon S3 in the same region, traffic might route through a NAT Gateway or an Internet Gateway if a private connection isn't established. This can lead to data transfer costs (specifically, NAT Gateway data processing charges).
+- [ ] S3 VPC Gateway Endpoint: An S3 VPC gateway endpoint enables instances in your VPC to use their private IP addresses to access Amazon S3 directly, without needing an Internet Gateway, NAT device, VPN connection, or AWS Direct Connect connection. Traffic between your VPC and S3 does not leave the Amazon network.   
+- [ ] Cost Savings: Crucially, data transferred between your EC2 instances and S3 through a gateway VPC endpoint within the same AWS Region does not incur data transfer charges or NAT gateway processing charges. This directly addresses the requirement to "reduce these costs."
+Endpoint Policy for Security: An endpoint policy can be attached to the S3 gateway endpoint to control access to S3 buckets from your VPC, providing an additional layer of security.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Amazon API Gateway is a service for creating, managing, and securing APIs. Using it as a proxy for S3 calls primarily to reduce data transfer costs for an application that directly interacts with S3 for uploads/downloads is an overly complex and inappropriate solution. It would likely introduce its own costs and latency.
+- [ ] Option B is wrong because: If the application instances are in private subnets, they might already be using a NAT gateway to access S3 (which is causing the data transfer fees). Deploying or continuing to use a NAT gateway for S3 access will incur data processing charges for traffic passing through it. A VPC gateway endpoint for S3 bypasses the NAT gateway for S3 traffic, thus saving those costs.
+- [ ] Option C is wrong because: If application instances are in a public subnet and use an Internet Gateway to access S3, this avoids NAT gateway charges. However, using a gateway VPC endpoint (Option D) is still the most direct and recommended way to ensure private connectivity to S3 and eliminate any potential data transfer costs for S3 access within the same region. It also allows instances to reside in private subnets for better security, while still accessing S3 cost-effectively.
+
+</details>
+
+<details>
+  <summary>Question 73</summary>
+
+A company recently launched Linux-based application instances on Amazon EC2 in a private subnet and launched a Linux-based bastion host on an Amazon EC2 instance in a public subnet of a VPC. A solutions architect needs to connect from the on-premises network, through the company's internet connection, to the bastion host, and to the application servers. The solutions architect must make sure that the security groups of all the EC2 instances will allow that access.
+
+Which combination of steps should the solutions architect take to meet these requirements? (Choose two.)
+
+- [ ] A. Replace the current security group of the bastion host with one that only allows inbound access from the application instances.
+- [ ] B. Replace the current security group of the bastion host with one that only allows inbound access from the internal IP range for the company.
+- [ ] C. Replace the current security group of the bastion host with one that only allows inbound access from the external IP range for the company.
+- [ ] D. Replace the current security group of the application instances with one that allows inbound SSH access from only the private IP address of the bastion host.
+- [ ] E. Replace the current security group of the application instances with one that allows inbound SSH access from only the public IP address of the bastion host.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Replace the current security group of the bastion host with one that only allows inbound access from the external IP range for the company.
+- [ ] D. Replace the current security group of the application instances with one that allows inbound SSH access from only the private IP address of the bastion host.
+
+Why these are the correct answers:
+
+This question describes a typical bastion host setup for secure SSH access to instances in private subnets.
+
+C. Replace the current security group of the bastion host with one that only allows inbound access from the external IP range for the company.
+- [ ] Bastion Host Security: The bastion host is in a public subnet and serves as the entry point from the internet (or an on-premises network via the internet) into the VPC.
+- [ ] Its security group should be configured to allow inbound SSH traffic (typically on port 22 for Linux) only from the known public IP address range of the company's on-premises network.
+- [ ] This restricts access to the bastion host itself, preventing unauthorized connection attempts from the wider internet.
+
+D. Replace the current security group of the application instances with one that allows inbound SSH access from only the private IP address of the bastion host.
+- [ ] Application Instance Security: The application instances are in a private subnet and should not be directly accessible from the internet.
+- [ ] Access to these instances should be routed through the bastion host. Therefore, the security group for the application instances should allow inbound SSH traffic (port 22) only from the bastion host.
+- [ ] This is best achieved by specifying the private IP address of the bastion host as the source in the inbound rule (or, even more securely and flexibly, by referencing the security group ID of the bastion host, though that specific wording isn't an option here, the private IP achieves the same goal from a specific instance).
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: The bastion host is the entry point; it does not need inbound access from the application instances it is designed to protect. Traffic flows from the on-premises network to the bastion, then from the bastion to the application instances.
+- [ ] Option B is wrong because: "Internal IP range for the company" usually refers to the company's on-premises private IP addresses. These private IPs are not routable over the public internet to reach the bastion host's public IP. The bastion host's security group needs to allow traffic from the company's external (public) IP range.
+- [ ] Option E is wrong because: When the bastion host initiates an SSH connection to an application instance in a private subnet within the same VPC, the source IP address of that connection will be the bastion host's private IP address, not its public IP address. Therefore, the application instances' security group must allow inbound SSH from the bastion's private IP.
+
+</details>
+
+<details>
+  <summary>Question 74</summary>
+
+A solutions architect is designing a two-tier web application. The application consists of a public-facing web tier hosted on Amazon EC2 in public subnets. The database tier consists of Microsoft SQL Server running on Amazon EC2 in a private subnet. Security is a high priority for the company.
+
+How should security groups be configured in this situation? (Choose two.)
+
+- [ ] A. Configure the security group for the web tier to allow inbound traffic on port 443 from 0.0.0.0/0.
+- [ ] B. Configure the security group for the web tier to allow outbound traffic on port 443 from 0.0.0.0/0.
+- [ ] C. Configure the security group for the database tier to allow inbound traffic on port 1433 from the security group for the web tier.
+- [ ] D. Configure the security group for the database tier to allow outbound traffic on ports 443 and 1433 to the security group for the web tier.
+- [ ] E. Configure the security group for the database tier to allow inbound traffic on ports 443 and 1433 from the security group for the web tier.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Configure the security group for the web tier to allow inbound traffic on port 443 from 0.0.0.0/0.
+- [ ] C. Configure the security group for the database tier to allow inbound traffic on port 1433 from the security group for the web tier.
+
+Why these are the correct answers:
+
+This setup describes a standard best practice for securing a two-tier web application using security groups:
+
+A. Configure the security group for the web tier to allow inbound traffic on port 443 from 0.0.0.0/0.
+- [ ] Public Access to Web Tier: The web tier is public-facing and needs to accept incoming HTTPS traffic from users on the internet.
+- [ ] Port 443 is the standard port for HTTPS. 0.0.0.0/0 represents any IP address, allowing global access to the web application over HTTPS. (Often, HTTP on port 80 would also be allowed, typically with a redirect to HTTPS, but allowing 443 from anywhere is essential for public web access).
+
+C. Configure the security group for the database tier to allow inbound traffic on port 1433 from the security group for the web tier.
+- [ ] Restricted Access to Database Tier: The database tier is in a private subnet and should only be accessible by the application's web tier.
+- [ ] Microsoft SQL Server typically listens on port 1433.
+- [ ] Security Group Referencing: A security best practice is to configure the database tier's security group to allow inbound traffic on port 1433 only from the security group that is attached to the web tier EC2 instances.
+- [ ] This ensures that only the web servers can initiate connections to the database, providing tight network isolation.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: Security groups are stateful. If inbound traffic on port 443 is allowed (as in option A), the corresponding outbound response traffic is automatically allowed. Outbound rules are typically configured for traffic initiated by the instances in the security group. Specifying a source IP (0.0.0.0/0) for an outbound rule in this context is not how it's typically defined; you define the destination and port for outbound traffic.
+- [ ] Option D is wrong because: The primary concern for connectivity between the web and database tiers is allowing the web tier to initiate connections to the database tier. While the database tier will send outbound traffic in response to these connections (which is statefully allowed), explicitly defining outbound rules from the database to the web tier's security group on ports 443 and 1433 is not the standard way to enable the required web-to-database communication. The critical rule is the inbound rule on the database security group.
+- [ ] Option E is wrong because: The database tier (Microsoft SQL Server) listens for database connections on port 1433. It does not need to accept inbound traffic on port 443 (HTTPS) from the web tier for standard database communication. Port 443 is for web traffic.
+
+</details>
+
+<details>
+  <summary>Question 75</summary>
+
+A company wants to move a multi-tiered application from on premises to the AWS Cloud to improve the application's performance. The application consists of application tiers that communicate with each other by way of RESTful services. Transactions are dropped when one tier becomes overloaded. A solutions architect must design a solution that resolves these issues and modernizes the application.
+
+Which solution meets these requirements and is the MOST operationally efficient?
+
+- [ ] A. Use Amazon API Gateway and direct transactions to the AWS Lambda functions as the application layer. Use Amazon Simple Queue Service (Amazon SQS) as the communication layer between application services.
+- [ ] B. Use Amazon CloudWatch metrics to analyze the application performance history to determine the servers' peak utilization during the performance failures. Increase the size of the application server's Amazon EC2 instances to meet the peak requirements.
+- [ ] C. Use Amazon Simple Notification Service (Amazon SNS) to handle the messaging between application servers running on Amazon EC2 in an Auto Scaling group. Use Amazon CloudWatch to monitor the SNS queue length and scale up and down as required.
+- [ ] D. Use Amazon Simple Queue Service (Amazon SQS) to handle the messaging between application servers running on Amazon EC2 in an Auto Scaling group. Use Amazon CloudWatch to monitor the SQS queue length and scale up when communication failures are detected.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Use Amazon API Gateway and direct transactions to the AWS Lambda functions as the application layer. Use Amazon Simple Queue Service (Amazon SQS) as the communication layer between application services.
+
+Why this is the correct answer:
+
+- [ ] Modernization with Serverless Components: This solution proposes a significant modernization by moving towards a serverless architecture.
+- [ ] Amazon API Gateway and AWS Lambda: Using API Gateway to expose RESTful services and AWS Lambda functions to implement the application logic for each tier is highly scalable, resilient, and "operationally efficient." There are no servers to manage for this part of the application, as AWS handles the underlying infrastructure, scaling, and availability.
+- [ ] Resolving Dropped Transactions with SQS: The problem states "Transactions are dropped when one tier becomes overloaded." Using Amazon Simple Queue Service (Amazon SQS) as the communication layer between these application services (implemented as Lambda functions or other components) provides a durable buffer. If a downstream service is overloaded, messages (transactions) can be reliably queued in SQS until the service can process them, preventing them from being dropped. This decouples the application tiers.
+- [ ] Improved Performance and Scalability: API Gateway and Lambda can scale automatically to handle varying loads. SQS provides a scalable and reliable messaging backbone.
+- [ ] MOST Operationally Efficient: A serverless architecture with managed services like API Gateway, Lambda, and SQS generally offers the highest operational efficiency because it minimizes infrastructure management tasks (provisioning, patching, scaling servers).
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: Simply increasing the size of EC2 instances (vertical scaling) is a traditional approach that might not be the most cost-effective or elastic solution for handling variable loads. It doesn't fundamentally "modernize" the application architecture or address the dropped transactions issue through decoupling in an optimal way. It can lead to over-provisioning and still doesn't prevent drops if synchronous calls between tiers remain the bottleneck.
+- [ ] Option C is wrong because: While Amazon SNS is a messaging service, it's primarily a publish/subscribe system designed for fanning out messages to multiple subscribers. For buffering transactions between specific application tiers where processing order or guaranteed delivery to a worker pool is important, SQS is generally a more suitable choice. Also, SNS topics don't have a "queue length" in the same way SQS queues do for direct monitoring and scaling of worker tiers. This option still relies on EC2 instances, making it less operationally efficient than option A.
+- [ ] Option D is wrong because: Using SQS between EC2-based application servers is an improvement over direct REST calls for preventing dropped transactions. However, option A offers a more complete modernization and higher operational efficiency by moving the application tiers themselves to serverless components (API Gateway and Lambda) in addition to using SQS for inter-service communication. Managing EC2 instances, even in an Auto Scaling group, involves more operational overhead than a fully serverless backend.
+
+</details>
+
+<details>
+  <summary>Question 76</summary>
+
+A company receives 10 TB of instrumentation data each day from several machines located at a single factory. The data consists of JSON files stored on a storage area network (SAN) in an on-premises data center located within the factory. The company wants to send this data to Amazon S3 where it can be accessed by several additional systems that provide critical near-real-time analytics. A secure transfer is important because the data is considered sensitive.
+
+Which solution offers the MOST reliable data transfer?
+
+- [ ] A. AWS DataSync over public internet
+- [ ] B. AWS DataSync over AWS Direct Connect
+- [ ] C. AWS Database Migration Service (AWS DMS) over public internet
+- [ ] D. AWS Database Migration Service (AWS DMS) over AWS Direct Connect
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. AWS DataSync over AWS Direct Connect
+
+Why this is the correct answer:
+
+- [ ] AWS DataSync for File Transfer: AWS DataSync is a data transfer service specifically designed to simplify, automate, and accelerate moving large amounts of data between on-premises storage systems (like a SAN storing JSON files) and AWS storage services such as Amazon S3. It is well-suited for transferring 10 TB of data daily.
+- [ ] AWS Direct Connect for Reliability and Security: AWS Direct Connect provides a dedicated, private network connection from your on-premises data center to AWS. Transferring data over Direct Connect offers:
+- [ ] Reliability: More consistent network performance and higher throughput compared to the public internet, which is crucial for transferring large volumes of time-sensitive data reliably.
+- [ ] Security: A private, dedicated path that does not traverse the public internet, enhancing security for sensitive data. DataSync encrypts data in transit, and using it over Direct Connect further secures the path.
+- [ ] This combination addresses the need for a "secure transfer" and the "MOST reliable data transfer."
+- [ ] Enabling Near-Real-Time Analytics: By efficiently and reliably transferring data to Amazon S3, downstream systems can then access this data for "critical near-real-time analytics."
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While AWS DataSync is the correct service for the data transfer, sending 10 TB of sensitive data daily "over public internet" is generally less reliable (due to potential network congestion and variability) and less secure than using a dedicated connection like AWS Direct Connect.
+- [ ] Option C is wrong because: AWS Database Migration Service (AWS DMS) is designed for migrating databases to or within AWS. It is not the appropriate tool for transferring JSON files from a storage area network (SAN) to Amazon S3. Using DMS over the public internet also shares the reliability and security concerns mentioned for option A.
+- [ ] Option D is wrong because: As with option C, AWS Database Migration Service (AWS DMS) is not the correct tool for transferring file-based data from a SAN. The nature of the data (JSON files on a SAN) points to a file transfer solution like AWS DataSync.
+
+</details>
+
+<details>
+  <summary>Question 77</summary>
+
+A company needs to configure a real-time data ingestion architecture for its application. The company needs an API, a process that transforms data as the data is streamed, and a storage solution for the data.
+
+Which solution will meet these requirements with the LEAST operational overhead?
+
+- [ ] A. Deploy an Amazon EC2 instance to host an API that sends data to an Amazon Kinesis data stream. Create an Amazon Kinesis Data Firehose delivery stream that uses the Kinesis data stream as a data source. Use AWS Lambda functions to transform the data. Use the Kinesis Data Firehose delivery stream to send the data to Amazon S3.
+- [ ] B. Deploy an Amazon EC2 instance to host an API that sends data to AWS Glue. Stop source/destination checking on the EC2 instance. Use AWS Glue to transform the data and to send the data to Amazon S3.
+- [ ] C. Configure an Amazon API Gateway API to send data to an Amazon Kinesis data stream. Create an Amazon Kinesis Data Firehose delivery stream that uses the Kinesis data stream as a data source. Use AWS Lambda functions to transform the data. Use the Kinesis Data Firehose delivery stream to send the data to Amazon S3.
+- [ ] D. Configure an Amazon API Gateway API to send data to AWS Glue. Use AWS Lambda functions to transform the data. Use AWS Glue to send the data to Amazon S3.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Configure an Amazon API Gateway API to send data to an Amazon Kinesis data stream. Create an Amazon Kinesis Data Firehose delivery stream that uses the Kinesis data stream as a data source. Use AWS Lambda functions to transform the data. Use the Kinesis Data Firehose delivery stream to send the data to Amazon S3.
+
+Why this is the correct answer:
+
+This solution provides a serverless and managed pipeline, minimizing operational overhead:
+
+- [ ] API with Amazon API Gateway: Amazon API Gateway is a fully managed service that allows you to create, publish, maintain, monitor, and secure APIs at any scale. Using API Gateway for the API endpoint requires no server management.   
+- [ ] Real-time Data Ingestion with Kinesis Data Streams: API Gateway can be configured to send the incoming data directly to an Amazon Kinesis data stream, which is designed for scalable and durable real-time data ingestion.
+- [ ] Stream Transformation with Kinesis Data Firehose and Lambda: An Amazon Kinesis Data Firehose delivery stream can use the Kinesis data stream as its source.
+- [ ] Firehose has a built-in feature to invoke an AWS Lambda function to perform data transformations on the records as they pass through.
+- [ ] This meets the requirement to "transform data as the data is streamed."
+- [ ] Storage with Amazon S3: Kinesis Data Firehose can then reliably deliver the transformed data to Amazon S3, which serves as a scalable and durable storage solution.
+- [ ] Least Operational Overhead: This architecture primarily uses managed services (API Gateway, Kinesis Data Streams, Kinesis Data Firehose, Lambda, S3), which significantly reduces the need to provision, manage, or scale underlying infrastructure.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Deploying an Amazon EC2 instance to host the API introduces operational overhead for managing that instance (patching, scaling, availability). API Gateway (as in option C) is a serverless alternative that eliminates this overhead. The rest of the pipeline is similar to option C, but the EC2 component makes it less operationally efficient.
+- [ ] Option B is wrong because: Similar to option A, using an EC2 instance for the API has higher operational overhead. Additionally, AWS Glue is primarily an ETL (extract, transform, load) service, generally used for batch or more complex streaming ETL jobs. While it can perform transformations, using Kinesis Data Firehose with Lambda for in-stream transformation of real-time API data is often a more lightweight and direct approach for "least operational overhead" in this specific scenario. Sending data directly from an API to AWS Glue for real-time streaming transformation is not as common or straightforward as using the Kinesis suite.
+- [ ] Option D is wrong because: Sending data directly from API Gateway to AWS Glue for real-time data transformation is not a typical or directly supported high-throughput streaming pattern. Kinesis Data Streams and Kinesis Data Firehose are purpose-built for ingesting and processing streaming data from sources like API Gateway before it lands in a data store or is further processed by services like Glue for more complex ETL.
+
+
+</details>
+
+<details>
+  <summary>Question 78</summary>
+
+A company needs to keep user transaction data in an Amazon DynamoDB table. The company must retain the data for 7 years.
+
+What is the MOST operationally efficient solution that meets these requirements?
+
+- [ ] A. Use DynamoDB point-in-time recovery to back up the table continuously.
+- [ ] B. Use AWS Backup to create backup schedules and retention policies for the table.
+- [ ] C. Create an on-demand backup of the table by using the DynamoDB console. Store the backup in an Amazon S3 bucket. Set an S3 Lifecycle configuration for the S3 bucket.
+- [ ] D. Create an Amazon EventBridge (Amazon CloudWatch Events) rule to invoke an AWS Lambda function. Configure the Lambda function to back up the table and to store the backup in an Amazon S3 bucket. Set an S3 Lifecycle configuration for the S3 bucket.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Use AWS Backup to create backup schedules and retention policies for the table.
+
+Why this is the correct answer:
+
+- [ ] AWS Backup for Centralized and Automated Backups: AWS Backup is a fully managed backup service that makes it easy to centralize and automate data protection across AWS services, including Amazon DynamoDB.   
+- [ ] Backup Schedules and Retention Policies: With AWS Backup, you can create backup plans that define automated backup schedules (e.g., daily, weekly) and, crucially, set retention policies.
+- [ ] You can configure these retention policies to keep backups for extended periods, such as the required 7 years.
+- [ ] AWS Backup will manage the lifecycle of these backups, including their expiration.
+- [ ] MOST Operationally Efficient: Using AWS Backup is highly operationally efficient for long-term retention requirements. It automates the entire backup lifecycle, from creation to expiration, and provides a central place to manage and monitor backups. This avoids the need for manual processes or custom scripting.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: DynamoDB point-in-time recovery (PITR) provides continuous backups and allows you to restore your table to any point in time within the last 35 days. While excellent for recovering from recent accidental writes or deletes, PITR itself is not designed for long-term retention beyond 35 days. It does not meet the 7-year retention requirement on its own.
+- [ ] Option C is wrong because: Creating on-demand backups via the DynamoDB console and then manually managing their storage in Amazon S3 (including setting S3 Lifecycle configurations) involves manual steps and is less operationally efficient than an automated and centralized solution like AWS Backup. While DynamoDB backups are stored in S3, AWS Backup provides the management layer for scheduling and retention across services.
+- [ ] Option D is wrong because: Building a custom solution using Amazon EventBridge to trigger an AWS Lambda function for backing up the table and managing its lifecycle in S3 requires custom development, testing, and ongoing maintenance. This is significantly more operational effort compared to using the managed capabilities of AWS Backup, which is designed for these tasks.
+
+</details>
+
+<details>
+  <summary>Question 79</summary>
+
+A company is planning to use an Amazon DynamoDB table for data storage. The company is concerned about cost optimization. The table will not be used on most mornings. In the evenings, the read and write traffic will often be unpredictable. When traffic spikes occur, they will happen very quickly.
+
+What should a solutions architect recommend?
+
+- [ ] A. Create a DynamoDB table in on-demand capacity mode.
+- [ ] B. Create a DynamoDB table with a global secondary index.
+- [ ] C. Create a DynamoDB table with provisioned capacity and auto scaling.
+- [ ] D. Create a DynamoDB table in provisioned capacity mode, and configure it as a global table.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Create a DynamoDB table in on-demand capacity mode.
+
+Why this is the correct answer:
+
+- [ ] DynamoDB On-Demand Capacity Mode: This capacity mode is specifically designed for workloads with unknown or unpredictable traffic patterns, and for applications where you want to pay only for what you use. DynamoDB on-demand automatically scales the read and write capacity to handle the traffic as it comes, without requiring manual capacity planning or adjustments.
+- [ ] Handles Unpredictable and Spiky Traffic: The scenario describes traffic that is "often unpredictable" and where "traffic spikes occur, they will happen very quickly." On-demand mode excels in these situations by instantly accommodating the traffic up to previous peak levels (and then scaling further if needed), without throttling requests.
+- [ ] Cost Optimization for Idle Periods: The table "will not be used on most mornings." With on-demand capacity mode, if there are no read or write requests to the table, you do not pay for any read/write throughput. This makes it very cost-effective for tables with significant idle periods.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: A Global Secondary Index (GSI) is used to enable querying on attributes other than the table's primary key. While GSIs are an important feature for flexible data access, creating a GSI does not address the core requirements of managing unpredictable traffic patterns or optimizing costs related to read/write capacity.
+- [ ] Option C is wrong because: While DynamoDB provisioned capacity with auto scaling can adjust throughput, it might not react instantaneously to "very quickly" occurring traffic spikes. Auto scaling typically adjusts capacity based on consumed capacity over a period, and there can be a delay before capacity is scaled up, potentially leading to throttling during sudden, sharp spikes. Furthermore, with provisioned capacity, you pay for the capacity you provision, even if it's not fully utilized during the idle morning periods, making it less cost-effective than on-demand for this specific usage pattern.
+- [ ] Option D is wrong because: As explained for option C, provisioned capacity mode is less suitable for this workload pattern than on-demand mode.
+DynamoDB global tables are designed for building multi-region, multi-active database solutions, typically for globally distributed applications or for disaster recovery across regions. The question does not mention any multi-region requirements. Configuring a global table adds complexity and cost that is not justified by the problem description.
+
+</details>
+
+<details>
+  <summary>Question 80</summary>
+  
+A company recently signed a contract with an AWS Managed Service Provider (MSP) Partner for help with an application migration initiative. A solutions architect needs to share an Amazon Machine Image (AMI) from an existing AWS account with the MSP Partner's AWS account. The AMI is backed by Amazon Elastic Block Store (Amazon EBS) and uses an AWS Key Management Service (AWS KMS) customer managed key to encrypt EBS volume snapshots.
+
+What is the MOST secure way for the solutions architect to share the AMI with the MSP Partner's AWS account?
+
+- [ ] A. Make the encrypted AMI and snapshots publicly available. Modify the key policy to allow the MSP Partner's AWS account to use the key.
+- [ ] B. Modify the launchPermission property of the AMI. Share the AMI with the MSP Partner's AWS account only. Modify the key policy to allow the MSP Partner's AWS account to use the key.
+- [ ] C. Modify the launchPermission property of the AMI. Share the AMI with the MSP Partner's AWS account only. Modify the key policy to trust a new KMS key that is owned by the MSP Partner for encryption.
+- [ ] D. Export the AMI from the source account to an Amazon S3 bucket in the MSP Partner's AWS account, Encrypt the S3 bucket with a new KMS key that is owned by the MSP Partner. Copy and launch the AMI in the MSP Partner's AWS account.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Modify the launchPermission property of the AMI. Share the AMI with the MSP Partner's AWS account only. Modify the key policy to allow the MSP Partner's AWS account to use the key.
+
+Why this is the correct answer:
+
+This solution follows the principle of least privilege and uses AWS-recommended mechanisms for sharing encrypted AMIs:
+
+- [ ] Modify AMI Launch Permissions: To share a private AMI with another specific AWS account, you modify its launchPermission attribute. This allows you to specify the AWS account ID(s) that are permitted to launch instances from this AMI. Sharing it "with the MSP Partner's AWS account only" ensures that the AMI is not exposed to other unintended accounts.
+- [ ] Share the KMS Key: Since the AMI's underlying EBS snapshots are encrypted with a customer-managed AWS KMS key, the MSP Partner's account will need permission to use this specific KMS key when launching an instance from the shared AMI (to decrypt the snapshots). This is achieved by modifying the key policy of the KMS key in the source account. The key policy must grant the MSP Partner's AWS account (or specific IAM principals within that account) the necessary permissions, such as kms:Decrypt, kms:ReEncrypt*, kms:CreateGrant, and kms:DescribeKey.
+- [ ] MOST Secure Way: This method ensures that the AMI itself is not made public and that access to the encryption key is explicitly granted only to the trusted MSP partner account.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Making an AMI and its snapshots publicly available is a significant security risk, especially if they contain sensitive configurations or data. Even if the KMS key policy restricts usage, exposing the AMI publicly is not the "MOST secure way."
+- [ ] Option C is wrong because: When the MSP partner launches an instance from the shared AMI, their account needs permission to use the original KMS key (owned by the source account) that was used to encrypt the snapshots. The source key policy grants usage permissions to the MSP account for the source key. It doesn't involve the source key policy "trusting a new KMS key owned by the MSP Partner for encryption" of the original snapshots. After launching, the MSP could choose to re-encrypt the resulting EBS volumes with their own key, but the initial launch requires access to the source key.
+- [ ] Option D is wrong because: Exporting an AMI to S3 and then having the partner import it is a more cumbersome and less direct method than sharing the AMI via launch permissions. While it can be done, it involves more steps, data transfer, and potentially more complex permission management than the native AMI sharing mechanism. Direct AMI sharing combined with KMS key policy modification is generally considered more straightforward and secure for this use case.
+
+</details>
+
+</details>
 
 
 
