@@ -3876,40 +3876,152 @@ Which action meets these requirements for storing and retrieving location data?
 - [ ] C. Use Amazon QuickSight with Amazon Redshift.
 - [ ] D. Use Amazon API Gateway with Amazon Kinesis Data Analytics.
 
-Correct Answer: B
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Use Amazon API Gateway with AWS Lambda.
 
 Why this is the correct answer:
 
 This question focuses on the components needed for storing and retrieving location data that must be accessible via a REST API, and then subsequently used in an analytics platform.
 
-Amazon API Gateway for REST API: Amazon API Gateway is a fully managed service that makes it easy for developers to create, publish, maintain, monitor, and secure APIs at any scale. This directly addresses the requirement that "The data points must be accessible from the REST API." API Gateway would serve as the frontend for these API calls.
-AWS Lambda for Backend Logic (Storing and Retrieving): AWS Lambda functions can be integrated with API Gateway to provide the backend logic. When API Gateway receives a request (e.g., to store a new location or retrieve a location), it can invoke a Lambda function. This Lambda function would then contain the code to interact with a suitable database or storage service (like Amazon DynamoDB, which is often used for such use cases due to its scalability and low latency, though the specific database isn't named in this option) to perform the actual "storing and retrieving location data."
-Multi-Tier Architecture and Viability: This combination forms a scalable, serverless backend, fitting a multi-tier architecture. The data, once stored by this mechanism, can then be fed into the "existing analytics platform."
+- [ ] Amazon API Gateway for REST API: Amazon API Gateway is a fully managed service that makes it easy for developers to create, publish, maintain, monitor, and secure APIs at any scale. This directly addresses the requirement that "The data points must be accessible from the REST API." API Gateway would serve as the frontend for these API calls.
+- [ ] AWS Lambda for Backend Logic (Storing and Retrieving): AWS Lambda functions can be integrated with API Gateway to provide the backend logic. When API Gateway receives a request (e.g., to store a new location or retrieve a location), it can invoke a Lambda function. This Lambda function would then contain the code to interact with a suitable database or storage service (like Amazon DynamoDB, which is often used for such use cases due to its scalability and low latency, though the specific database isn't named in this option) to perform the actual "storing and retrieving location data."
+- [ ] Multi-Tier Architecture and Viability: This combination forms a scalable, serverless backend, fitting a multi-tier architecture. The data, once stored by this mechanism, can then be fed into the "existing analytics platform."
+
 Why are the other answers wrong?
 
-Option A is wrong because: Amazon Athena is a serverless query service primarily used for analyzing data in Amazon S3 using standard SQL. While S3 could store location data and Athena could analyze it (fitting the "analytics platform" part), Athena is not designed for real-time transactional storing and retrieving of individual data points via a low-latency REST API, especially for tracking active bicycle locations.
-Option C is wrong because: Amazon QuickSight is a business intelligence (BI) service used for creating visualizations and dashboards. Amazon Redshift is a data warehousing service. Both are components of an analytics platform but are not the primary tools for building a REST API to store and retrieve individual, real-time location data points for a tracking system.
-Option D is wrong because: While Amazon API Gateway is correct for the REST API frontend, Amazon Kinesis Data Analytics is designed for real-time processing and analysis of streaming data. It's not a storage service from which individual data points would typically be retrieved via an API in the context of a simple store/retrieve pattern. Data would flow through Kinesis Data Analytics for analysis, not be stored in it for API-based retrieval of specific records.
+- [ ] Option A is wrong because: Amazon Athena is a serverless query service primarily used for analyzing data in Amazon S3 using standard SQL. While S3 could store location data and Athena could analyze it (fitting the "analytics platform" part), Athena is not designed for real-time transactional storing and retrieving of individual data points via a low-latency REST API, especially for tracking active bicycle locations.
+- [ ] Option C is wrong because: Amazon QuickSight is a business intelligence (BI) service used for creating visualizations and dashboards. Amazon Redshift is a data warehousing service. Both are components of an analytics platform but are not the primary tools for building a REST API to store and retrieve individual, real-time location data points for a tracking system.
+- [ ] Option D is wrong because: While Amazon API Gateway is correct for the REST API frontend, Amazon Kinesis Data Analytics is designed for real-time processing and analysis of streaming data. It's not a storage service from which individual data points would typically be retrieved via an API in the context of a simple store/retrieve pattern. Data would flow through Kinesis Data Analytics for analysis, not be stored in it for API-based retrieval of specific records.
+
+</details>
+
+<details>
+  <summary>Question 108</summary>
+
+A company has an automobile sales website that stores its listings in a database on Amazon RDS. When an automobile is sold, the listing needs to be removed from the website and the data must be sent to multiple target systems.
+
+Which design should a solutions architect recommend?
+
+- [ ] A. Create an AWS Lambda function triggered when the database on Amazon RDS is updated to send the information to an Amazon Simple Queue Service (Amazon SQS) queue for the targets to consume.
+- [ ] B. Create an AWS Lambda function triggered when the database on Amazon RDS is updated to send the information to an Amazon Simple Queue Service (Amazon SQS) FIFO queue for the targets to consume.
+- [ ] C. Subscribe to an RDS event notification and send an Amazon Simple Queue Service (Amazon SQS) queue fanned out to multiple Amazon Simple Notification Service (Amazon SNS) topics. Use AWS Lambda functions to update the targets.
+- [ ] D. Subscribe to an RDS event notification and send an Amazon Simple Notification Service (Amazon SNS) topic fanned out to multiple Amazon Simple Queue Service (Amazon SQS) queues. Use AWS Lambda functions to update the targets.
 
 </details>
 
 <details>
   <summary>Answer</summary>
 
-- [ ] A.  Turn
+- [ ] A. Create an AWS Lambda function triggered when the database on Amazon RDS is updated to send the information to an Amazon Simple Queue Service (Amazon SQS) queue for the targets to consume.
 
+Why this is the correct answer:
+
+This question describes a scenario where an event (an automobile sale, resulting in a database update) needs to trigger multiple downstream actions: removing the listing from the website and sending data to several target systems.
+
+- [ ] Triggering Mechanism (Interpreted): The phrase "triggered when the database on Amazon RDS is updated" likely implies that the application logic that records the sale in the RDS database will also initiate the trigger for an AWS Lambda function. (Direct RDS triggers for data manipulation events to Lambda are not a standard out-of-the-box feature; it's usually application-driven or via more complex Change Data Capture setups).
+- [ ] AWS Lambda for Orchestration: The triggered Lambda function can perform the immediate necessary actions. This includes:
+- [ ] Logic to remove the listing from the website (e.g., by updating a cache, calling a website API, or modifying another data store that the website reads from).
+- [ ] Sending the relevant sales data as a message to an Amazon SQS queue.
+- [ ] Amazon SQS for Decoupling and Multiple Consumers: The SQS queue acts as a durable and reliable buffer. "Multiple target systems" can then have their own consumer applications (which could also be other Lambda functions or EC2-based applications) that independently poll this SQS queue to receive and process the sales data. This decouples the initial sales event processing from the individual target systems, allowing them to process data at their own pace and providing resilience.
+- [ ] This approach provides a decoupled architecture where the initial Lambda handles primary post-sale actions and SQS ensures reliable delivery of sales information to various downstream systems.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: While using an SQS queue is good, specifying an SQS FIFO (First-In, First-Out) queue might be overly restrictive if strict ordering of sales data processing by all target systems is not explicitly required. Standard SQS queues offer higher throughput. If ordering is critical for all consumers, FIFO would be considered, but the question doesn't stress this as a primary requirement over the general mechanism. The core solution in A (Lambda + SQS) is sound.
+- [ ] Option C is wrong because:
+RDS event notifications typically relate to operational events of the DB instance (e.g., backups, failovers, parameter group changes), not to data modification events within tables like a sale being recorded.
+The fan-out pattern is described incorrectly: SQS fanning out to multiple SNS topics is not the standard way to distribute a single message to multiple distinct processing queues. The typical pattern is SNS fanning out to multiple SQS queues.
+- [ ] Option D is wrong because: Similar to option C, relying on "RDS event notification" to capture a business event like a sale (which is a data change) is generally not how RDS event notifications work. While the subsequent pattern of SNS fanning out to multiple SQS queues for different target systems (each consumed by Lambda) is a valid and robust fan-out architecture, the initial trigger mechanism via RDS operational event notifications is likely incorrect for this use case. Option A's implied application-driven Lambda trigger is more plausible for acting on a data update.
+
+Given the options, Option A provides a viable (with interpretation of the trigger) and straightforward approach for handling the post-sale tasks using Lambda and SQS for distribution to multiple systems.
 
 </details>
 
+<details>
+  <summary>Question 109</summary>
+
+A company needs to store data in Amazon S3 and must prevent the data from being changed. The company wants new objects that are uploaded to Amazon S3 to remain unchangeable for a nonspecific amount of time until the company decides to modify the objects. Only specific users in the company's AWS account can have the ability to delete the objects.
+
+What should a solutions architect do to meet these requirements?
+
+- [ ] A. Create an S3 Glacier vault. Apply a write-once, read-many (WORM) vault lock policy to the objects.
+- [ ] B. Create an S3 bucket with S3 Object Lock enabled. Enable versioning. Set a retention period of 100 years. Use governance mode as the S3 bucket's default retention mode for new objects.
+- [ ] C. Create an S3 bucket. Use AWS CloudTrail to track any S3 API events that modify the objects. Upon notification, restore the modified objects from any backup versions that the company has.
+- [ ] D. Create an S3 bucket with S3 Object Lock enabled. Enable versioning. Add a legal hold to the objects. Add the s3:PutObjectLegalHold permission to the IAM policies of users who need to delete the objects.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Create an S3 bucket with S3 Object Lock enabled. Enable versioning. Add a legal hold to the objects. Add the s3:PutObjectLegalHold permission to the IAM policies of users who need to delete the objects.
+
+Why this is the correct answer:
+
+- [ ] S3 Object Lock for Immutability: The requirement is to "prevent the data from being changed." S3 Object Lock provides Write-Once-Read-Many (WORM) capabilities to protect objects from being deleted or overwritten.
+- [ ] Versioning Prerequisite: S3 Object Lock requires S3 Versioning to be enabled on the bucket.
+- [ ] Legal Hold for Indefinite, Controllable Retention: The company wants objects to remain unchangeable "for a nonspecific amount of time until the company decides to modify the objects." A legal hold, which is a feature of S3 Object Lock, provides this exact functionality. A legal hold prevents an object version from being overwritten or deleted, but unlike a retention period, a legal hold does not have an expiration date. It remains in effect until explicitly removed.
+- [ ] Controlled Deletion/Modification via Legal Hold Removal: "Only specific users... can have the ability to delete the objects." To delete an object under a legal hold, the legal hold must first be removed. The permission s3:PutObjectLegalHold allows users to place and remove legal holds on objects. By granting this permission only to the specific users, the company controls who can effectively make an object deletable (by first removing the legal hold).
+- [ ] This solution meets all requirements: data is unchangeable, the unchangeable period is indefinite until a decision is made, and specific users control the ability to lift this protection.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While S3 Glacier Vault Lock can enforce WORM policies, it applies to S3 Glacier vaults, which are for archival storage. The question implies uploads to standard "Amazon S3" buckets and doesn't necessarily dictate archival from the outset. S3 Object Lock is a feature for standard S3 buckets.
+- [ ] Option B is wrong because: Setting a fixed retention period (e.g., 100 years) with S3 Object Lock does not meet the requirement for the objects to remain unchangeable for a "nonspecific amount of time until the company decides to modify the objects." A legal hold provides this indefinite protection that can be explicitly removed when needed. Governance mode, while allowing overrides with special permissions, is tied to a specific retention period.
+- [ ] Option C is wrong because: Using AWS CloudTrail to track modifications and then restoring from backups is a reactive approach (detect and recover), not a preventative one. The requirement is to "prevent the data from being changed" in the first place.
+
+</details>
+
+<details>
+  <summary>Question 110</summary>
+
+A social media company allows users to upload images to its website. The website runs on Amazon EC2 instances. During upload requests, the website resizes the images to a standard size and stores the resized images in Amazon S3. Users are experiencing slow upload requests to the website. The company needs to reduce coupling within the application and improve website performance. A solutions architect must design the most operationally efficient process for image uploads.
+
+Which combination of actions should the solutions architect take to meet these requirements? (Choose two.)
+
+- [ ] A. Configure the application to upload images to S3 Glacier.
+- [ ] B. Configure the web server to upload the original images to Amazon S3.
+- [ ] C. Configure the application to upload images directly from each user's browser to Amazon S3 through the use of a presigned URL
+- [ ] D. Configure S3 Event Notifications to invoke an AWS Lambda function when an image is uploaded. Use the function to resize the image.
+- [ ] E. Create an Amazon EventBridge (Amazon CloudWatch Events) rule that invokes an AWS Lambda function on a schedule to resize uploaded images.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Configure the application to upload images directly from each user's browser to Amazon S3 through the use of a presigned URL
+- [ ] D. Configure S3 Event Notifications to invoke an AWS Lambda function when an image is uploaded. Use the function to resize the image.
+
+Why these are the correct answers:
+
+This solution aims to offload work from the EC2 instances and process images asynchronously, improving website performance and operational efficiency.
+
+C. Configure the application to upload images directly from each user's browser to Amazon S3 through the use of a presigned URL
+- [ ] Improved Website Performance: Currently, the EC2 instances handle the image uploads, which contributes to slow requests.
+- [ ] By allowing users' browsers to upload images directly to an Amazon S3 bucket using a presigned URL, the web servers (EC2 instances) are bypassed for the actual file transfer.
+- [ ] This significantly reduces the load on the web servers, freeing them up to handle other requests and improving the perceived performance for the user during the upload process.
+- [ ] Reduced Coupling: This decouples the web servers from the responsibility of handling the raw image uploads.
+
+D. Configure S3 Event Notifications to invoke an AWS Lambda function when an image is uploaded. Use the function to resize the image.
+- [ ] Asynchronous Image Resizing: Instead of the EC2 instances resizing images synchronously during the upload request (which causes slowness), this approach processes images asynchronously.
+- [ ] When an original image is uploaded to S3 (as per option C), an S3 event notification can automatically trigger an AWS Lambda function.
+- [ ] Serverless and Scalable Resizing: The Lambda function can then perform the image resizing.
+- [ ] Lambda is serverless, scales automatically with the number of uploads, and is operationally efficient as you don't manage servers for this processing.
+- [ ] The resized image can then be stored back in S3. This decouples the resizing logic from the web application.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Amazon S3 Glacier is a low-cost storage class designed for data archiving where retrieval times of minutes to hours are acceptable. It is not suitable for storing images that need to be processed (resized) and potentially accessed shortly after upload.
+- [ ] Option B is wrong because: While having the web server upload the original images to S3 is a step towards using S3, it doesn't fundamentally solve the problem of "slow upload requests" if the web server is still the intermediary handling the full upload from the user's browser and potentially doing synchronous resizing. Option C, direct browser upload to S3, is more effective at offloading the web server.
+- [ ] Option E is wrong because: Using a scheduled EventBridge rule to trigger a Lambda function for image resizing means that images would not be processed immediately after upload. Instead, they would be processed in batches when the schedule runs. This could lead to delays in users seeing their resized images and doesn't fit the typical expectation of quick processing after an upload. S3 event notifications (as in option D) provide near real-time, event-driven processing.
 
 
-
-
-
-
-
-
-
+</details>
 
 </details>
 
