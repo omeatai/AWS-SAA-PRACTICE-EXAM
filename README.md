@@ -2880,6 +2880,369 @@ Why are the other answers wrong?
 
 </details>
 
+<details>
+  <summary>==Questions 81-90==</summary>
+
+<details>
+  <summary>Question 81</summary>
+
+A solutions architect is designing the cloud architecture for a new application being deployed on AWS. The process should run in parallel while adding and removing application nodes as needed based on the number of jobs to be processed. The processor application is stateless. The solutions architect must ensure that the application is loosely coupled and the job items are durably stored.
+
+Which design should the solutions architect use?
+
+- [ ] A. Create an Amazon SNS topic to send the jobs that need to be processed. Create an Amazon Machine Image (AMI) that consists of the processor application. Create a launch configuration that uses the AMI. Create an Auto Scaling group using the launch configuration. Set the scaling policy for the Auto Scaling group to add and remove nodes based on CPU usage.
+- [ ] B. Create an Amazon SQS queue to hold the jobs that need to be processed. Create an Amazon Machine Image (AMI) that consists of the processor application. Create a launch configuration that uses the AMI. Create an Auto Scaling group using the launch configuration. Set the scaling policy for the Auto Scaling group to add and remove nodes based on network usage.
+- [ ] C. Create an Amazon SQS queue to hold the jobs that need to be processed. Create an Amazon Machine Image (AMI) that consists of the processor application. Create a launch template that uses the AMI. Create an Auto Scaling group using the launch template. Set the scaling policy for the Auto Scaling group to add and remove nodes based on the number of items in the SQS queue.
+- [ ] D. Create an Amazon SNS topic to send the jobs that need to be processed. Create an Amazon Machine Image (AMI) that consists of the processor application. Create a launch template that uses the AMI. Create an Auto Scaling group using the launch template. Set the scaling policy for the Auto Scaling group to add and remove nodes based on the number of messages published to the SNS topic.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Create an Amazon SQS queue to hold the jobs that need to be processed. Create an Amazon Machine Image (AMI) that consists of the processor application. Create a launch template that uses the AMI. Create an Auto Scaling group using the launch template. Set the scaling policy for the Auto Scaling group to add and remove nodes based on the number of items in the SQS queue.
+
+Why this is the correct answer:
+
+- [ ] Amazon SQS for Durable and Decoupled Job Queuing: Amazon Simple Queue Service (SQS) is designed to store messages (job items) durably and provide loose coupling between components. This meets the requirements for job items to be "durably stored" and the application to be "loosely coupled."
+- [ ] Stateless EC2 Instances with Auto Scaling: The processor application is stateless and can run on Amazon EC2 instances. An Auto Scaling group, using a launch template with the application's AMI, can manage these instances.
+- [ ] Scaling Based on Queue Depth (Number of Jobs): The crucial requirement is to scale "based on the number of jobs to be processed." EC2 Auto Scaling can be configured to use Amazon CloudWatch metrics from SQS, such as ApproximateNumberOfMessagesVisible (the number of items in the SQS queue), to trigger scaling actions.
+- [ ] This ensures that the number of application nodes (EC2 instances) scales up when there are many jobs in the queue and scales down when the queue is short. This allows processing to "run in parallel."
+- [ ] Launch Templates: Launch templates are the recommended way to specify launch parameters for EC2 Auto Scaling groups, offering more features and flexibility than older launch configurations.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Amazon SNS (Simple Notification Service) is a publish/subscribe messaging service, primarily used for fanning out notifications to multiple subscribers. It is not designed as a queue for holding a backlog of jobs that need processing by a pool of workers in the way SQS is. Also, scaling based on CPU usage might not accurately reflect the number of pending jobs; jobs could be I/O-bound or numerous but individually lightweight on CPU.
+- [ ] Option B is wrong because: While using SQS is correct for job queuing, scaling the Auto Scaling group based on "network usage" is generally not a direct or reliable indicator of the number of jobs waiting to be processed. Scaling based on the SQS queue depth is a much more direct and appropriate metric.
+- [ ] Option D is wrong because: As with option A, SNS is not the appropriate service for durable job queuing. Furthermore, scaling based on the "number of messages published to the SNS topic" is not a standard or practical metric for an Auto Scaling group managing worker instances that process a backlog. SNS messages are pushed to subscribers and not typically stored in the topic itself for backlog processing.
+
+</details>  
+
+<details>
+  <summary>Question 82</summary>
+
+A company hosts its web applications in the AWS Cloud. The company configures Elastic Load Balancers to use certificates that are imported into AWS Certificate Manager (ACM). The company's security team must be notified 30 days before the expiration of each certificate.
+
+What should a solutions architect recommend to meet this requirement?
+
+- [ ] A. Add a rule in ACM to publish a custom message to an Amazon Simple Notification Service (Amazon SNS) topic every day, beginning 30 days before any certificate will expire.
+- [ ] B. Create an AWS Config rule that checks for certificates that will expire within 30 days. Configure Amazon EventBridge (Amazon CloudWatch Events) to invoke a custom alert by way of Amazon Simple Notification Service (Amazon SNS) when AWS Config reports a noncompliant resource.
+- [ ] C. Use AWS Trusted Advisor to check for certificates that will expire within 30 days. Create an Amazon CloudWatch alarm that is based on Trusted Advisor metrics for check status changes. Configure the alarm to send a custom alert by way of Amazon Simple Notification Service (Amazon SNS).
+- [ ] D. Create an Amazon EventBridge (Amazon CloudWatch Events) rule to detect any certificates that will expire within 30 days. Configure the rule to invoke an AWS Lambda function. Configure the Lambda function to send a custom alert by way of Amazon Simple Notification Service (Amazon SNS).
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Create an Amazon EventBridge (Amazon CloudWatch Events) rule to detect any certificates that will expire within 30 days. Configure the rule to invoke an AWS Lambda function. Configure the Lambda function to send a custom alert by way of Amazon Simple Notification Service (Amazon SNS).
+
+Why this is the correct answer:
+
+- [ ] ACM Events for Expiration: AWS Certificate Manager (ACM) automatically publishes events to Amazon EventBridge (formerly CloudWatch Events) when an imported certificate (which is the case here) is approaching its expiration date. Specifically, for certificates that ACM does not manage renewal for (like imported ones), an ACM Certificate Approaching Expiration event is sent at predefined intervals, including 30 days before expiration.
+- [ ] EventBridge Rule: An EventBridge rule can be created to listen for this specific ACM Certificate Approaching Expiration event. The rule can be filtered to act only on the 30-day notification or process the event details to confirm the timeframe.
+- [ ] Lambda for Custom Alerting: The EventBridge rule can be configured to invoke an AWS Lambda function. This Lambda function can then process the event details, format a custom notification message, and send this alert to an Amazon Simple Notification Service (Amazon SNS) topic. The security team would be subscribed to this SNS topic to receive the notifications.
+- [ ] Event-Driven and Serverless: This solution is event-driven, directly utilizing the notifications provided by ACM, and is fully serverless (EventBridge, Lambda, SNS), minimizing operational overhead.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: AWS Certificate Manager (ACM) itself does not have a feature to "add a rule" to directly publish custom messages to SNS based on certificate expiration. ACM integrates with EventBridge for such event notifications.
+- [ ] Option B is wrong because: While AWS Config can be used with a managed rule (acm-certificate-expiration-check) to identify certificates nearing expiration and then trigger notifications via EventBridge and SNS, this approach adds an extra layer (AWS Config) primarily designed for broader configuration compliance and auditing. Directly reacting to ACM's native EventBridge events (as in option D) is a more direct and often simpler solution if the sole requirement is an expiration notification.
+- [ ] Option C is wrong because: AWS Trusted Advisor does provide a check for ACM certificate expiration. However, Trusted Advisor checks run periodically, and relying on its refresh cycle and then setting up CloudWatch alarms based on Trusted Advisor metrics can be less immediate or direct than using the real-time events emitted by ACM to EventBridge. Additionally, programmatic access to Trusted Advisor check results or automated notifications based on them might have dependencies on the company's AWS Support plan.
+
+</details>
+
+<details>
+  <summary>Question 83</summary>
+
+A company's dynamic website is hosted using on-premises servers in the United States. The company is launching its product in Europe, and it wants to optimize site loading times for new European users. The site's backend must remain in the United States. The product is being launched in a few days, and an immediate solution is needed.
+
+What should the solutions architect recommend?
+
+- [ ] A. Launch an Amazon EC2 instance in us-east-1 and migrate the site to it.
+- [ ] B. Move the website to Amazon S3. Use Cross-Region Replication between Regions.
+- [ ] C. Use Amazon CloudFront with a custom origin pointing to the on-premises servers.
+- [ ] D. Use an Amazon Route 53 geoproximity routing policy pointing to on-premises servers.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Use Amazon CloudFront with a custom origin pointing to the on-premises servers.
+
+Why this is the correct answer:
+
+- [ ] Amazon CloudFront for Latency Reduction: Amazon CloudFront is a global content delivery network (CDN) service. It caches static assets (like images, CSS, JavaScript) at edge locations around the world, including many in Europe. When European users access the website, these static assets can be served from a nearby edge location, significantly reducing latency and improving site loading times.
+- [ ] Custom Origin for On-Premises Backend: CloudFront can be configured to use a "custom origin," which can be your on-premises servers located in the United States. For dynamic content that cannot be cached, CloudFront routes requests back to this origin, often over optimized network paths within the AWS backbone for part of the journey, which can still offer performance improvements compared to users directly accessing the US servers over the public internet.
+- [ ] Backend Remains in the United States: This solution allows the site's backend to remain in the United States, as required.
+- [ ] Immediate Solution: Setting up a CloudFront distribution with a custom origin is a relatively quick process and can provide immediate performance benefits for European users, meeting the "immediate solution is needed" requirement.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Migrating the site to an Amazon EC2 instance in us-east-1 (a US East region) still means the website is hosted in the United States. This would not fundamentally optimize site loading times for European users compared to well-provisioned on-premises US servers, especially if the backend must remain in the US anyway. CloudFront is specifically designed for global content delivery with low latency.
+- [ ] Option B is wrong because: Moving a "dynamic website" to Amazon S3 is only feasible if the dynamic aspects are handled elsewhere (e.g., via serverless functions) or if it can be converted to a static site. If the website truly relies on dynamic processing from the on-premises servers, S3 alone is not a suitable hosting solution for the dynamic parts. While S3 with Cross-Region Replication can distribute static assets, CloudFront is still the primary service for low-latency delivery of those assets.
+- [ ] Option D is wrong because: An Amazon Route 53 geoproximity routing policy (or geolocation routing) directs users to specific resources based on their geographic location. However, if all requests are ultimately pointed back to the same on-premises servers in the United States, this routing policy alone will not improve the loading times for European users. CloudFront improves performance by caching content closer to the users, which Route 53 by itself does not do.
+
+</details>
+
+<details>
+  <summary>Question 84</summary>
+
+A company wants to reduce the cost of its existing three-tier web architecture. The web, application, and database servers are running on Amazon EC2 instances for the development, test, and production environments. The EC2 instances average 30% CPU utilization during peak hours and 10% CPU utilization during non-peak hours. The production EC2 instances run 24 hours a day. The development and test EC2 instances run for at least 8 hours each day. The company plans to implement automation to stop the development and test EC2 instances when they are not in use.
+
+Which EC2 instance purchasing solution will meet the company's requirements MOST cost-effectively?
+
+- [ ] A. Use Spot Instances for the production EC2 instances. Use Reserved Instances for the development and test EC2 instances.
+- [ ] B. Use Reserved Instances for the production EC2 instances. Use On-Demand Instances for the development and test EC2 instances.
+- [ ] C. Use Spot blocks for the production EC2 instances. Use Reserved Instances for the development and test EC2 instances.
+- [ ] D. Use On-Demand Instances for the production EC2 instances. Use Spot blocks for the development and test EC2 instances.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Use Reserved Instances for the production EC2 instances. Use On-Demand Instances for the development and test EC2 instances.
+
+Why this is the correct answer:
+
+- [ ] Production EC2 Instances (24/7 workload): Reserved Instances (RIs): The production instances run 24 hours a day. For such continuous, predictable workloads, Amazon EC2 Reserved Instances offer significant discounts (up to 72%) compared to On-Demand pricing in exchange for a 1-year or 3-year commitment. This is the most cost-effective approach for the always-on production environment. Even with CPU utilization averaging 10-30%, having a baseline covered by RIs is beneficial.
+- [ ] Development and Test EC2 Instances (Intermittent workload): On-Demand Instances: The development and test instances run for at least 8 hours a day and will be stopped when not in use. On-Demand Instances are ideal for such workloads because you pay for compute capacity by the second (for Linux) or hour with no long-term commitments or upfront payments. When the instances are stopped, you do not pay for the compute hours. This flexibility makes On-Demand cost-effective for these intermittent environments.
+- [ ] MOST Cost-Effective Combination: This strategy optimizes costs by leveraging RIs for the predictable, continuous production load and On-Demand pricing for the flexible, stop-start nature of development and test environments.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because:
+Spot Instances for Production: Spot Instances can offer deep discounts but can be interrupted by AWS with only a two-minute warning if AWS needs the capacity back. For production workloads of a three-tier web architecture, relying solely on Spot Instances is generally too risky due to potential service interruptions, unless the application is specifically designed for fault tolerance against such interruptions.
+Reserved Instances for Dev/Test: Using RIs for development and test instances that are frequently stopped is not cost-effective. You commit to paying for RIs for the entire term, regardless of whether the instance is running or stopped (for most RI types).
+- [ ] Option C is wrong because:
+Spot Blocks for Production: Spot Instances with a defined duration (Spot blocks) are for workloads that need to run uninterrupted for a finite duration (1 to 6 hours). This is not suitable for production instances that run 24/7.
+Reserved Instances for Dev/Test: Same issue as in option A.
+- [ ] Option D is wrong because:
+On-Demand Instances for Production: Using On-Demand Instances for production workloads that run 24/7 is the most expensive option. Significant savings can be achieved with RIs or Savings Plans for such continuous usage.
+Spot Blocks for Dev/Test: While Spot (or Spot blocks if the "at least 8 hours" fits within the block duration and interruptions are acceptable) can be cheaper than On-Demand, the key is that On-Demand provides flexibility to stop and start without long-term commitment, making it suitable. However, the primary flaw in this option is using On-Demand for 24/7 production. Option B provides a better overall cost optimization strategy.
+
+</details>
+
+<details>
+  <summary>Question 85</summary>
+
+A company has a production web application in which users upload documents through a web interface or a mobile app. According to a new regulatory requirement. new documents cannot be modified or deleted after they are stored.
+
+What should a solutions architect do to meet this requirement?
+
+- [ ] A. Store the uploaded documents in an Amazon S3 bucket with S3 Versioning and S3 Object Lock enabled.
+- [ ] B. Store the uploaded documents in an Amazon S3 bucket. Configure an S3 Lifecycle policy to archive the documents periodically.
+- [ ] C. Store the uploaded documents in an Amazon S3 bucket with S3 Versioning enabled. Configure an ACL to restrict all access to read-only.
+- [ ] D. Store the uploaded documents on an Amazon Elastic File System (Amazon EFS) volume. Access the data by mounting the volume in read-only mode.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Store the uploaded documents in an Amazon S3 bucket with S3 Versioning and S3 Object Lock enabled.
+
+Why this is the correct answer:
+
+- [ ] Amazon S3 for Document Storage: S3 is a highly durable and scalable service for storing documents.
+- [ ] S3 Object Lock for Immutability: The core requirement is that documents "cannot be modified or deleted after they are stored." Amazon S3 Object Lock provides Write-Once-Read-Many (WORM) protection for objects. When Object Lock is enabled with a retention period and mode (governance or compliance), it prevents objects from being overwritten or deleted for that specified duration.
+- [ ] For the strictest requirement, compliance mode would be used, which prevents even the root user from deleting or overwriting the object version until the retention period expires.
+- [ ] S3 Versioning Requirement: S3 Object Lock can only be enabled on buckets that have S3 Versioning enabled. Versioning itself helps protect against accidental overwrites (by creating new versions) and deletions (by creating delete markers), and Object Lock then protects specific object versions from being changed or deleted.
+- [ ] This combination directly meets the regulatory requirement for immutability.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: An S3 Lifecycle policy is used to manage the storage class of objects (e.g., moving them to archive tiers for cost savings) or to define when objects expire (are deleted). It does not prevent modification or deletion of active objects before the lifecycle rules apply. It's for managing data over its lifetime, not for making it immutable upon creation.
+- [ ] Option C is wrong because: While enabling S3 Versioning helps protect against accidental overwrites and allows recovery from deletions (by removing delete markers), it does not by itself prevent a user with delete permissions from deleting object versions. Configuring an ACL (or bucket policy) to restrict access to read-only would prevent modifications for users subject to that ACL/policy, but users with higher privileges could still potentially modify or delete objects or change the permissions. S3 Object Lock provides a stronger guarantee of immutability at the object level.
+- [ ] Option D is wrong because: Mounting an Amazon EFS volume in read-only mode is a client-side setting. It does not prevent users or processes with write access to the EFS file system (e.g., from a different EC2 instance or with administrative privileges on the EFS mount) from modifying or deleting the files directly on the EFS file system. EFS does not have an equivalent to S3 Object Lock for file-level WORM protection.
+
+</details>
+
+<details>
+  <summary>Question 86</summary>
+
+A company has several web servers that need to frequently access a common Amazon RDS MySQL Multi-AZ DB instance. The company wants a secure method for the web servers to connect to the database while meeting a security requirement to rotate user credentials frequently.
+
+Which solution meets these requirements?
+
+- [ ] A. Store the database user credentials in AWS Secrets Manager. Grant the necessary IAM permissions to allow the web servers to access AWS Secrets Manager.
+- [ ] B. Store the database user credentials in AWS Systems Manager OpsCenter. Grant the necessary IAM permissions to allow the web servers to access OpsCenter.
+- [ ] C. Store the database user credentials in a secure Amazon S3 bucket. Grant the necessary IAM permissions to allow the web servers to retrieve credentials and access the database.
+- [ ] D. Store the database user credentials in files encrypted with AWS Key Management Service (AWS KMS) on the web server file system. The web server should be able to decrypt the files and access the database.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Store the database user credentials in AWS Secrets Manager. Grant the necessary IAM permissions to allow the web servers to access AWS Secrets Manager.
+
+Why this is the correct answer:
+
+- [ ] AWS Secrets Manager for Secure Storage and Rotation: AWS Secrets Manager is a service specifically designed to manage, retrieve, and rotate secrets such as database credentials, API keys, and other sensitive information. It securely stores the credentials and integrates with services like Amazon RDS MySQL to enable automatic credential rotation on a schedule. This directly meets the requirement to "rotate user credentials frequently" with minimal operational overhead.
+- [ ] Secure Access for Applications: Web servers (running on EC2 instances or containers) can be granted IAM permissions (typically via an IAM role attached to the compute resource) to securely retrieve the database credentials from Secrets Manager at runtime. This avoids hardcoding credentials in application code or configuration files.
+- [ ] Centralized Management: Secrets Manager provides a central place to manage and audit access to secrets.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: AWS Systems Manager OpsCenter is a service used for aggregating, investigating, and resolving operational issues (OpsItems) related to your AWS resources. It is not designed or intended for storing or managing sensitive data like database credentials.
+- [ ] Option C is wrong because: While storing credentials in an encrypted S3 bucket is possible, it is generally less secure and less manageable than using a dedicated secrets management service like AWS Secrets Manager. More importantly, this approach does not provide an automated mechanism for frequent credential rotation; this would have to be custom-built, increasing operational overhead.
+- [ ] Option D is wrong because: Storing encrypted credential files directly on the web server's file system still poses risks if the server is compromised. Managing the encryption keys, the decryption process within the application, and especially the frequent rotation of these credentials across multiple web servers would be operationally complex and error-prone. AWS Secrets Manager centralizes and automates these tasks.
+
+</details>
+
+<details>
+  <summary>Question 87</summary>
+
+A company hosts an application on AWS Lambda functions that are invoked by an Amazon API Gateway API. The Lambda functions save customer data to an Amazon Aurora MySQL database. Whenever the company upgrades the database, the Lambda functions fail to establish database connections until the upgrade is complete. The result is that customer data is not recorded for some of the event.
+
+A solutions architect needs to design a solution that stores customer data that is created during database upgrades.
+
+Which solution will meet these requirements?
+
+- [ ] A. Provision an Amazon RDS proxy to sit between the Lambda functions and the database. Configure the Lambda functions to connect to the RDS proxy.
+- [ ] B. Increase the run time of the Lambda functions to the maximum. Create a retry mechanism in the code that stores the customer data in the database.
+- [ ] C. Persist the customer data to Lambda local storage. Configure new Lambda functions to scan the local storage to save the customer data to the database.
+- [ ] D. Store the customer data in an Amazon Simple Queue Service (Amazon SQS) FIFO queue. Create a new Lambda function that polls the queue and stores the customer data in the database.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Store the customer data in an Amazon Simple Queue Service (Amazon SQS) FIFO queue. Create a new Lambda function that polls the queue and stores the customer data in the database.
+
+Why this is the correct answer:
+
+- [ ] Decoupling with Amazon SQS: The primary issue is data loss when the database is unavailable during upgrades. By introducing an Amazon SQS queue, the Lambda functions invoked by API Gateway can send the customer data as messages to the SQS queue instead of trying to write directly to the database. SQS acts as a durable buffer.
+- [ ] Ensuring Data Durability: Messages sent to SQS are stored durably until they are successfully processed. This means if the database is down for an upgrade, the incoming customer data is not lost but is queued safely.
+- [ ] Asynchronous Processing by a Second Lambda: A separate AWS Lambda function can be configured to poll the SQS queue. This second Lambda function would be responsible for reading messages from the queue and writing the customer data to the Amazon Aurora MySQL database. This processing happens asynchronously. If the database is unavailable, the messages remain in the SQS queue, and the Lambda function can retry processing them later (SQS allows messages to become visible again after a timeout if not deleted).
+- [ ] FIFO Queue for Order Preservation: Using an SQS FIFO (First-In, First-Out) queue ensures that customer data is processed and stored in the database in the same order it was received, which can be important for transactional data.
+- [ ] This solution directly addresses the problem by ensuring data created during database upgrades is durably stored and processed once the database is available.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While Amazon RDS Proxy is excellent for managing database connections (pooling) and improving application resilience to database failovers (e.g., in a Multi-AZ setup), it doesn't inherently solve the problem of the database being completely unavailable for an extended period during an upgrade. If the RDS Proxy cannot connect to the underlying database because it's undergoing an upgrade, the Lambda functions would still fail to save data through the proxy. RDS Proxy doesn't queue the data itself if the database is offline.
+- [ ] Option B is wrong because: Increasing Lambda run time and implementing retries within the Lambda code might help with very short, transient database unavailability. However, database upgrades can sometimes take several minutes or longer, potentially exceeding even the maximum Lambda execution time (15 minutes). Continuous retries during an extended upgrade would be inefficient, costly, and could still result in data loss if all retries fail or the Lambda times out. It doesn't provide a durable store for data arriving during the entire upgrade window.
+- [ ] Option C is wrong because: Lambda local storage (/tmp directory) is ephemeral and non-persistent. It is tied to a specific execution environment of a Lambda invocation and is not suitable for durably storing customer data, especially if the Lambda function fails or new invocations are used for subsequent requests. Data stored there would be lost.
+
+</details>
+
+<details>
+  <summary>Question 88</summary>
+
+A survey company has gathered data for several years from areas in the United States. The company hosts the data in an Amazon S3 bucket that is 3 TB in size and growing. The company has started to share the data with a European marketing firm that has S3 buckets. The company wants to ensure that its data transfer costs remain as low as possible.
+
+Which solution will meet these requirements?
+
+- [ ] A. Configure the Requester Pays feature on the company's S3 bucket.
+- [ ] B. Configure S3 Cross-Region Replication from the company's S3 bucket to one of the marketing firm's S3 buckets.
+- [ ] C. Configure cross-account access for the marketing firm so that the marketing firm has access to the company's S3 bucket.
+- [ ] D. Configure the company's S3 bucket to use S3 Intelligent-Tiering. Sync the S3 bucket to one of the marketing firm's S3 buckets.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Configure the Requester Pays feature on the company's S3 bucket.
+
+Why this is the correct answer:
+
+- [ ] S3 Requester Pays Feature: The Amazon S3 Requester Pays feature allows the bucket owner to specify that the requester (the party downloading the data) will pay for the data transfer out costs, instead of the bucket owner.
+- [ ] Minimizing the Survey Company's Costs: By enabling Requester Pays on their S3 bucket, the survey company ensures that when the European marketing firm accesses and downloads the data, the marketing firm incurs the associated data transfer costs. This directly meets the requirement for the survey company to keep "its data transfer costs remain as low as possible."
+- [ ] Data Sharing: This solution still allows the marketing firm to access the necessary data from the survey company's S3 bucket, provided they are authenticated and authorized, and are willing to accept the data transfer charges.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: If the survey company configures S3 Cross-Region Replication to replicate data to the marketing firm's S3 bucket (presumably in a European region), the survey company (as the owner of the source bucket and the replication configuration) would be responsible for the inter-region data transfer costs associated with the replication itself. This would likely increase the survey company's data transfer costs, not minimize them.
+- [ ] Option C is wrong because: Configuring cross-account access allows the marketing firm to access the data in the survey company's S3 bucket. However, unless Requester Pays is also enabled, the survey company (as the bucket owner) would typically still be billed for the data transfer out costs when the marketing firm downloads the data from their bucket. This does not inherently minimize the survey company's data transfer costs.
+- [ ] Option D is wrong because: S3 Intelligent-Tiering is a storage class that optimizes storage costs by automatically moving data between access tiers based on usage patterns. It does not directly affect or reduce data transfer costs. Syncing the S3 bucket to the marketing firm's bucket would involve data transfer, and the costs for this transfer would likely be borne by the survey company if they initiate the sync, similar to replication.
+
+</details>
+
+<details>
+  <summary>Question 89</summary>
+
+A company uses Amazon S3 to store its confidential audit documents. The S3 bucket uses bucket policies to restrict access to audit team IAM user credentials according to the principle of least privilege. Company managers are worried about accidental deletion of documents in the S3 bucket and want a more secure solution.
+
+What should a solutions architect do to secure the audit documents?
+
+- [ ] A. Enable the versioning and MFA Delete features on the S3 bucket.
+- [ ] B. Enable multi-factor authentication (MFA) on the IAM user credentials for each audit team IAM user account.
+- [ ] C. Add an S3 Lifecycle policy to the audit team's IAM user accounts to deny the s3:DeleteObject action during audit dates.
+- [ ] D. Use AWS Key Management Service (AWS KMS) to encrypt the S3 bucket and restrict audit team IAM user accounts from accessing the KMS key.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Enable the versioning and MFA Delete features on the S3 bucket.
+
+Why this is the correct answer:
+
+- [ ] S3 Versioning for Recovery: Enabling S3 Versioning on the bucket means that multiple versions of each document (object) are preserved. If a document is "deleted," S3 actually inserts a delete marker instead of permanently removing the object's content. This allows for easy recovery from accidental deletions by simply removing the delete marker or restoring a previous version. This directly addresses the concern about "accidental deletion."
+- [ ] MFA Delete for Enhanced Deletion Protection: Enabling MFA (Multi-Factor Authentication) Delete on a versioning-enabled bucket adds another layer of security. For certain operations, such as permanently deleting an object version or changing the versioning state of the bucket, the bucket owner must provide their standard AWS credentials plus a valid code from their MFA device. This makes it significantly harder to accidentally (or even maliciously, without MFA device access) permanently delete documents. This provides a "more secure solution."
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: Enabling MFA for IAM user accounts is a good security practice for protecting user identities and preventing unauthorized access to those accounts. However, it does not directly prevent an authorized user (who has successfully authenticated with MFA) from accidentally deleting a document if their IAM permissions allow deletion. MFA Delete on the S3 bucket (Option A) specifically protects the S3 delete operations themselves.
+- [ ] Option C is wrong because: S3 Lifecycle policies are used to manage the lifecycle of objects (e.g., transitioning them to different storage classes or expiring/deleting them after a defined period). You cannot attach S3 Lifecycle policies to IAM user accounts. While a bucket policy could be used to deny delete actions, this option misrepresents how lifecycle policies function and what they are applied to.
+- [ ] Option D is wrong because: Using AWS KMS to encrypt the S3 bucket is essential for protecting the confidentiality of the audit documents (data at rest). However, encryption does not prevent the documents from being deleted. If an authorized user (or an attacker who gains access) deletes an encrypted document, the document is still gone. The primary concern stated is "accidental deletion," not unauthorized reading of the content.
+
+</details>
+
+<details>
+  <summary>Question 90</summary>
+
+A company is using a SQL database to store movie data that is publicly accessible. The database runs on an Amazon RDS Single-AZ DB instance. A script runs queries at random intervals each day to record the number of new movies that have been added to the database. The script must report a final total during business hours.
+
+The company's development team notices that the database performance is inadequate for development tasks when the script is running. A solutions architect must recommend a solution to resolve this issue.
+
+Which solution will meet this requirement with the LEAST operational overhead?
+
+- [ ] A. Modify the DB instance to be a Multi-AZ deployment.
+- [ ] B. Create a read replica of the database. Configure the script to query only the read replica.
+- [ ] C. Instruct the development team to manually export the entries in the database at the end of each day.
+- [ ] D. Use Amazon ElastiCache to cache the common queries that the script runs against the database.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Create a read replica of the database. Configure the script to query only the read replica.
+
+Why this is the correct answer:
+
+- [ ] Issue: Read Load Impacting Primary DB: The problem states that the script's queries (which are read operations to count new movies) are degrading database performance for development tasks. This indicates that the read load from the script is impacting the primary (and only) DB instance.
+- [ ] Amazon RDS Read Replicas: Amazon RDS allows you to create one or more read replicas of your source DB instance. Read replicas are asynchronously replicated copies of the primary instance and are designed to offload read-heavy traffic.
+- [ ] Offloading Script Queries: By creating a read replica and modifying the script to direct its queries to this read replica, the read load generated by the script is removed from the primary DB instance. This allows the primary instance to dedicate its resources to serving the development team's tasks and other application writes without performance degradation caused by the script.
+- [ ] Least Operational Overhead: Creating a read replica in RDS is a managed operation. Modifying the script's connection string to point to the read replica's endpoint is a relatively small change. This solution effectively isolates the read traffic with minimal ongoing management effort.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Modifying the DB instance to a Multi-AZ deployment creates a synchronous standby replica in a different Availability Zone. The primary purpose of Multi-AZ is to provide high availability and data durability by enabling automatic failover. The standby instance in a Multi-AZ setup does not serve read traffic (except during a failover event). Therefore, this will not alleviate the performance issue caused by the script's read queries on the primary instance.
+- [ ] Option C is wrong because: Instructing the development team to perform manual exports is an operational burden and does not solve the problem of the script itself impacting database performance when it runs. The script still needs to run its queries to get the count of new movies.
+- [ ] Option D is wrong because: Amazon ElastiCache is an in-memory caching service. While it can reduce database load by caching frequently accessed query results, the script is querying for "new movies added." Such queries, which seek new or changing data, are often not good candidates for caching, as the cache would frequently be stale or miss the latest additions. A read replica directly offloads the entire query load, regardless of whether the results are cacheable.
+
+</details>
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
