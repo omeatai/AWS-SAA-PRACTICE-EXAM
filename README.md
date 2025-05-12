@@ -3233,6 +3233,418 @@ Why are the other answers wrong?
 
 </details>
 
+<details>
+  <summary>==Questions 91-100==</summary>
+
+<details>
+  <summary>Question 91</summary>
+
+A company has applications that run on Amazon EC2 instances in a VPC. One of the applications needs to call the Amazon S3 API to store and read objects. According to the company's security regulations, no traffic from the applications is allowed to travel across the internet.
+
+Which solution will meet these requirements?
+
+- [ ] A. Configure an S3 gateway endpoint.
+- [ ] B. Create an S3 bucket in a private subnet.
+- [ ] C. Create an S3 bucket in the same AWS Region as the EC2 instances.
+- [ ] D. Configure a NAT gateway in the same subnet as the EC2 instances.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Configure an S3 gateway endpoint.
+
+Why this is the correct answer:
+
+- [ ] S3 Gateway Endpoint for Private Connectivity: An Amazon S3 gateway endpoint (a type of VPC endpoint) enables your EC2 instances within a VPC to connect to Amazon S3 services directly, without requiring traffic to traverse an Internet Gateway, NAT Gateway, VPN connection, or AWS Direct Connect connection.
+- [ ] No Internet Traffic: Traffic between your VPC and Amazon S3 using a gateway endpoint stays entirely within the AWS network. This ensures that "no traffic from the applications is allowed to travel across the internet," meeting the company's security regulation.
+- [ ] Cost and Performance: Using a gateway endpoint for S3 can also reduce data transfer costs, as data transferred to S3 within the same region via a gateway endpoint is typically free, and it avoids NAT gateway processing charges. It can also improve performance due to the direct private connection.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: Amazon S3 buckets are not created "in a private subnet." S3 is a regional service, and buckets are accessed via regional or global endpoints. The concept of placing an S3 bucket within a VPC subnet is incorrect.
+- [ ] Option C is wrong because: While creating an S3 bucket in the same AWS Region as the EC2 instances is a general best practice for performance and cost, it does not, by itself, ensure that traffic between the EC2 instances and S3 will not traverse the internet (e.g., if the instances are in a private subnet and use a NAT gateway to reach public S3 endpoints). The security regulation specifically requires traffic not to travel across the internet.
+- [ ] Option D is wrong because: A NAT gateway is used to allow instances in a private subnet to initiate outbound connections to the internet or other AWS public services (like S3 public endpoints) while preventing unsolicited inbound connections from the internet. If EC2 instances use a NAT gateway to access S3, the traffic is routed through the NAT gateway to S3's public endpoints. While this traffic typically stays within the AWS network for same-region S3 access, a gateway endpoint (Option A) provides a more direct, private path within the VPC without relying on NAT gateways and ensures traffic doesn't use public S3 endpoints via the internet path. The requirement is explicitly "no traffic... across the internet."
+
+</details>
+
+<details>
+  <summary>Question 92</summary>
+
+A company is storing sensitive user information in an Amazon S3 bucket. The company wants to provide secure access to this bucket from the application tier running on Amazon EC2 instances inside a VPC.
+
+Which combination of steps should a solutions architect take to accomplish this? (Choose two.)
+
+- [ ] A. Configure a VPC gateway endpoint for Amazon S3 within the VPC.
+- [ ] B. Create a bucket policy to make the objects in the S3 bucket public.
+- [ ] C. Create a bucket policy that limits access to only the application tier running in the VPC.
+- [ ] D. Create an IAM user with an S3 access policy and copy the IAM credentials to the EC2 instance.
+- [ ] E. Create a NAT instance and have the EC2 instances use the NAT instance to access the S3 bucket.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Configure a VPC gateway endpoint for Amazon S3 within the VPC.
+- [ ] C. Create a bucket policy that limits access to only the application tier running in the VPC.
+
+Why these are the correct answers:
+
+This question focuses on providing secure access from EC2 instances within a VPC to an S3 bucket containing sensitive information.
+
+A. Configure a VPC gateway endpoint for Amazon S3 within the VPC.
+- [ ] Private Connectivity: A VPC gateway endpoint for S3 allows your EC2 instances within the VPC to communicate with S3 without traffic leaving the AWS network (i.e., not going over the public internet via an Internet Gateway or NAT Gateway). This enhances security by keeping the network path private.
+- [ ] Cost Savings: It can also reduce data transfer costs as traffic to S3 via a gateway endpoint within the same region does not incur data transfer charges or NAT gateway processing fees.
+
+C. Create a bucket policy that limits access to only the application tier running in the VPC.
+- [ ] Principle of Least Privilege: An S3 bucket policy allows you to define fine-grained permissions on your S3 bucket and its objects. To secure sensitive data, you should create a bucket policy that explicitly grants access only to the necessary principals. In this case, it would be the IAM role(s) associated with the EC2 instances in the application tier.
+- [ ] Restricting Access: The policy can be written to allow actions (like s3:GetObject, s3:PutObject) only if the request originates from the EC2 instances belonging to the application tier (e.g., by referencing their IAM role or the VPC endpoint). This ensures that only the authorized application tier can access the sensitive information.
+- [ ] Combining a private network path (VPC gateway endpoint) with resource-based permissions (S3 bucket policy) provides a robust and secure access mechanism.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: Making an S3 bucket that stores "sensitive user information" public is a severe security risk and directly contradicts the goal of providing secure access.
+- [ ] Option D is wrong because: Creating an IAM user and embedding its long-term access keys (access key ID and secret access key) onto EC2 instances is not a security best practice. These credentials can be compromised if the instance is breached. The recommended approach for EC2 instances to securely access AWS services is by using IAM roles, which provide temporary, automatically rotated credentials.
+- [ ] Option E is wrong because: A NAT instance (or NAT Gateway) is used to enable instances in a private subnet to initiate outbound connections to the internet or public AWS services. While this allows access to S3's public endpoints, it does not provide the same level of private connectivity as a VPC gateway endpoint. Using a VPC gateway endpoint is more secure for this use case as it keeps traffic off the internet path and can also be more cost-effective.
+
+</details>
+
+<details>
+  <summary>Question 93</summary>
+
+A company runs an on-premises application that is powered by a MySQL database. The company is migrating the application to AWS to increase the application's elasticity and availability. The current architecture shows heavy read activity on the database during times of normal operation. Every 4 hours, the company's development team pulls a full export of the production database to populate a database in the staging environment. During this period, users experience unacceptable application latency. The development team is unable to use the staging environment until the procedure completes.
+
+A solutions architect must recommend replacement architecture that alleviates the application latency issue. The replacement architecture also must give the development team the ability to continue using the staging environment without delay.
+
+Which solution meets these requirements?
+
+- [ ] A. Use Amazon Aurora MySQL with Multi-AZ Aurora Replicas for production. Populate the staging database by implementing a backup and restore process that uses the mysqldump utility.
+- [ ] B. Use Amazon Aurora MySQL with Multi-AZ Aurora Replicas for production. Use database cloning to create the staging database on-demand.
+- [ ] C. Use Amazon RDS for MySQL with a Multi-AZ deployment and read replicas for production. Use the standby instance for the staging database.
+- [ ] D. Use Amazon RDS for MySQL with a Multi-AZ deployment and read replicas for production. Populate the staging database by implementing a backup and restore process that uses the mysqldump utility.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Use Amazon Aurora MySQL with Multi-AZ Aurora Replicas for production. Use database cloning to create the staging database on-demand.
+
+Why this is the correct answer:
+
+- [ ] Amazon Aurora MySQL for Production: Amazon Aurora MySQL is a high-performance, MySQL-compatible database designed for the cloud. Using it with Multi-AZ Aurora Replicas addresses the "heavy read activity" by allowing read traffic to be offloaded to the replicas, and provides high availability for the production environment.
+- [ ] Database Cloning for Staging: A key feature of Amazon Aurora is its ability to perform fast database cloning. Cloning creates a new, independent copy of your database cluster very quickly (often in minutes), regardless of the database size. This is because it's initially a copy-on-write clone. This process has minimal impact on the performance of the production database.
+- [ ] Alleviates Latency and Staging Delay: By using database cloning instead of a full export (like mysqldump), the "unacceptable application latency" experienced on the production database during the export process is eliminated. The staging database can be created quickly "on-demand," allowing the development team to use the staging environment "without delay."
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Implementing a backup and restore process using the mysqldump utility to populate the staging database is similar to the current problematic method of pulling a full export. This would likely still impose a significant load on the production database and take considerable time, leading to the same latency issues and delays for the staging environment that the company wants to avoid.
+- [ ] Option C is wrong because: In an Amazon RDS Multi-AZ deployment, the standby instance is a passive replica maintained for failover purposes. It cannot be directly accessed or used to serve read traffic or as a source for a staging database. Attempting to use the standby instance for staging is not a supported or viable approach. Read replicas are used for offloading read traffic, not the standby.
+- [ ] Option D is wrong because: Similar to option A, using mysqldump for backup and restore to populate the staging database does not solve the core problem of performance degradation on the production instance during the export or the time it takes to make the staging environment available. While Amazon RDS for MySQL with read replicas is a good solution for read-heavy production workloads, the method for creating the staging environment is flawed in this option.
+
+</details>
+
+<details>
+  <summary>Question 94</summary>
+
+- [ ] A.  Turn  
+A company is designing an application where users upload small files into Amazon S3. After a user uploads a file, the file requires one-time simple processing to transform the data and save the data in JSON format for later analysis. Each file must be processed as quickly as possible after it is uploaded. Demand will vary. On some days, users will upload a high number of files. On other days, users will upload a few files or no files.
+
+Which solution meets these requirements with the LEAST operational overhead?
+
+- [ ] A. Configure Amazon EMR to read text files from Amazon S3. Run processing scripts to transform the data. Store the resulting JSON file in an Amazon Aurora DB cluster.
+- [ ] B. Configure Amazon S3 to send an event notification to an Amazon Simple Queue Service (Amazon SQS) queue. Use Amazon EC2 instances to read from the queue and process the data. Store the resulting JSON file in Amazon DynamoDB.
+- [ ] C. Configure Amazon S3 to send an event notification to an Amazon Simple Queue Service (Amazon SQS) queue. Use an AWS Lambda function to read from the queue and process the data. Store the resulting JSON file in Amazon DynamoDB.
+- [ ] D. Configure Amazon EventBridge (Amazon CloudWatch Events) to send an event to Amazon Kinesis Data Streams when a new file is uploaded. Use an AWS Lambda function to consume the event from the stream and process the data. Store the resulting JSON file in an Amazon Aurora DB cluster.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Configure Amazon S3 to send an event notification to an Amazon Simple Queue Service (Amazon SQS) queue. Use an AWS Lambda function to read from the queue and process the data. Store the resulting JSON file in Amazon DynamoDB.
+
+Why this is the correct answer:
+
+This solution offers a serverless, event-driven architecture that is efficient and has low operational overhead:
+
+- [ ] Amazon S3 for File Uploads: S3 is the ideal place to store the uploaded small files.
+- [ ] S3 Event Notification to SQS: When a new file is uploaded to S3, an S3 event notification can automatically send a message (containing details about the uploaded file) to an Amazon SQS queue. SQS decouples the file upload from the processing step and provides a durable buffer, which is excellent for handling varying demand ("high number of files" or "few files").
+- [ ] AWS Lambda for Processing: An AWS Lambda function can be configured to use the SQS queue as an event source. Lambda will automatically poll the queue and invoke the function to process each file. Since the processing is "one-time simple processing," Lambda is well-suited. It scales automatically based on the number of messages in the queue, ensuring files are processed "as quickly as possible." As a serverless service, it minimizes operational overhead.
+- [ ] Amazon DynamoDB for JSON Storage: After processing, the transformed data (in JSON format) can be stored in Amazon DynamoDB. DynamoDB is a fully managed NoSQL database that is excellent for storing JSON documents and scales seamlessly, suitable for "later analysis."
+- [ ] Least Operational Overhead: This entire pipeline (S3 -> SQS -> Lambda -> DynamoDB) consists of managed and serverless services, requiring minimal infrastructure management from the company.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Amazon EMR is a big data platform designed for large-scale distributed data processing using frameworks like Spark and Hadoop. Using EMR for "one-time simple processing" of "small files" is overly complex, not cost-effective for this scale, and incurs significant operational overhead compared to Lambda. Storing simple JSON results in an Amazon Aurora DB cluster might also be more overhead than DynamoDB if the analysis needs don't strictly require a relational database.
+- [ ] Option B is wrong because: While using S3 event notifications to SQS is a good start, using Amazon EC2 instances to read from the queue and process data requires managing those instances (provisioning, patching, scaling). AWS Lambda (as in option C) offers a serverless alternative that eliminates this instance management overhead and scales automatically.
+- [ ] Option D is wrong because: Using Amazon EventBridge to send an event to Amazon Kinesis Data Streams for individual small file uploads adds an unnecessary layer of complexity. Kinesis Data Streams is designed for continuous, real-time data streaming, not typically for discrete file processing events initiated by S3 uploads in this manner. A direct S3 event to SQS (or even S3 to Lambda directly for very quick tasks) is simpler. Also, as with option A, Aurora might be more overhead than DynamoDB for storing the resulting JSON for analysis.
+
+</details>
+
+<details>
+  <summary>Question 95</summary>
+ 
+An application allows users at a company's headquarters to access product data. The product data is stored in an Amazon RDS MySQL DB instance. The operations team has isolated an application performance slowdown and wants to separate read traffic from write traffic. A solutions architect needs to optimize the application's performance quickly.
+
+What should the solutions architect recommend?
+
+- [ ] A. Change the existing database to a Multi-AZ deployment. Serve the read requests from the primary Availability Zone.
+- [ ] B. Change the existing database to a Multi-AZ deployment. Serve the read requests from the secondary Availability Zone.
+- [ ] C. Create read replicas for the database. Configure the read replicas with half of the compute and storage resources as the source database.
+- [ ] D. Create read replicas for the database. Configure the read replicas with the same compute and storage resources as the source database.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Create read replicas for the database. Configure the read replicas with the same compute and storage resources as the source database.
+
+Why this is the correct answer:
+
+- [ ] Separating Read and Write Traffic: The core problem is an application performance slowdown, and the desired solution is to "separate read traffic from write traffic." Amazon RDS Read Replicas are specifically designed for this purpose. They are asynchronously replicated copies of the primary database instance that can offload read-intensive workloads.
+- [ ] Optimizing Performance Quickly: Creating one or more read replicas for an existing RDS instance is a relatively quick and standard procedure. Once created, the application can be configured to direct its read queries to the read replica endpoint(s) and write queries to the primary instance endpoint. This immediately reduces the load on the primary instance, improving its performance for write operations and overall application responsiveness.
+- [ ] Sizing of Read Replicas: To effectively handle the read traffic that was previously causing slowdowns on the primary, the read replicas should have adequate resources. Configuring them with the "same compute and storage resources as the source database" (or resources appropriately sized for the read workload) ensures they can handle the diverted read traffic without becoming a new bottleneck. Under-provisioning read replicas could lead to poor read performance.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: A Multi-AZ deployment for Amazon RDS provides high availability and data durability by creating a synchronous standby replica in a different Availability Zone. However, this standby replica does not serve read traffic during normal operations (it only becomes active during a failover). All read and write traffic still goes to the primary instance. Thus, this does not separate read traffic or alleviate read-related performance issues on the primary.
+- [ ] Option B is wrong because: Similar to option A, the secondary (standby) instance in a Multi-AZ deployment is not used for serving read traffic during normal operations. It is strictly for failover. Attempting to serve read requests from the secondary Availability Zone in a standard Multi-AZ setup is incorrect.
+- [ ] Option C is wrong because: While creating read replicas is the correct approach, configuring them with "half of the compute and storage resources as the source database" might not be sufficient to handle the existing read load effectively, especially if that read load is significant enough to cause a performance slowdown on the primary. If the read replicas are under-provisioned, they could simply become a new performance bottleneck for read queries, failing to optimize overall application performance.
+
+</details>
+
+<details>
+  <summary>Question 96</summary>
+
+An Amazon EC2 administrator created the following policy associated with an IAM group containing several users:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "*",
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "10.100.100.0/24"
+        }
+      }
+    },
+    {
+      "Effect": "Deny",
+      "Action": "ec2:*",
+      "Resource": "*",
+      "Condition": {
+        "StringNotEquals": {
+          "ec2:Region": "us-east-1"
+        }
+      }
+    }
+  ]
+}
+```
+
+What is the effect of this policy?
+
+- [ ] A. Users can terminate an EC2 instance in any AWS Region except us-east-1.
+- [ ] B. Users can terminate an EC2 instance with the IP address 10.100.100.1 in the us-east-1 Region.
+- [ ] C. Users can terminate an EC2 instance in the us-east-1 Region when the user's source IP is 10.100.100.254.
+- [ ] D. Users cannot terminate an EC2 instance in the us-east-1 Region when the user's source IP is 10.100.100.254.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Users can terminate an EC2 instance in the us-east-1 Region when the user's source IP is 10.100.100.254.
+
+Why this is the correct answer:
+
+Let's break down the IAM policy:
+
+- [ ] First Statement (Allow TerminateInstances):
+
+"Effect": "Allow"
+"Action": "ec2:TerminateInstances"
+"Resource": "*" (applies to all EC2 instances)
+"Condition": {"IpAddress": {"aws:SourceIp": "10.100.100.0/24"}} This statement allows users to terminate EC2 instances only if their request originates from an IP address within the 10.100.100.0/24 range (i.e., 10.100.100.0 to 10.100.100.255).
+Second Statement (Deny EC2 actions outside us-east-1):
+
+"Effect": "Deny"
+"Action": "ec2:*" (applies to all EC2 actions)
+"Resource": "*" (applies to all EC2 resources)
+"Condition": {"StringNotEquals": {"ec2:Region": "us-east-1"}} This statement denies all EC2 actions if the action is performed in any region other than us-east-1. If the region is us-east-1, the StringNotEquals condition is false, and this Deny statement does not take effect. If the region is, for example, eu-west-1, the condition is true, and the action is denied.
+
+Combined Effect:
+
+- [ ] An explicit Deny in an IAM policy always overrides an Allow.
+- [ ] Because of the second statement, users can only perform any EC2 actions (including ec2:TerminateInstances) if those actions are targeted at resources within the us-east-1 Region. All EC2 actions in other regions are denied.
+- [ ] For the ec2:TerminateInstances action to be allowed (it must be in us-east-1 due to the second statement), the condition in the first statement must also be met: the user's source IP address must be within the 10.100.100.0/24 range.
+- [ ] Evaluating Option C: "Users can terminate an EC2 instance in the us-east-1 Region when the user's source IP is 10.100.100.254."
+- [ ] Region Check: The action is in us-east-1. The second statement's Deny condition (StringNotEquals: {"ec2:Region": "us-east-1"}) is false, so the Deny does not apply.
+- [ ] Source IP Check: The user's source IP is 10.100.100.254. This IP address is within the 10.100.100.0/24 range specified in the first statement's Allow condition.
+- [ ] Conclusion: Both conditions for the Allow are met, and the overriding Deny (for other regions) does not apply. Therefore, users can terminate instances in us-east-1 if their IP is 10.100.100.254.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: The second statement explicitly denies all EC2 actions in any region except us-east-1. Therefore, users cannot terminate instances outside of us-east-1.
+- [ ] Option B is wrong because: The Allow condition in the first statement is based on the user's source IP address (aws:SourceIp), not the IP address of the EC2 instance being terminated. The IP address 10.100.100.1 refers to an instance's potential IP, which is not what the policy conditions on for allowing the action.
+- [ ] Option D is wrong because: This directly contradicts the correct analysis of option C. If the conditions in option C are met (action in us-east-1 and source IP is 10.100.100.254), the termination is allowed.
+
+</details>
+
+<details>
+  <summary>Question 97</summary>
+
+A company has a large Microsoft SharePoint deployment running on-premises that requires Microsoft Windows shared file storage. The company wants to migrate this workload to the AWS Cloud and is considering various storage options. The storage solution must be highly available and integrated with Active Directory for access control.
+
+Which solution will satisfy these requirements?
+
+- [ ] A. Configure Amazon EFS storage and set the Active Directory domain for authentication.
+- [ ] B. Create an SMB file share on an AWS Storage Gateway file gateway in two Availability Zones.
+- [ ] C. Create an Amazon S3 bucket and configure Microsoft Windows Server to mount it as a volume.
+- [ ] D. Create an Amazon FSx for Windows File Server file system on AWS and set the Active Directory domain for authentication.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Create an Amazon FSx for Windows File Server file system on AWS and set the Active Directory domain for authentication.
+
+Why this is the correct answer:
+
+- [ ] Amazon FSx for Windows File Server: This service is specifically designed to provide fully managed, native Microsoft Windows file systems. It supports the SMB (Server Message Block) protocol, Windows NTFS permissions, and Active Directory (AD) integration, which are all critical requirements for a Microsoft SharePoint deployment.
+- [ ] Active Directory Integration: FSx for Windows File Server can be joined to your existing Microsoft Active Directory domain (either AWS Managed Microsoft AD or your self-managed AD on-premises or in AWS). This allows you to use your existing AD users, groups, and permissions for access control to the file shares, meeting the requirement for AD integration.
+- [ ] High Availability: FSx for Windows File Server supports Multi-AZ deployments, which provide high availability and durability by automatically replicating data across multiple Availability Zones and handling failover. This meets the "highly available" requirement.
+- [ ] Suitable for SharePoint: SharePoint heavily relies on Windows shared file storage with specific features and performance characteristics that FSx for Windows File Server is built to provide.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Amazon EFS (Elastic File System) provides file storage primarily using the NFS (Network File System) protocol. While Windows clients can connect to NFS shares, SharePoint typically requires and is optimized for SMB/CIFS file shares with native Windows NTFS permissions and deep Active Directory integration. FSx for Windows File Server is the more appropriate AWS service for this. EFS does not offer the same level of native Windows compatibility and AD integration for NTFS ACLs.
+- [ ] Option B is wrong because: An AWS Storage Gateway file gateway can provide an SMB interface, typically with Amazon S3 as the backend storage. While it can integrate with Active Directory, using it as the primary storage solution for a SharePoint deployment being migrated to AWS might not offer the same performance or full feature set as a native Windows file system like FSx for Windows File Server. FSx provides a fully managed Windows Server-based file system directly in the cloud. Deploying a file gateway "in two Availability Zones" refers to the on-premises gateway instances for HA, not typically how the cloud storage itself is made HA for this use case.
+- [ ] Option C is wrong because: Amazon S3 is an object storage service. While there are ways (often involving third-party tools or specific configurations like AWS File Gateway) to present S3 storage as a mountable volume to Windows Server, S3 does not natively provide the file system semantics (like file locking, hierarchical directory structures with NTFS permissions) or the performance characteristics required by demanding applications like SharePoint for its core content databases and file storage. This is not a recommended or robust solution for SharePoint's shared file storage needs.
+
+</details>
+
+<details>
+  <summary>Question 98</summary>
+
+An image-processing company has a web application that users use to upload images. The application uploads the images into an Amazon S3 bucket. The company has set up S3 event notifications to publish the object creation events to an Amazon Simple Queue Service (Amazon SQS) standard queue. The SQS queue serves as the event source for an AWS Lambda function that processes the images and sends the results to users through email.
+
+Users report that they are receiving multiple email messages for every uploaded image. A solutions architect determines that SQS messages are invoking the Lambda function more than once, resulting in multiple email messages.
+
+What should the solutions architect do to resolve this issue with the LEAST operational overhead?
+
+- [ ] A. Set up long polling in the SQS queue by increasing the ReceiveMessage wait time to 30 seconds.
+- [ ] B. Change the SQS standard queue to an SQS FIFO queue. Use the message deduplication ID to discard duplicate messages.
+- [ ] C. Increase the visibility timeout in the SQS queue to a value that is greater than the total of the function timeout and the batch window timeout.
+- [ ] D. Modify the Lambda function to delete each message from the SQS queue immediately after the message is read before processing.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Increase the visibility timeout in the SQS queue to a value that is greater than the total of the function timeout and the batch window timeout.
+
+Why this is the correct answer:
+
+- [ ] Understanding SQS Visibility Timeout: When an AWS Lambda function (or any consumer) retrieves a message from an SQS queue, the message is not immediately deleted.
+- [ ] Instead, it becomes temporarily invisible to other consumers for a configurable period called the "visibility timeout." The Lambda function is expected to process the message and then explicitly delete it from the queue within this timeout period.
+- [ ] Cause of Multiple Invocations: If the Lambda function takes longer to process the image and send the email than the current visibility timeout allows, or if it fails during processing and doesn't delete the message, the message will become visible again in the SQS queue after the timeout expires.
+- [ ] Another Lambda invocation (or a retry of the same function if configured) will then pick up the same message, leading to it being processed again and a duplicate email being sent.
+- [ ] Solution with Visibility Timeout: Increasing the visibility timeout to a value that is comfortably longer than the maximum time the Lambda function needs to successfully process a message (including image processing, sending email, and deleting the message from SQS) will prevent the message from becoming visible again prematurely. This gives a single Lambda invocation enough time to complete its work, ensuring the message is processed only once. This is often the simplest fix with the "LEAST operational overhead" for this specific problem.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Long polling (increasing the ReceiveMessage wait time) is a feature that helps reduce the number of empty API calls to SQS, making message retrieval more efficient, especially for queues that are often empty. It does not prevent a message from being processed multiple times if the visibility timeout is too short.
+- [ ] Option B is wrong because: While changing to an SQS FIFO queue with message deduplication could prevent duplicate processing, it's a more significant architectural change than simply adjusting the visibility timeout on a standard queue. FIFO queues have different characteristics (e.g., stricter ordering, potentially lower throughput limits without careful design) and might be overkill if the problem is solely due to the visibility timeout. Adjusting the visibility timeout is a simpler first step with less operational overhead.
+- [ ] Option D is wrong because: Deleting the message from the SQS queue before processing is complete is a bad practice. If the Lambda function fails during the image processing or email sending steps after the message has been deleted, the event (and the task to process the image) will be lost permanently, leading to unprocessed images rather than duplicate emails. Messages should only be deleted after successful completion of the task.
+
+</details>
+
+<details>
+  <summary>Question 99</summary>
+
+A company is implementing a shared storage solution for a gaming application that is hosted in an on-premises data center. The company needs the ability to use Lustre clients to access data. The solution must be fully managed.
+
+Which solution meets these requirements?
+
+- [ ] A. Create an AWS Storage Gateway file gateway. Create a file share that uses the required client protocol. Connect the application server to the file share.
+- [ ] B. Create an Amazon EC2 Windows instance. Install and configure a Windows file share role on the instance. Connect the application server to the file share.
+- [ ] C. Create an Amazon Elastic File System (Amazon EFS) file system, and configure it to support Lustre. Attach the file system to the origin server. Connect the application server to the file system.
+- [ ] D. Create an Amazon FSx for Lustre file system. Attach the file system to the origin server. Connect the application server to the file system.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Create an Amazon FSx for Lustre file system. Attach the file system to the origin server. Connect the application server to the file system.
+
+Why this is the correct answer:
+
+- [ ] Amazon FSx for Lustre: This AWS service provides fully managed, high-performance file systems that are optimized for compute-intensive workloads. It is based on Lustre, a popular open-source parallel file system. This directly meets the requirement for a storage solution that "Lustre clients" can access.
+- [ ] Fully Managed: Amazon FSx for Lustre is a fully managed service. AWS handles the setup, patching, and maintenance of the file system hardware and software, which aligns with the requirement that "The solution must be fully managed."
+- [ ] Access from On-Premises: FSx for Lustre file systems can be accessed from on-premises clients (like the gaming application servers in the company's data center) over an AWS Direct Connect connection or an AWS VPN. The phrase "Attach the file system to the origin server" implies making it accessible to the on-premises application server.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: An AWS Storage Gateway file gateway provides a file interface (NFS or SMB) to data stored in Amazon S3. It does not provide a Lustre file system interface or support Lustre clients.
+- [ ] Option B is wrong because: Creating a Windows file share on an Amazon EC2 instance uses the SMB/CIFS protocol, not Lustre. Furthermore, this solution is not "fully managed" in the same way as FSx for Lustre; the company would be responsible for managing the EC2 instance, the Windows operating system, and the file share configuration.
+- [ ] Option C is wrong because: Amazon Elastic File System (EFS) provides scalable file storage primarily using the NFS protocol. EFS does not natively support the Lustre file system or protocol, nor can it be "configured to support Lustre." For Lustre-specific needs, Amazon FSx for Lustre is the appropriate AWS service.
+
+</details>
+
+<details>
+  <summary>Question 100</summary>
+
+A company's containerized application runs on an Amazon EC2 instance. The application needs to download security certificates before it can communicate with other business applications. The company wants a highly secure solution to encrypt and decrypt the certificates in near real time. The solution also needs to store data in highly available storage after the data is encrypted.
+
+Which solution will meet these requirements with the LEAST operational overhead?
+
+- [ ] A. Create AWS Secrets Manager secrets for encrypted certificates. Manually update the certificates as needed. Control access to the data by using fine-grained IAM access.
+- [ ] B. Create an AWS Lambda function that uses the Python cryptography library to receive and perform encryption operations. Store the function in an Amazon S3 bucket.
+- [ ] C. Create an AWS Key Management Service (AWS KMS) customer managed key. Allow the EC2 role to use the KMS key for encryption operations. Store the encrypted data on Amazon S3.
+- [ ] D. Create an AWS Key Management Service (AWS KMS) customer managed key. Allow the EC2 role to use the KMS key for encryption operations. Store the encrypted data on Amazon Elastic Block Store (Amazon EBS) volumes.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Create an AWS Key Management Service (AWS KMS) customer managed key. Allow the EC2 role to use the KMS key for encryption operations. Store the encrypted data on Amazon S3.
+
+Why this is the correct answer:
+
+- [ ] AWS Key Management Service (AWS KMS) for Secure Encryption/Decryption: AWS KMS is a managed service that makes it easy to create and control the encryption keys used to encrypt your data. Using a customer-managed key (CMK) in KMS gives you control over the key material and its usage policies. KMS performs cryptographic operations (encrypt, decrypt) in a secure manner, often utilizing FIPS 140-2 validated hardware security modules. This addresses the need for a "highly secure solution to encrypt and decrypt the certificates in near real time."
+- [ ] IAM Role for EC2 Access to KMS: The EC2 instance running the containerized application can be granted permissions to use the specific KMS key for encryption and decryption operations via an IAM role attached to the instance. This is a secure way to grant permissions without hardcoding credentials.
+- [ ] Amazon S3 for Highly Available Storage: After the certificates (or sensitive data derived from them) are encrypted using KMS, they can be stored in Amazon S3. S3 is designed for high durability (99.999999999%) and availability, automatically storing data across multiple Availability Zones within a region. This meets the requirement to "store data in highly available storage after the data is encrypted."
+- [ ] Least Operational Overhead: This solution leverages fully managed AWS services (KMS for key management and cryptographic operations, S3 for storage, IAM for permissions). This significantly minimizes the operational overhead compared to building and managing custom cryptographic solutions or less available storage options.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While AWS Secrets Manager is excellent for storing and managing secrets like full certificates or private keys, the question emphasizes the need to "encrypt and decrypt the certificates in near real time," suggesting the application might be handling sensitive components of certificates or data related to them that require cryptographic operations. KMS is the service for performing these encryption/decryption operations using managed keys. Secrets Manager is more about storing the final secret value. "Manually update the certificates as needed" also points to operational overhead that might be reduced with other automated solutions for certificate lifecycle, though that's not the primary focus of the encryption/decryption requirement here.
+- [ ] Option B is wrong because: Creating a custom AWS Lambda function with a Python cryptography library to perform encryption operations means the company would be responsible for managing the cryptographic implementation, key management, security of the keys, and the operational aspects of the Lambda function. This introduces significant development and operational overhead and potential security risks compared to using a purpose-built, managed, and validated service like AWS KMS.
+- [ ] Option D is wrong because: While using AWS KMS with an EC2 role for encryption operations is correct, storing the encrypted data on Amazon EBS volumes is less ideal for "highly available storage" compared to Amazon S3 for this use case. Standard EBS volumes are zonal resources (tied to a specific Availability Zone). While EBS is reliable, achieving high availability across AZs for EBS-stored data requires additional mechanisms like replication or frequent snapshots and restoration procedures, which adds operational overhead. S3 provides high availability and durability across multiple AZs by default for object storage.
+
+</details>
+
+
+
+
+
+
+
+
+</details>
 
 
 
