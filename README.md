@@ -4249,23 +4249,143 @@ Why are the other answers wrong?
 
 </details>
 
+<details>
+  <summary>Question 117</summary>
+
+A company stores its application logs in an Amazon CloudWatch Logs log group. A new policy requires the company to store all application logs in Amazon OpenSearch Service (Amazon Elasticsearch Service) in near-real time.
+
+Which solution will meet this requirement with the LEAST operational overhead?
+
+- [ ] A. Configure a CloudWatch Logs subscription to stream the logs to Amazon OpenSearch Service (Amazon Elasticsearch Service).
+- [ ] B. Create an AWS Lambda function. Use the log group to invoke the function to write the logs to Amazon OpenSearch Service (Amazon Elasticsearch Service).
+- [ ] C. Create an Amazon Kinesis Data Firehose delivery stream. Configure the log group as the delivery stream's sources. Configure Amazon OpenSearch Service (Amazon Elasticsearch Service) as the delivery stream's destination.
+- [ ] D. Install and configure Amazon Kinesis Agent on each application server to deliver the logs to Amazon Kinesis Data Streams. Configure Kinesis Data Streams to deliver the logs to Amazon OpenSearch Service (Amazon Elasticsearch Service).
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Configure a CloudWatch Logs subscription to stream the logs to Amazon OpenSearch Service (Amazon Elasticsearch Service).
+
+Why this is the correct answer:
+
+- [ ] CloudWatch Logs Subscriptions: Amazon CloudWatch Logs allows you to create subscription filters. These filters can match log events from a log group and stream them in near real-time to various AWS destinations, including Amazon Kinesis Data Streams, AWS Lambda, and directly to an Amazon OpenSearch Service (formerly Amazon Elasticsearch Service) domain.
+- [ ] Direct Streaming to OpenSearch Service: Configuring a CloudWatch Logs subscription to stream directly to an Amazon OpenSearch Service domain is a built-in, fully managed capability. This is the most straightforward and direct method for this specific requirement.
+- [ ] Near-Real Time: Subscription filters process and deliver data in near-real time.
+- [ ] Least Operational Overhead: This approach requires minimal setup and no ongoing management of intermediary services like custom Lambda functions or Kinesis Data Firehose delivery streams (if their specific features aren't needed). AWS manages the data streaming pipeline from CloudWatch Logs to OpenSearch Service.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: While you can configure a CloudWatch Logs subscription to trigger an AWS Lambda function, which then writes the logs to OpenSearch Service, this introduces custom code that needs to be developed, deployed, monitored, and maintained. A direct subscription (as in Option A) avoids this custom Lambda logic, resulting in less operational overhead.
+- [ ] Option C is wrong because: This proposes a path: CloudWatch Logs -> Amazon Kinesis Data Firehose -> Amazon OpenSearch Service. While this is a valid and robust way to get data into OpenSearch Service (and Firehose offers features like data transformation, batching, compression, and retries), it involves an additional service (Kinesis Data Firehose) to configure and manage. If the only requirement is to stream logs from CloudWatch Logs to OpenSearch Service without needing the specific transformation or buffering capabilities of Firehose, a direct subscription (Option A) is simpler and has less operational overhead.
+- [ ] Option D is wrong because: This solution suggests changing the log collection mechanism by installing and configuring the Amazon Kinesis Agent on each application server to send logs to Amazon Kinesis Data Streams, which then deliver to OpenSearch Service. The problem states the logs are already being collected in CloudWatch Logs. This option introduces unnecessary complexity and operational overhead by requiring agent installation and management on application servers and doesn't leverage the existing CloudWatch Logs setup.
+
+</details>
+
+<details>
+  <summary>Question 118</summary>
+
+A company is building a web-based application running on Amazon EC2 instances in multiple Availability Zones. The web application will provide access to a repository of text documents totaling about 900 TB in size. The company anticipates that the web application will experience periods of high demand. A solutions architect must ensure that the storage component for the text documents can scale to meet the demand of the application at all times. The company is concerned about the overall cost of the solution.
+
+Which storage solution meets these requirements MOST cost-effectively?
+
+- [ ] A. Amazon Elastic Block Store (Amazon EBS)
+- [ ] B. Amazon Elastic File System (Amazon EFS)
+- [ ] C. Amazon OpenSearch Service (Amazon Elasticsearch Service)
+- [ ] D. Amazon S3
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Amazon S3
+
+Why this is the correct answer:
+
+- [ ] Amazon S3 for Scalability and Cost-Effectiveness: Amazon S3 (Simple Storage Service) is designed for storing and retrieving massive amounts of data (like 900 TB) with high durability and availability. It scales automatically to handle storage needs and request loads, which is crucial for an application experiencing periods of high demand. Critically, S3 is generally the MOST cost-effective AWS storage option for large object storage like text documents, especially when considering the scale of 900 TB.
+- [ ] Accessibility for Web Applications: The text documents stored in S3 can be easily accessed by the web application running on EC2 instances, either directly via the S3 API or by serving them through services like Amazon CloudFront for optimized delivery.
+- [ ] Meeting Demand: S3's inherent scalability ensures it can handle the fluctuating demand of the application.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Amazon Elastic Block Store (Amazon EBS) provides block-level storage volumes for use with EC2 instances. While EBS offers various performance tiers, storing and managing 900 TB of data directly on EBS volumes across multiple EC2 instances would be significantly more expensive and operationally complex than using S3. EBS volumes are also zonal, so sharing this amount of data across a fleet of instances in multiple Availability Zones would require additional mechanisms if a shared repository is needed, adding complexity and cost. S3 is better suited as a central repository for this volume of data.
+- [ ] Option B is wrong because: Amazon Elastic File System (Amazon EFS) provides scalable, shared file storage that can be accessed by multiple EC2 instances. While EFS can scale to petabytes, its cost per GB is typically higher than Amazon S3. For storing a large repository of 900 TB of text documents where cost-effectiveness is a major concern, S3 is usually the more economical choice. EFS is often preferred when applications require a POSIX-compliant file system interface.
+- [ ] Option C is wrong because: Amazon OpenSearch Service (Amazon Elasticsearch Service) is a managed service for search, analytics, and visualization of data. While it could be used to index the content of the text documents to make them searchable, OpenSearch Service itself is not designed or cost-effective as a primary storage solution for 900 TB of raw text documents. It would typically be used in conjunction with a primary storage service like S3, where the documents are stored, and OpenSearch Service stores the search index.
+
+</details>
+
+<details>
+  <summary>Question 119</summary>
+
+A global company is using Amazon API Gateway to design REST APIs for its loyalty club users in the us-east-1 Region and the ap-southeast-2 Region. A solutions architect must design a solution to protect these API Gateway managed REST APIs across multiple accounts from SQL injection and cross-site scripting attacks.
+
+Which solution will meet these requirements with the LEAST amount of administrative effort?
+
+- [ ] A. Set up AWS WAF in both Regions. Associate Regional web ACLs with an API stage.
+- [ ] B. Set up AWS Firewall Manager in both Regions. Centrally configure AWS WAF rules.
+- [ ] C. Set up AWS Shield in bath Regions. Associate Regional web ACLs with an API stage.
+- [ ] D. Set up AWS Shield in one of the Regions. Associate Regional web ACLs with an API stage.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] B. Set up AWS Firewall Manager in both Regions. Centrally configure AWS WAF rules.
+
+Why this is the correct answer:
+
+- [ ] AWS WAF for Application Layer Protection: AWS WAF (Web Application Firewall) is the appropriate service to protect web applications and APIs (like those managed by Amazon API Gateway) from common web exploits such as SQL injection and cross-site scripting (XSS) attacks.
+- [ ] AWS Firewall Manager for Centralized Management: The company has APIs in multiple regions (us-east-1, ap-southeast-2) and potentially "across multiple accounts." AWS Firewall Manager is a security management service that allows you to centrally configure and manage firewall rules (including AWS WAF rules) across your AWS accounts and applications within an AWS Organization. This means you can define a common security policy (e.g., WAF rules for SQL injection and XSS protection) and automatically apply it to all your API Gateway instances in different regions and accounts.
+- [ ] Least Amount of Administrative Effort: Using Firewall Manager to centrally deploy and manage AWS WAF rules significantly reduces the administrative effort compared to manually configuring and maintaining WAF web ACLs in each region and for each account individually. It ensures consistency and simplifies policy updates.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While setting up AWS WAF in both regions and associating web ACLs with the API stages is necessary for protection, doing this manually in each region (and potentially each account if "across multiple accounts" implies different AWS accounts) does not represent the "LEAST amount of administrative effort." AWS Firewall Manager (Option B) is designed for centralized management, which reduces this effort.
+- [ ] Option C is wrong because: AWS Shield is a managed Distributed Denial of Service (DDoS) protection service. While AWS Shield Advanced works in conjunction with AWS WAF for comprehensive protection, Shield itself primarily focuses on mitigating DDoS attacks, not specifically SQL injection or cross-site scripting. AWS WAF is the service tailored for protecting against these application-layer attacks.
+- [ ] Option D is wrong because: Similar to option C, AWS Shield is for DDoS protection. Furthermore, protections like WAF rules need to be applied in each region where the API Gateway endpoints exist, not just one region, to be effective for all APIs.
 
 
+</details>
 
+<details>
+  <summary>Question 120</summary>
+ 
+A company has implemented a self-managed DNS solution on three Amazon EC2 instances behind a Network Load Balancer (NLB) in the us-west-2 Region. Most of the company's users are located in the United States and Europe. The company wants to improve the performance and availability of the solution. The company launches and configures three EC2 instances in the eu-west-1 Region and adds the EC2 instances as targets for a new NLB.
 
+Which solution can the company use to route traffic to all the EC2 instances?
 
+- [ ] A. Create an Amazon Route 53 geolocation routing policy to route requests to one of the two NLBs. Create an Amazon CloudFront distribution. Use the Route 53 record as the distribution's origin.
+- [ ] B. Create a standard accelerator in AWS Global Accelerator. Create endpoint groups in us-west-2 and eu-west-1. Add the two NLBs as endpoints for the endpoint groups.
+- [ ] C. Attach Elastic IP addresses to the six EC2 instances. Create an Amazon Route 53 geolocation routing policy to route requests to one of the six EC2 instances. Create an Amazon CloudFront distribution. Use the Route 53 record as the distribution's origin.
+- [ ] D. Replace the two NLBs with two Application Load Balancers (ALBs). Create an Amazon Route 53 latency routing policy to route requests to one of the two ALBs. Create an Amazon CloudFront distribution. Use the Route 53 record as the distribution's origin.
 
+</details>
 
+<details>
+  <summary>Answer</summary>
 
+- [ ] B. Create a standard accelerator in AWS Global Accelerator. Create endpoint groups in us-west-2 and eu-west-1. Add the two NLBs as endpoints for the endpoint groups.
 
+Why this is the correct answer:
 
+- [ ] AWS Global Accelerator for Global Traffic Management: AWS Global Accelerator is a service that improves the availability and performance of your applications with local or global users. It provides static IP addresses that act as a fixed entry point to your application endpoints in one or more AWS Regions. Global Accelerator directs user traffic to the optimal endpoint based on factors like user location, endpoint health, and configured weights.   
+- [ ] Suitable for Non-HTTP (DNS) Traffic: DNS primarily uses UDP (and sometimes TCP) on port 53. Global Accelerator supports both TCP and UDP traffic, making it suitable for routing DNS requests.
+- [ ] Improved Performance and Availability: By creating endpoint groups in us-west-2 and eu-west-1 and adding the respective NLBs as endpoints, Global Accelerator will route users to the nearest healthy regional deployment of the DNS service. This reduces latency and improves availability through health checks and automatic failover.
+- [ ] Uses Existing NLBs: This solution leverages the existing Network Load Balancers, which are appropriate for handling DNS traffic to the EC2 instances.
 
+Why are the other answers wrong?
 
+- [ ] Option A is wrong because: Amazon CloudFront is a content delivery network (CDN) designed primarily for caching and delivering web content (HTTP/HTTPS). It is not suitable for distributing or routing DNS query traffic. While Amazon Route 53 geolocation routing can direct users to the NLB in the geographically closest region, Global Accelerator offers additional benefits like routing traffic over the optimized AWS global network and providing static anycast IP addresses.
+- [ ] Option C is wrong because: Attaching Elastic IP addresses to individual EC2 instances and using Route 53 to route directly to these instances bypasses the Network Load Balancers. This would eliminate the load balancing and health checking benefits provided by the NLBs, reducing availability and scalability. Also, CloudFront is not suitable for DNS traffic.
+- [ ] Option D is wrong because:
+- [ ] Application Load Balancers (ALBs) operate at Layer 7 and are designed for HTTP/HTTPS traffic. They are not suitable for handling DNS traffic, which primarily uses UDP/TCP on port 53. Network Load Balancers are the correct choice for this protocol.
 
+Again, CloudFront is not appropriate for DNS traffic distribution.
 
-
-
-
+</details>
 
 </details>
 
