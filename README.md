@@ -4769,7 +4769,213 @@ Why are the other answers wrong?
 
 </details>
 
+<details>
+  <summary>==Questions 131-140==</summary>
 
+<details>
+  <summary>Question 131</summary>
+
+- [ ] A.  Turn  
+A company is developing a file-sharing application that will use an Amazon S3 bucket for storage. The company wants to serve all the files through an Amazon CloudFront distribution. The company does not want the files to be accessible through direct navigation to the S3 URL.
+
+What should a solutions architect do to meet these requirements?
+
+- [ ] A. Write individual policies for each S3 bucket to grant read permission for only CloudFront access.
+- [ ] B. Create an IAM user. Grant the user read permission to objects in the S3 bucket. Assign the user to CloudFront.
+- [ ] C. Write an S3 bucket policy that assigns the CloudFront distribution ID as the Principal and assigns the target S3 bucket as the Amazon Resource Name (ARN).
+- [ ] D. Create an origin access identity (OAI). Assign the OAI to the CloudFront distribution. Configure the S3 bucket permissions so that only the OAI has read permission.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Create an origin access identity (OAI). Assign the OAI to the CloudFront distribution. Configure the S3 bucket permissions so that only the OAI has read permission.
+
+Why this is the correct answer:
+
+This solution uses the standard and recommended method for restricting S3 bucket access to only a CloudFront distribution:
+
+- [ ] Origin Access Identity (OAI): An OAI is a special CloudFront user identity that you create and associate with your CloudFront distribution. This OAI acts as a trusted principal that CloudFront uses when accessing your S3 bucket.
+- [ ] Restricting S3 Bucket Permissions to OAI: You then modify the S3 bucket policy (or ACLs, though bucket policies are generally preferred for more granular control) to grant read permissions (e.g., s3:GetObject) only to this specific OAI. All other public access or access by other IAM principals to the S3 bucket is denied or not granted.
+- [ ] Result: When users request files through the CloudFront distribution, CloudFront uses its associated OAI to fetch the files from the S3 bucket. Since the bucket policy only allows the OAI to read the objects, direct S3 URLs will not work for users, thus meeting the requirement that files are not accessible through direct S3 navigation.
+- [ ] Note: AWS has also introduced Origin Access Control (OAC) as an enhanced alternative to OAI, offering better security and features, but OAI is the classic method and still valid, especially in the context of these exam options.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While bucket policies are used, this option is too vague. "Grant read permission for only CloudFront access" needs a specific mechanism. Simply stating this doesn't explain how CloudFront's access is identified and restricted. Option D provides that specific mechanism (OAI).
+- [ ] Option B is wrong because: You do not assign an IAM user to CloudFront for origin access. CloudFront does not use IAM user credentials in this manner to access S3 buckets. The OAI (or OAC) mechanism is used for this purpose.
+- [ ] Option C is wrong because: You cannot directly assign a CloudFront distribution ID as a Principal in an S3 bucket policy in the way described. The Principal in the bucket policy, when using OAI, refers to the canonical user ID of the OAI. If using OAC, the principal is cloudfront.amazonaws.com with a condition based on the distribution.
+
+</details>  
+
+<details>
+  <summary>Question 132</summary>
+
+A company's website provides users with downloadable historical performance reports. The website needs a solution that will scale to meet the company's website demands globally. The solution should be cost-effective, limit the provisioning of infrastructure resources, and provide the fastest possible response time.
+
+Which combination should a solutions architect recommend to meet these requirements?
+
+- [ ] A. Amazon CloudFront and Amazon S3
+- [ ] B. AWS Lambda and Amazon DynamoDB
+- [ ] C. Application Load Balancer with Amazon EC2 Auto Scaling
+- [ ] D. Amazon Route 53 with internal Application Load Balancers
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] A. Amazon CloudFront and Amazon S3
+
+Why this is the correct answer:
+
+This solution leverages AWS services designed for scalable, cost-effective, and low-latency global content delivery:
+
+- [ ] Amazon S3 for Storing Reports: Amazon S3 (Simple Storage Service) is an ideal place to store the "downloadable historical performance reports." S3 offers high durability, scalability, and is very cost-effective for storing static files.
+- [ ] Amazon CloudFront for Global Delivery and Performance: Amazon CloudFront is a global content delivery network (CDN). By configuring CloudFront with the S3 bucket as its origin, the performance reports will be cached at edge locations geographically closer to users around the world. When a user requests a report, it is served from the nearest edge location, which significantly reduces latency and provides the "fastest possible response time."
+- [ ] Scalability: Both S3 and CloudFront are highly scalable services that can automatically handle large and fluctuating demand globally.
+- [ ] Cost-Effectiveness and Limited Infrastructure Provisioning: This is a serverless approach for content storage and delivery. There are no servers to manage, which "limits the provisioning of infrastructure resources" and reduces operational overhead. This combination is generally very "cost-effective" for distributing static content globally.
+
+Why are the other answers wrong?
+
+- [ ] Option B is wrong because: AWS Lambda and Amazon DynamoDB are powerful serverless components for building application backends (e.g., processing requests, storing structured data). However, for serving static downloadable files like performance reports globally with the fastest response time, S3 and CloudFront are more direct and optimized. Lambda and DynamoDB might be used to generate the reports or manage metadata about them, but not for the primary delivery of the files themselves.
+- [ ] Option C is wrong because: Using an Application Load Balancer with Amazon EC2 Auto Scaling is a solution for hosting dynamic web applications that require compute instances. For serving downloadable static reports, this approach involves managing EC2 instances, which increases operational overhead and cost compared to a serverless S3/CloudFront solution. It does not align well with "limit the provisioning of infrastructure resources."
+- [ ] Option D is wrong because: Amazon Route 53 is a DNS service used for routing users to endpoints. Internal Application Load Balancers are designed for distributing traffic to applications within your VPC, not for serving content globally to external users with the fastest possible response time. CloudFront is the key AWS service for global, low-latency content delivery to end-users.
+
+</details>
+
+<details>
+  <summary>Question 133</summary>
+
+A company runs an Oracle database on premises. As part of the company's migration to AWS, the company wants to upgrade the database to the most recent available version. The company also wants to set up disaster recovery (DR) for the database. The company needs to minimize the operational overhead for normal operations and DR setup. The company also needs to maintain access to the database's underlying operating system.
+
+Which solution will meet these requirements?
+
+- [ ] A. Migrate the Oracle database to an Amazon EC2 instance. Set up database replication to a different AWS Region.
+- [ ] B. Migrate the Oracle database to Amazon RDS for Oracle. Activate Cross-Region automated backups to replicate the snapshots to another AWS Region.
+- [ ] C. Migrate the Oracle database to Amazon RDS Custom for Oracle. Create a read replica for the database in another AWS Region.
+- [ ] D. Migrate the Oracle database to Amazon RDS for Oracle. Create a standby database in another Availability Zone.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Migrate the Oracle database to Amazon RDS Custom for Oracle. Create a read replica for the database in another AWS Region.
+
+Why this is the correct answer:
+
+This question has several key requirements: upgrade flexibility, disaster recovery (DR), minimized operational overhead, and access to the underlying operating system.
+
+- [ ] Maintain Access to Underlying OS (Amazon RDS Custom for Oracle): A critical requirement is to "maintain access to the database's underlying operating system." Standard Amazon RDS is fully managed and does not provide OS access. Amazon RDS Custom for Oracle, however, gives you administrative access to the underlying EC2 instance and the database environment. This allows for customizations, specific configurations, and the ability to apply patches or upgrades that might not yet be supported by standard RDS.
+- [ ] Upgrade to Most Recent Version: With OS and database environment access provided by RDS Custom, the company has more control and flexibility to "upgrade the database to the most recent available version," even if that version isn't immediately available or fully supported in standard RDS.
+- [ ] Disaster Recovery (Cross-Region Read Replica): For Amazon RDS Custom for Oracle, you can set up a cross-region read replica. In a DR scenario, this read replica in a different AWS Region can be promoted to become a standalone, writable instance. This provides a DR solution.
+- [ ] Minimize Operational Overhead (Relative to EC2): While RDS Custom requires more customer management responsibility than standard RDS (due to OS access), it still automates some database administration tasks (like provisioning and some backup aspects) compared to running an Oracle database entirely on self-managed EC2 instances. For setting up DR via a managed read replica, it is also less overhead than manually configuring and managing replication for Oracle on EC2.
+- [ ] This option best balances the need for OS access with managed features for DR and somewhat reduced operational overhead compared to a full EC2 deployment.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: Migrating to an Oracle database on a self-managed Amazon EC2 instance provides full OS access. However, setting up and managing database replication to a different AWS Region for DR would involve significant operational overhead for configuration, monitoring, patching the OS and database, and managing the replication process itself. This contradicts the requirement to "minimize the operational overhead for... DR setup."
+- [ ] Option B is wrong because: Standard Amazon RDS for Oracle is a fully managed service and does not provide access to the underlying operating system, which is a key requirement. While Cross-Region automated backups are a valid DR mechanism for standard RDS, the lack of OS access makes this option unsuitable.
+- [ ] Option D is wrong because:
+Standard Amazon RDS for Oracle does not provide OS access.
+Creating a standby database in another Availability Zone (a Multi-AZ deployment) is for high availability within a single region, protecting against an AZ failure. It is not a cross-region disaster recovery solution.
+
+</details>
+
+<details>
+  <summary>Question 134</summary>
+
+- [ ] A.  Turn  
+A company wants to move its application to a serverless solution. The serverless solution needs to analyze existing and new data by using SQL. The company stores the data in an Amazon S3 bucket. The data requires encryption and must be replicated to a different AWS Region.
+
+Which solution will meet these requirements with the LEAST operational overhead?
+
+- [ ] A. Create a new S3 bucket. Load the data into the new S3 bucket. Use S3 Cross-Region Replication (CRR) to replicate encrypted objects to an S3 bucket in another Region. Use server-side encryption with AWS KMS multi-Region keys (SSE-KMS). Use Amazon Athena to query the data.
+- [ ] B. Create a new S3 bucket. Load the data into the new S3 bucket. Use S3 Cross-Region Replication (CRR) to replicate encrypted objects to an S3 bucket in another Region. Use server-side encryption with AWS KMS multi-Region keys (SSE-KMS). Use Amazon RDS to query the data.
+- [ ] C. Load the data into the existing S3 bucket. Use S3 Cross-Region Replication (CRR) to replicate encrypted objects to an S3 bucket in another Region. Use server-side encryption with Amazon S3 managed encryption keys (SSE-S3). Use Amazon Athena to query the data.
+- [ ] D. Load the data into the existing S3 bucket. Use S3 Cross-Region Replication (CRR) to replicate encrypted objects to an S3 bucket in another Region. Use server-side encryption with Amazon S3 managed encryption keys (SSE-S3). Use Amazon RDS to query the data.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] C. Load the data into the existing S3 bucket. Use S3 Cross-Region Replication (CRR) to replicate encrypted objects to an S3 bucket in another Region. Use server-side encryption with Amazon S3 managed encryption keys (SSE-S3). Use Amazon Athena to query the data.
+
+Why this is the correct answer:
+
+This solution focuses on serverless components and minimizing operational overhead.
+
+- [ ] Using Existing S3 Bucket: Loading data into an existing S3 bucket is straightforward and avoids the setup of a new one if not strictly necessary.
+S3 Cross-Region Replication (CRR): CRR automatically and asynchronously copies objects across buckets in different AWS Regions. This meets the requirement that "data must be replicated to a different AWS Region."
+- [ ] Server-Side Encryption with S3-Managed Keys (SSE-S3): SSE-S3 provides encryption at rest where Amazon S3 manages both the encryption process and the encryption keys. This is the simplest way to achieve encryption in S3 with the absolute "LEAST operational overhead" because there are no keys for the customer to manage. When using CRR with SSE-S3 encrypted objects, S3 handles the re-encryption in the destination region transparently.
+- [ ] Amazon Athena for SQL Analysis: Amazon Athena is a serverless, interactive query service that makes it easy to analyze data directly in Amazon S3 using standard SQL. This perfectly fits the requirement to "analyze existing and new data by using SQL" in a serverless manner with minimal setup or management.   
+- [ ] Overall Least Operational Overhead: This combination leverages fully managed and serverless AWS services for storage, replication, encryption, and querying, leading to the lowest possible operational burden.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: While using server-side encryption with AWS KMS multi-Region keys (SSE-KMS) provides more customer control over the encryption keys and allows the same key to be used across regions, it generally involves slightly more operational overhead than SSE-S3. With SSE-KMS, you need to create and manage the KMS key, its policies, and potentially its rotation (though automatic rotation is available for KMS-managed CMKs). SSE-S3 is simpler from a key management perspective if the only requirement is that data "requires encryption."
+- [ ] Option B is wrong because:
+Similar to option A, SSE-KMS has slightly more operational overhead for key management than SSE-S3.
+More significantly, using Amazon RDS (a relational database service) to query data stored directly in an Amazon S3 bucket is not its primary design. While some RDS engines might offer ways to load data from S3 or link to it (like Aurora querying S3), Amazon Athena is the purpose-built, serverless SQL query engine for data in S3. Using RDS would introduce the operational overhead of managing a database instance.
+- [ ] Option D is wrong because: Similar to option B, using Amazon RDS to query data directly from S3 is not the most operationally efficient or standard serverless approach. Athena is the correct tool for serverless SQL queries on S3.
+
+</details>
+
+<details>
+  <summary>Question 135</summary>
+
+A company runs workloads on AWS. The company needs to connect to a service from an external provider. The service is hosted in the provider's VPC. According to the company's security team, the connectivity must be private and must be restricted to the target service. The connection must be initiated only from the company's VPC.
+
+Which solution will meet these requirements?
+
+- [ ] A. Create a VPC peering connection between the company's VPC and the provider's VPC. Update the route table to connect to the target service.
+- [ ] B. Ask the provider to create a virtual private gateway in its VPC. Use AWS PrivateLink to connect to the target service.
+- [ ] C. Create a NAT gateway in a public subnet of the company's VPC. Update the route table to connect to the target service.
+- [ ] D. Ask the provider to create a VPC endpoint for the target service. Use AWS PrivateLink to connect to the target service.
+
+</details>
+
+<details>
+  <summary>Answer</summary>
+
+- [ ] D. Ask the provider to create a VPC endpoint for the target service. Use AWS PrivateLink to connect to the target service.
+
+Why this is the correct answer:
+
+- [ ] (Note: The PDF phrasing "provider to create a VPC endpoint" is slightly imprecise. The provider creates an endpoint service, and the company creates an interface VPC endpoint to connect to that service.)
+- [ ] AWS PrivateLink for Private and Secure Connectivity: AWS PrivateLink is designed to provide secure, private connectivity between your VPCs, AWS services, and your on-premises applications, without exposing your traffic to the public internet. This directly addresses the "connectivity must be private" requirement.
+- [ ] Provider Creates Endpoint Service: The external provider would host their service behind a Network Load Balancer (NLB) and then create a VPC endpoint service configuration for it. This makes their service available for private connections via PrivateLink.
+- [ ] Company Creates Interface Endpoint: The company (consumer) then creates an interface VPC endpoint in their own VPC. This endpoint gets a private IP address from the company's subnet and acts as an entry point to the provider's service.
+- [ ] Restricted to Target Service: Connectivity via PrivateLink is specific to the service endpoint defined by the provider. This ensures that access is "restricted to the target service," not the provider's entire VPC.
+- [ ] Connection Initiated from Company's VPC: The connection is initiated from the company's VPC through the interface endpoint to the provider's service. Traffic flows unidirectionally in terms of initiation, from consumer to provider service.
+- [ ] No Internet Exposure: Traffic stays within the AWS private network.
+
+Why are the other answers wrong?
+
+- [ ] Option A is wrong because: VPC peering establishes a network connection between two VPCs, enabling them to communicate as if they are on the same private network. However, VPC peering connects the VPCs at a network level, potentially exposing more than just the target service unless very strict security group and network ACL rules are applied. It also doesn't work if the VPCs have overlapping CIDR blocks. PrivateLink offers more granular, service-specific private connectivity.
+- [ ] Option B is wrong because: A virtual private gateway is used on the VPC side to establish a VPN connection or an AWS Direct Connect connection, typically to an on-premises network. It's not the component a service provider creates in their VPC for consumers to connect via PrivateLink. The provider would create an endpoint service.
+- [ ] Option C is wrong because: A NAT gateway is used to enable instances in a private subnet to initiate outbound connections to the internet. This solution would route traffic over the public internet to access the provider's service (if it had a public endpoint), which violates the "connectivity must be private" requirement.
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</details>
 
 
 
