@@ -1062,12 +1062,6 @@ Why are the other answers wrong?
 
 </details>
 
-
-</details>
-
-<details>
-  <summary>==Questions 31-40==</summary>
-
 <details>
   <summary>Question 31</summary>
 
