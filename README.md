@@ -2,7 +2,7 @@
 AWS-SAA-PRACTICE-EXAM
 
 <details>
-  <summary>==Questions 1-20==</summary>
+  <summary>==Questions 1-50==</summary>
   
 <details>
   <summary>Question 1</summary>
@@ -696,14 +696,6 @@ Why are the other answers wrong?
 
 </details>
 
-
-</details>
-
-
-
-<details>
-  <summary>==Questions 21-40==</summary>
-
 <details>
   <summary>Question 21</summary>
 
@@ -1145,8 +1137,7 @@ What should a solutions architect recommend to meet these requirements?
 <details>
   <summary>Answer</summary>
 
-- [ ] A.  Turn
-Correct Answer: C
+- [ ] C. Stream the transactions data into Amazon Kinesis Data Streams. Use AWS Lambda integration to remove sensitive data from every transaction and then store the transactions data in Amazon DynamoDB. Other applications can consume the transactions data off the Kinesis data stream.
 
 Why this is the correct answer:
 
@@ -1408,13 +1399,6 @@ Why are the other answers wrong?
 - [ ] Option D is wrong because: Using Amazon SQS with a 14-day message retention period  and then relying on consumers to manually check message age, analyze, and then copy to S3 for archival is a complex and potentially error-prone process. This solution is not as operationally efficient or robust for ingesting and archiving 1 TB of data daily compared to using Kinesis Data Firehose for direct S3 delivery and S3 Lifecycle policies for archival. It also places a significant burden on the consumer logic.
 
 </details>
-
-
-</details>
-
-
-<details>
-  <summary>==Questions 41-50==</summary>
 
 <details>
   <summary>Question 41</summary>
@@ -1789,7 +1773,7 @@ Maintenance windows are used to define recurring schedules for performing potent
 </details>
 
 <details>
-  <summary>==Questions 51-60==</summary>
+  <summary>==Questions 51-100==</summary>
 
 <details>
   <summary>Question 51</summary>
