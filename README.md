@@ -4760,42 +4760,7 @@ Why are the other answers wrong?
 <details>
   <summary>==Questions 131-140==</summary>
 
-<details>
-  <summary>Question 131</summary>
 
-- [ ] A.  Turn  
-A company is developing a file-sharing application that will use an Amazon S3 bucket for storage. The company wants to serve all the files through an Amazon CloudFront distribution. The company does not want the files to be accessible through direct navigation to the S3 URL.
-
-What should a solutions architect do to meet these requirements?
-
-- [ ] A. Write individual policies for each S3 bucket to grant read permission for only CloudFront access.
-- [ ] B. Create an IAM user. Grant the user read permission to objects in the S3 bucket. Assign the user to CloudFront.
-- [ ] C. Write an S3 bucket policy that assigns the CloudFront distribution ID as the Principal and assigns the target S3 bucket as the Amazon Resource Name (ARN).
-- [ ] D. Create an origin access identity (OAI). Assign the OAI to the CloudFront distribution. Configure the S3 bucket permissions so that only the OAI has read permission.
-
-</details>
-
-<details>
-  <summary>Answer</summary>
-
-- [ ] D. Create an origin access identity (OAI). Assign the OAI to the CloudFront distribution. Configure the S3 bucket permissions so that only the OAI has read permission.
-
-Why this is the correct answer:
-
-This solution uses the standard and recommended method for restricting S3 bucket access to only a CloudFront distribution:
-
-- [ ] Origin Access Identity (OAI): An OAI is a special CloudFront user identity that you create and associate with your CloudFront distribution. This OAI acts as a trusted principal that CloudFront uses when accessing your S3 bucket.
-- [ ] Restricting S3 Bucket Permissions to OAI: You then modify the S3 bucket policy (or ACLs, though bucket policies are generally preferred for more granular control) to grant read permissions (e.g., s3:GetObject) only to this specific OAI. All other public access or access by other IAM principals to the S3 bucket is denied or not granted.
-- [ ] Result: When users request files through the CloudFront distribution, CloudFront uses its associated OAI to fetch the files from the S3 bucket. Since the bucket policy only allows the OAI to read the objects, direct S3 URLs will not work for users, thus meeting the requirement that files are not accessible through direct S3 navigation.
-- [ ] Note: AWS has also introduced Origin Access Control (OAC) as an enhanced alternative to OAI, offering better security and features, but OAI is the classic method and still valid, especially in the context of these exam options.
-
-Why are the other answers wrong?
-
-- [ ] Option A is wrong because: While bucket policies are used, this option is too vague. "Grant read permission for only CloudFront access" needs a specific mechanism. Simply stating this doesn't explain how CloudFront's access is identified and restricted. Option D provides that specific mechanism (OAI).
-- [ ] Option B is wrong because: You do not assign an IAM user to CloudFront for origin access. CloudFront does not use IAM user credentials in this manner to access S3 buckets. The OAI (or OAC) mechanism is used for this purpose.
-- [ ] Option C is wrong because: You cannot directly assign a CloudFront distribution ID as a Principal in an S3 bucket policy in the way described. The Principal in the bucket policy, when using OAI, refers to the canonical user ID of the OAI. If using OAC, the principal is cloudfront.amazonaws.com with a condition based on the distribution.
-
-</details>  
 
 <details>
   <summary>Question 132</summary>
