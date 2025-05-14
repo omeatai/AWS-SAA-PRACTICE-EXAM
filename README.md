@@ -2,7 +2,7 @@
 AWS-SAA-PRACTICE-EXAM
 
 <details>
-  <summary>==Questions 1-10==</summary>
+  <summary>==Questions 1-20==</summary>
   
 <details>
   <summary>Question 1</summary>
@@ -337,12 +337,6 @@ Why are the other answers wrong?
 - [ ] Option D is wrong because: Amazon SQS standard queues offer "best-effort" ordering, meaning that while messages are generally delivered in the order they are sent, there's no guarantee. For critical tasks like processing ecommerce orders in sequence, where mistakes in ordering can have significant consequences, standard SQS queues are not appropriate. SQS FIFO queues are the correct choice for guaranteed ordering.
 
 </details>
-
-
-</details>
-
-<details>
-  <summary>==Questions 11-20==</summary>
 
 <details>
   <summary>Question 11</summary>
