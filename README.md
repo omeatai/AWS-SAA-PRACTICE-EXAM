@@ -2129,11 +2129,6 @@ Server Name Indication (SNI) is a TLS extension that allows a server to present 
 
 </details>
 
-</details>
-
-<details>
-  <summary>==Questions 61-70==</summary>
-
 <details>
   <summary>Question 61</summary>
 
@@ -2475,11 +2470,6 @@ Why are the other answers wrong?
 - [ ] Option D is wrong because: If the NLB's health checks are not correctly identifying the instances as unhealthy when they are returning HTTP errors (as stated in the problem: "NLB is not detecting HTTP errors"), then the UnhealthyHostCount metric for the NLB will not be accurate. An alarm based on this potentially inaccurate metric would not reliably trigger the Auto Scaling action to replace the genuinely unhealthy instances. The root cause of the health check inadequacy needs to be addressed first.
 
 </details>
-
-</details>
-
-<details>
-  <summary>==Questions 71-80==</summary>
 
 <details>
   <summary>Question 71</summary>
@@ -2850,11 +2840,6 @@ Why are the other answers wrong?
 
 </details>
 
-</details>
-
-<details>
-  <summary>==Questions 81-90==</summary>
-
 <details>
   <summary>Question 81</summary>
 
@@ -3202,11 +3187,6 @@ Why are the other answers wrong?
 - [ ] Option D is wrong because: Amazon ElastiCache is an in-memory caching service. While it can reduce database load by caching frequently accessed query results, the script is querying for "new movies added." Such queries, which seek new or changing data, are often not good candidates for caching, as the cache would frequently be stale or miss the latest additions. A read replica directly offloads the entire query load, regardless of whether the results are cacheable.
 
 </details>
-
-</details>
-
-<details>
-  <summary>==Questions 91-100==</summary>
 
 <details>
   <summary>Question 91</summary>
@@ -3612,7 +3592,7 @@ Why are the other answers wrong?
 </details>
 
 <details>
-  <summary>==Questions 101-110==</summary>
+  <summary>==Questions 101-150==</summary>
 
 <details>
   <summary>Question 101</summary>
@@ -3995,11 +3975,6 @@ Why are the other answers wrong?
 
 </details>
 
-</details>
-
-<details>
-  <summary>==Questions 111-120==</summary>
-
 <details>
   <summary>Question 111</summary>
 
@@ -4358,11 +4333,6 @@ Application Load Balancers (ALBs) operate at Layer 7 and are designed for HTTP/H
 Again, CloudFront is not appropriate for DNS traffic distribution.
 
 </details>
-
-</details>
-
-<details>
-  <summary>==Questions 121-130==</summary>
 
 <details>
   <summary>Question 121</summary>
@@ -4739,11 +4709,6 @@ Why are the other answers wrong?
 
 </details>
 
-</details>
-
-<details>
-  <summary>==Questions 131-140==</summary>
-
 <details>
   <summary>Question 131</summary>
 
@@ -4950,21 +4915,6 @@ Why are the other answers wrong?
 </details>
 
 
-<details>
-  <summary>Question X</summary>
-
-- [ ] A.  Turn  
-
-
-</details>
-
-<details>
-  <summary>Answer</summary>
-
-- [ ] A.  Turn
-
-
-</details>
 
 </details>
 
@@ -4978,6 +4928,10 @@ Why are the other answers wrong?
   <summary>==Questions X-X==</summary>
 
 
+</details>
+
+
+
 <details>
   <summary>Question X</summary>
 
@@ -4993,11 +4947,6 @@ Why are the other answers wrong?
 
 
 </details>
-
-
-</details>
-
-
 
 
 
