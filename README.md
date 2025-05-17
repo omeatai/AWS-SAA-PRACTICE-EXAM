@@ -6,7 +6,7 @@ AWS-SAA-PRACTICE-EXAM
 - [ ]  [Questions 101-150](https://github.com/omeatai/AWS-SAA-PRACTICE-EXAM/blob/main/101_150.md)
 - [ ]  [Questions 151-200](https://github.com/omeatai/AWS-SAA-PRACTICE-EXAM/blob/main/151_200.md)
 - [ ]  [Questions 201-250](https://github.com/omeatai/AWS-SAA-PRACTICE-EXAM/blob/main/201_250.md)
-
+- [ ]  [Questions 251-300](https://github.com/omeatai/AWS-SAA-PRACTICE-EXAM/blob/main/251_300.md)
 
 
 
